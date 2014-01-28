@@ -26,6 +26,9 @@ cxxoptflags += -march=barcelona -ffast-math -O3
 foptflags += -O2
 # the pgf libs are needed for linking parallel HDF5
 flibflags += -lgfortran -L/opt/pgi/default/linux86-64/default/lib 
+#this XTRALDFLAGS was present in Make.defs.hopper.gnu, but we don't appear to need it
+#XTRALDFLAGS += -Wl,-zmuldefs 
+
 
 else ifeq ($(PRG_ENV),PGI)
 CH_CPP=$(CXX)  -E
