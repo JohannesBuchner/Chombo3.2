@@ -174,7 +174,7 @@ protected:
   DisjointBoxLayout m_grids;
 
   // Patch integrator
-  PatchGodunov    m_patchGodunov;
+  LayoutData<PatchGodunov>    m_patchGodunov;
 
   // Number of ghost cells need locally for this level
   int m_numGhost;

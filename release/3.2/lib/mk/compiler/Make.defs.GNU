@@ -80,8 +80,14 @@ ifeq ($(cxxname),g++)
   # NOTE: -malign-double causes MPI programs that use pout() to
   # segfault in ~ostream(), so dont use it
   defcxxcomflags := $(_cxxbaseflags)
+
+ifeq ($(OPENMPCC),TRUE)
+  defcxxoptflags := -O2 -funroll-loops -fopenmp
+  defcxxdbgflags := -g -pedantic -Wall -fopenmp
+else
   defcxxoptflags := -O2 -funroll-loops
   defcxxdbgflags := -g -pedantic -Wall
+endif
   #newer versions of gcc (4.3.2 works) can use this
 
   # gcc v4 doesn't understand this yet
@@ -325,8 +331,11 @@ ifeq ($(fname),gfortran)
     endif
   endif
 
-  defflibflags  += -lgfortran -lm
-
+ifeq ($(OPENMPCC),TRUE)
+  defflibflags  += -lgfortran -lm -lgomp
+else
+  defflibflags  += -lgfortran -lm 
+endif
 endif
 
 ################################################################
