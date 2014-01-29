@@ -80,7 +80,11 @@ void LevelGodunov::define(const DisjointBoxLayout&    a_thisDisjointBoxLayout,
   m_hasCoarser = a_hasCoarser;
   m_hasFiner = a_hasFiner;
 
-  m_patchGodunov.define(m_domain,m_dx,
+  m_patchGodunov.define(m_grids);
+  for(DataIterator dit = m_grids.dataIterator(); dit.ok(); ++dit)
+    {
+      // Set the current box for the patch integrator
+      m_patchGodunov[dit()].define(m_domain,m_dx,
                         a_gdnvPhysics,
                         m_normalPredOrder,
                         m_useFourthOrderSlopes,
@@ -89,7 +93,8 @@ void LevelGodunov::define(const DisjointBoxLayout&    a_thisDisjointBoxLayout,
                         m_useFlattening,
                         m_useArtificialViscosity,
                         m_artificialViscosity);
-
+      m_patchGodunov[dit()].setCurrentBox(m_grids[dit()]);
+    }
   // Set the number of ghost cells appropriately
   if (m_useFourthOrderSlopes || m_normalPredOrder == 2)
     {
@@ -177,13 +182,14 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
 
   // Setup an interval corresponding to the conserved variables
   Interval UInterval(0,m_numCons-1);
+  DataIterator dit = m_grids.dataIterator();
 
 #if CH_OPENMP==1
 #pragma omp parallel
 #endif
   {
     CH_TIME("setup::localU");
-    DataIterator dit = m_U.dataIterator();
+    //    DataIterator dit = m_U.dataIterator();
     int nbox = dit.size();
 #if CH_OPENMP==1
 #pragma omp for
@@ -247,27 +253,25 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
 
   // Potentially used in boundary conditions
 
-  m_patchGodunov.setCurrentTime(a_time);
 
   // Dummy source used if source term passed in is empty
-  FArrayBox zeroSource;
 
   // Use to restrict maximum wave speed away from zero
   Real maxWaveSpeed = 1.0e-12;
 
   CH_STOP(timeSetup);
-
+  //  return 0;
   Vector<Real> speeds(m_grids.size(), 0);
 #if CH_OPENMP==1
 #pragma omp parallel  default (shared)
 #endif
   {
-    DataIterator dit = m_grids.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
-	CH_START(timeUpdate);
+	//	CH_START(timeUpdate);
+	FArrayBox zeroSource;
 	//AD: work on this section later
       // The current box
       const Box& curBox = m_grids.get(dit[ibox]);
@@ -286,14 +290,13 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
       // other face centered quantities
       FluxBox flux;
 
-      // Set the current box for the patch integrator
-      m_patchGodunov.setCurrentBox(curBox);
 
       Real maxWaveSpeedGrid;
 
       // Update the current grid's conserved variables, return the final
       // fluxes used for this, and the maximum wave speed for this grid
-      m_patchGodunov.updateState(curU,
+      m_patchGodunov[dit[ibox]].setCurrentTime(a_time);
+      m_patchGodunov[dit[ibox]].updateState(curU,
                                  flux,
                                  maxWaveSpeedGrid,
                                  *source,
@@ -301,12 +304,12 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
                                  curBox);
 
       // Clamp away from zero
-      speeds[ibox]=maxWaveSpeedGrid;
-      //      maxWaveSpeed = Max(maxWaveSpeed,maxWaveSpeedGrid);
+           speeds[ibox]=maxWaveSpeedGrid;
+           maxWaveSpeed = Max(maxWaveSpeed,maxWaveSpeedGrid);
 
-      CH_STOP(timeUpdate);
+      //      CH_STOP(timeUpdate);
 
-      CH_START(timeReflux);
+      //CH_START(timeReflux);
 
       // Do flux register updates
       for (int idir = 0; idir < SpaceDim; idir++)
@@ -331,8 +334,7 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
                                                   UInterval,idir);
             }
         }
-
-      CH_STOP(timeReflux);
+      //CH_STOP(timeReflux);
       }
   }
   for(int ibox = 0; ibox < speeds.size(); ibox++)
@@ -343,12 +345,12 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
   CH_START(timeConclude);
 
 #if CH_OPENMP==1
-#pragma omp parallel   default (shared)
+//#pragma omp parallel   default (shared)
 #endif
   {
-    DataIterator dit = m_U.dataIterator();
+    //DataIterator dit = m_U.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {
         a_U[dit[ibox]].copy(m_U[dit[ibox]]);
@@ -412,12 +414,12 @@ void LevelGodunov::computeWHalf(LayoutData<FluxBox>&        a_WHalf,
   LevelData<FArrayBox> U(m_grids,m_numCons,m_numGhost*IntVect::Unit);
 
 #if CH_OPENMP==1
-#pragma omp parallel   default (none) shared(U)
+//#pragma omp parallel   default (none) shared(U)
 #endif
   {
     DataIterator dit = U.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {
         U[dit[ibox]].setVal(0.0);
@@ -479,12 +481,12 @@ void LevelGodunov::computeWHalf(LayoutData<FluxBox>&        a_WHalf,
   // Now we copy the contents of temporary storage, U, into the permanent
   // storage, a_U, to get ghost cells set for call "computeUpdate".
 #if CH_OPENMP==1
-#pragma omp parallel   default (shared)
+//#pragma omp parallel   default (shared)
 #endif
   {  
     DataIterator dit = U.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {
         a_U[dit[ibox]].copy(U[dit[ibox]]);
@@ -495,20 +497,18 @@ void LevelGodunov::computeWHalf(LayoutData<FluxBox>&        a_WHalf,
   //     a_U[dit].copy(U[dit]);
   //   }
 
-  // Potentially used in boundary conditions
-  m_patchGodunov.setCurrentTime(a_time);
 
   // Dummy source used if source term passed in is empty
   FArrayBox zeroSource;
   // Beginning of loop through patches/grids.
 
 #if CH_OPENMP==1
-#pragma omp parallel   default (shared)
+//#pragma omp parallel   default (shared)
 #endif
   {  
     DataIterator dit = m_grids.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {      
 	// The current box
@@ -529,15 +529,17 @@ void LevelGodunov::computeWHalf(LayoutData<FluxBox>&        a_WHalf,
 	  }
 	
 	// Set the current box for the patch integrator
-	m_patchGodunov.setCurrentBox(curBox);
+	// Potentially used in boundary conditions
 
 	// Update the current grid's conserved variables, return the final
 	// fluxes used for this, and the maximum wave speed for this grid
-	m_patchGodunov.computeWHalf(curWHalf,
-				    curU,
-				    *source,
-				    a_dt,
-				    curBox);
+	m_patchGodunov[dit[ibox]].setCurrentTime(a_time);
+	m_patchGodunov[dit[ibox]].setCurrentBox(curBox);
+	m_patchGodunov[dit[ibox]].computeWHalf(curWHalf,
+					       curU,
+					       *source,
+					       a_dt,
+					       curBox);
       }
   }
 }
@@ -565,19 +567,17 @@ Real LevelGodunov::computeUpdate(LevelData<FArrayBox>&       a_dU,
   // Setup an interval corresponding to the conserved variables
   Interval UInterval(0,m_numCons-1);
 
-  // Potentially used in boundary conditions
-  m_patchGodunov.setCurrentTime(a_time);
 
   // Use to restrict maximum wave speed away from zero
   Real maxWaveSpeed = 1.0e-12;
 
 #if CH_OPENMP==1
-#pragma omp parallel   default (shared)
+//#pragma omp parallel   default (shared)
 #endif
   {  
     DataIterator dit = m_grids.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {      
 	// Beginning of loop through patches/grids.
@@ -600,21 +600,20 @@ Real LevelGodunov::computeUpdate(LevelData<FArrayBox>&       a_dU,
       // half time step
       const FluxBox& curWHalf = a_WHalf[dit[ibox]];
 
-      // Set the current box for the patch integrator
-      m_patchGodunov.setCurrentBox(curBox);
-
       Real maxWaveSpeedGrid;
+  // Potentially used in boundary conditions
 
       // Update the current grid's conserved variables, return the final
       // fluxes used for this, and the maximum wave speed for this grid
-      m_patchGodunov.computeUpdate(curDU,
-                                   flux,
-                                   curU,
-                                   curWHalf,
-                                   a_dt,
-                                   curBox);
+      m_patchGodunov[dit[ibox]].setCurrentTime(a_time);
+      m_patchGodunov[dit[ibox]].computeUpdate(curDU,
+					      flux,
+					      curU,
+					      curWHalf,
+					      a_dt,
+					      curBox);
 
-	maxWaveSpeedGrid = m_patchGodunov.getGodunovPhysicsPtr()->getMaxWaveSpeed(curU, curBox);
+	maxWaveSpeedGrid = m_patchGodunov[dit[ibox]].getGodunovPhysicsPtr()->getMaxWaveSpeed(curU, curBox);
       // Get maximum wave speed for this grid
       // AD: Any reason why this does not use the thread private variable
       // like before
@@ -684,24 +683,21 @@ Real LevelGodunov::getMaxWaveSpeed(const LevelData<FArrayBox>& a_U)
   // This computation doesn't need involve a time but the time being set
   // is checked by PatchGodunov::getMaxWaveSpeed so we have to set it
   // to something...
-  m_patchGodunov.setCurrentTime(0.0);
   Vector<Real> speeds(dit.size(), 0.0);
 #if CH_OPENMP==1
-#pragma omp parallel
+//#pragma omp parallel
 #endif
   {
     // Loop over all grids to get the maximum wave speed
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+//#pragma omp for schedule(CH_SCHEDULE)                  
     for(int ibox = 0; ibox < nbox; ibox++)
       {
+        m_patchGodunov[dit[ibox]].setCurrentTime(0.0);
 	const Box& curBox = disjointBoxLayout.get(dit[ibox]);
 
-      // Set the current box and get the maximum wave speed on the current grid
-      m_patchGodunov.setCurrentBox(curBox);
-
       // Get maximum wave speed for this grid
-      Real speedOverBox = m_patchGodunov.getGodunovPhysicsPtr()->getMaxWaveSpeed(a_U[dit[ibox]], curBox);
+      Real speedOverBox = m_patchGodunov[dit[ibox]].getGodunovPhysicsPtr()->getMaxWaveSpeed(a_U[dit[ibox]], curBox);
 
       // Compute a running maximum
       speeds[ibox] = speedOverBox;
@@ -736,19 +732,22 @@ Real LevelGodunov::getMaxWaveSpeed(const LevelData<FArrayBox>& a_U)
 void LevelGodunov::highOrderLimiter(bool a_highOrderLimiter)
 {
   CH_assert(m_isDefined);
-  m_patchGodunov.highOrderLimiter(a_highOrderLimiter);
+  for(DataIterator dit = m_grids.dataIterator(); dit.ok(); ++dit)
+    m_patchGodunov[dit()].highOrderLimiter(a_highOrderLimiter);
 }
 
 GodunovPhysics*
 LevelGodunov::getGodunovPhysicsPtr()
 {
-  return  m_patchGodunov.getGodunovPhysicsPtr();
+  DataIterator dit = m_grids.dataIterator(); 
+  return  m_patchGodunov[dit()].getGodunovPhysicsPtr();
 }
 
 const GodunovPhysics*
 LevelGodunov::getGodunovPhysicsPtrConst() const
 {
-  return  ((PatchGodunov&)m_patchGodunov).getGodunovPhysicsPtr();
+  DataIterator dit = m_grids.dataIterator(); 
+  return  ((PatchGodunov&)m_patchGodunov[dit()]).getGodunovPhysicsPtr();
 }
 
 

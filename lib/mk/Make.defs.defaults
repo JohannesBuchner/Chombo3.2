@@ -73,6 +73,9 @@ MPI?=FALSE
 ROSE?=FALSE
 GPU?=FALSE
 PIC?=FALSE
+OPENMPCC?=FALSE
+OPENMPFC?=FALSE
+
 CXX?=g++
 FC?=gfortran
 # Note: if MPI=TRUE, MPICXX is used to compile but CXX is used to

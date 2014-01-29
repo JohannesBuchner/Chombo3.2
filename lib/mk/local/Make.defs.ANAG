@@ -81,6 +81,10 @@ makefiles+=local/Make.defs.ANAG
 
 MPICXX=mpiCC
 
+ifeq ($(OPENMPCC),TRUE)
+  USE_MT = FALSE
+endif
+
 # set default for 64bit mode based on system architecture
 ifeq ($(findstring 64,$(arch)),64)
   USE_64 = TRUE

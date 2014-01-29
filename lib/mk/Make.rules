@@ -133,6 +133,8 @@ export USE_PYTHON
 export USE_PETSC
 export PETSC_DIR
 export PETSC_ARCH
+export OPENMPCC
+export OPENMPFC
 
 ## First, set some local variables
 ##  config       is the configuration identification string used in filenames
@@ -217,7 +219,17 @@ libincludes = $(foreach i,$(LibNames),-I$(CHOMBO_HOME)/src/$i)
 ## Finally, set the variables that are user-visible.
 ## User definitions will override these.
 ##
-CPPFLAGS := -DCH_SPACEDIM=$(DIM) \
+openintcc = 0
+ifeq ($(OPENMPCC),TRUE)
+openintcc = 1
+endif
+
+openmpflag = 
+ifeq ($(OPENMPFC),TRUE)
+openmpflag = -P
+endif
+
+CPPFLAGS := -DCH_SPACEDIM=$(DIM) -DCH_OPENMP=$(openintcc)\
 -DCH_$(system)\
 $(subst FALSE,,$(subst TRUE,$(cppdbgflags),$(DEBUG)))\
 $(subst FALSE,,$(subst TRUE,$(cppoptflags),$(subst HIGH,$(cppoptflags) -DNDEBUG,$(OPT))))\
@@ -439,7 +451,7 @@ ifeq ($(ROSE),TRUE)
 # Preprocess with Rose
 o/$(config)/%.o : %.cpp   d/$(config)/%.d
 	$(QUIET)$(ROSECC) $(CPPFLAGS) $(XTRACPPFLAGS) -DCH_LANG_CC $(cxxcompflag) -rose:o rose/$(config)/rose_$< $<
-	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) $(CPPFLAGS) $(XTRACPPFLAGS) -I./ -DCH_LANG_CC $(cxxcompflag) rose/$(config)/rose_$< $(cxxobjflag)$@
+	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) $(CPPFLAGS) $(XTRACPPFLAGS) -I./ -DCH_LANG_CC $(openmpflag) $(cxxcompflag) rose/$(config)/rose_$< $(cxxobjflag)$@
 else
 # Direct Vendor compilation
 o/$(config)/%.o : %.cpp   d/$(config)/%.d
