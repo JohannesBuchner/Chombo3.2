@@ -14,6 +14,7 @@
 ##  CXX             command to compile C++ code and link programs
 ##  FC              command to compile Fortran code
 ##  MPI             compile for parallel (TRUE or FALSE)
+##  OPENMPCC        compile for hybrid parallelism with OpenMP (TRUE or FALSE)
 ##  MPICXX          command to compile C++ code and link programs for parallel execution
 ##                   (note: blank means no parallel build is defined)
 ##  ROSE            preprocessed with a Rose-based translator

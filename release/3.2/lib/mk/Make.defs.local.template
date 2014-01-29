@@ -37,6 +37,7 @@ makefiles+=Make.defs.local
 #  CXX          : command to compile/link C++ code
 #  FC           : command to compile Fortran code
 #  MPI          :(TRUE,FALSE) compile for parallel if TRUE, else serial
+#  OPENMPCC     : TRUE for threading with OpenMP, FALSE without OpenMP
 #  MPICXX       : command to compile/link C++ code in parallel
 #  OBJMODEL     : special config for non-default compiler mode
 #  XTRACONFIG   : user-defined special config
