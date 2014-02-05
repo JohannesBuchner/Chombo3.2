@@ -154,6 +154,7 @@ PetscCompGrid::clean()
   if (m_mat) 
     {
       MatDestroy(&m_mat);
+      m_mat = 0; // this can get called multiple times
       if (m_domains.size() > 1)
         {
           const Box& stencilBox = m_FCStencils.box();
@@ -188,10 +189,7 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
   const int numLevs = maxiLev - a_ibase + 1;
   m_bc = a_bc;
 
-  if (m_domains.size()>0)
-    { 
-      //clean(); // this is virtual this needs to be called before derived classes defines, yuck
-    }
+  PetscCompGrid::clean(); // this is virtual so lets not step on derived classes data
 
   if (numLevs>1)
     {
