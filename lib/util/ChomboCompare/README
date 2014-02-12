@@ -80,7 +80,7 @@ compare.errorRoot = <filename> -- if doPlots is 1, this is the filename
     viewed with ChomboVis)
 
 compare.no_average_var <list of variable names> -- There are also some
-    variable that users may want to treat specially by just computing
+    variables that users may want to treat specially by just computing
     the (AMR-aware) norms of the computed solution, without comparing
     against averaged "exact" values (the implicit assumption is that
     the "Exact" values of these is zero).  These variables may be
@@ -88,7 +88,7 @@ compare.no_average_var <list of variable names> -- There are also some
 
 
 compare.sum_var <list of variable names> -- There are also some
-    variable that users may want to treat specially by summing "exact"
+    variables that users may want to treat specially by summing "exact"
     values inestead of averaging them. One example of this would be 
     cell volumes in a mapped-grid computation, where one computes 
     error by summing the overlying exact-solution values and then 
