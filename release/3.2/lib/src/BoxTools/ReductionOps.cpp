@@ -69,8 +69,9 @@ SumOp::linearOut(const FArrayBox& arg, void* buf, const Box& R,
       Box transverseBox(IntVect::Zero, IntVect::Zero);
       for (int n=0; n<m_summingDir.size(); n++)
         {
-          transverseBox.setSmall(n,R.smallEnd(m_summingDir[n]));
-          transverseBox.setBig(n,R.bigEnd(m_summingDir[n]));
+          transverseBox.setBig(m_summingDir[n],
+                               (R.bigEnd(m_summingDir[n])-R.smallEnd(m_summingDir[n])));
+          //transverseBox.setSmall(m_summingDir[n],R.smallEnd(m_summingDir[n]));
         }
       // don't apply scale here, since we'll do it in the linearIn side of
       // things.
