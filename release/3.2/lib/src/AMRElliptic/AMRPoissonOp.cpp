@@ -15,6 +15,7 @@
 #include "LayoutIterator.H"
 #include "FineInterp.H"
 #include "CoarseAverage.H"
+#include "CH_OpenMP.H"
 #include "AMRMultiGrid.H"
 #include "Misc.H"
 
@@ -288,12 +289,19 @@ void AMRPoissonOp::preCond(LevelData<FArrayBox>&       a_phi,
 
   // don't need to use a Copier -- plain copy will do
   DataIterator dit = a_phi.dataIterator();
-  for (dit.begin(); dit.ok(); ++dit)
-    {
-      a_phi[dit].copy(a_rhs[dit]);
-      a_phi[dit] *= mult;
-    }
+  int nbox = dit.size();
 
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox=0; ibox<nbox; ibox++)
+      {
+      a_phi[dit[ibox]].copy(a_rhs[dit[ibox]]);
+      a_phi[dit[ibox]] *= mult;
+      }
+  }  //end pragma
   relax(a_phi, a_rhs, 2);
 }
 
@@ -325,27 +333,36 @@ void AMRPoissonOp::applyOpI(LevelData<FArrayBox>&       a_lhs,
 
   const DisjointBoxLayout& dbl = a_lhs.disjointBoxLayout();
   DataIterator dit = phi.dataIterator();
-
+  int nbox=dit.size();
+#if CH_OPENMP==1
+#pragma omp parallel   default (shared)
+#endif
   {
     CH_TIME("AMRPoissonOp::applyOpIBC");
-
-    for (dit.begin(); dit.ok(); ++dit)
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for (int ibox=0;ibox<nbox; ibox++)
       {
-        m_bc(phi[dit], dbl[dit], m_domain, m_dx, a_homogeneous);
+        m_bc(phi[dit[ibox]], dbl[dit[ibox]], m_domain, m_dx, a_homogeneous);
       }
-  }
+  }// end pragma
 
-  for (dit.begin(); dit.ok(); ++dit)
-    {
-      const Box& region = dbl[dit];
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for (int ibox=0;ibox<nbox; ibox++)
+      {
+      const Box& region = dbl[dit[ibox]];
 
-      FORT_OPERATORLAP(CHF_FRA(a_lhs[dit]),
-                       CHF_CONST_FRA(phi[dit]),
+      FORT_OPERATORLAP(CHF_FRA(a_lhs[dit[ibox]]),
+                       CHF_CONST_FRA(phi[dit[ibox]]),
                        CHF_BOX(region),
                        CHF_CONST_REAL(m_dx),
                        CHF_CONST_REAL(m_alpha),
                        CHF_CONST_REAL(m_beta));
     }
+  }//end pragma
 }
 
 void AMRPoissonOp::applyOpNoBoundary(LevelData<FArrayBox>&       a_lhs,
@@ -356,19 +373,25 @@ void AMRPoissonOp::applyOpNoBoundary(LevelData<FArrayBox>&       a_lhs,
   LevelData<FArrayBox>& phi = (LevelData<FArrayBox>&)a_phi;
   const DisjointBoxLayout& dbl = a_lhs.disjointBoxLayout();
   DataIterator dit = phi.dataIterator();
-
+  int nbox=dit.size();
   phi.exchange(phi.interval(), m_exchangeCopier);
 
-  for (dit.begin(); dit.ok(); ++dit)
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for (int ibox = 0; ibox < nbox; ibox++)
     {
-      const Box& region = dbl[dit];
-      FORT_OPERATORLAP(CHF_FRA(a_lhs[dit]),
-                       CHF_CONST_FRA(phi[dit]),
+      const Box& region = dbl[dit[ibox]];
+      FORT_OPERATORLAP(CHF_FRA(a_lhs[dit[ibox]]),
+                       CHF_CONST_FRA(phi[dit[ibox]]),
                        CHF_BOX(region),
                        CHF_CONST_REAL(m_dx),
                        CHF_CONST_REAL(m_alpha),
                        CHF_CONST_REAL(m_beta));
     }
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -611,32 +634,46 @@ void AMRPoissonOp::restrictResidual(LevelData<FArrayBox>&       a_resCoarse,
     MayDay::Abort("exchangeMode");
 
   const DisjointBoxLayout& dblFine = a_phiFine.disjointBoxLayout();
-  for (DataIterator dit = a_phiFine.dataIterator(); dit.ok(); ++dit)
-    {
-      FArrayBox& phi = a_phiFine[dit];
-      m_bc(phi, dblFine[dit], m_domain, m_dx, true);
-    }
+  DataIterator dit = a_phiFine.dataIterator();
+  int nbox=dit.size();
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& phi = a_phiFine[dit[ibox]];
+	m_bc(phi, dblFine[dit[ibox]], m_domain, m_dx, true);
+      }
+  }//end pragma
 
-  for (DataIterator dit = a_phiFine.dataIterator(); dit.ok(); ++dit)
-    {
-      FArrayBox&       phi = a_phiFine[dit];
-      const FArrayBox& rhs = a_rhsFine[dit];
-      FArrayBox&       res = a_resCoarse[dit];
-
-      Box region = dblFine[dit];
-      const IntVect& iv = region.smallEnd();
-      IntVect civ = coarsen(iv, 2);
-
-      res.setVal(0.0);
-
-      FORT_RESTRICTRES(CHF_FRA_SHIFT(res, civ),
-                       CHF_CONST_FRA_SHIFT(phi, iv),
-                       CHF_CONST_FRA_SHIFT(rhs, iv),
-                       CHF_CONST_REAL(m_alpha),
-                       CHF_CONST_REAL(m_beta),
-                       CHF_BOX_SHIFT(region, iv),
-                       CHF_CONST_REAL(m_dx));
-    }
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox&       phi = a_phiFine[dit[ibox]];
+	const FArrayBox& rhs = a_rhsFine[dit[ibox]];
+	FArrayBox&       res = a_resCoarse[dit[ibox]];
+	
+	Box region = dblFine[dit[ibox]];
+	const IntVect& iv = region.smallEnd();
+	IntVect civ = coarsen(iv, 2);
+	
+	res.setVal(0.0);
+	
+	FORT_RESTRICTRES(CHF_FRA_SHIFT(res, civ),
+			 CHF_CONST_FRA_SHIFT(phi, iv),
+			 CHF_CONST_FRA_SHIFT(rhs, iv),
+			 CHF_CONST_REAL(m_alpha),
+			 CHF_CONST_REAL(m_beta),
+			 CHF_BOX_SHIFT(region, iv),
+			 CHF_CONST_REAL(m_dx));
+      }
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -647,20 +684,28 @@ void AMRPoissonOp::prolongIncrement(LevelData<FArrayBox>&       a_phiThisLevel,
   
   DisjointBoxLayout dbl = a_phiThisLevel.disjointBoxLayout();
   int mgref = 2; //this is a multigrid func
+  DataIterator dit = a_phiThisLevel.dataIterator();
+  int nbox=dit.size();
   
-  for (DataIterator dit = a_phiThisLevel.dataIterator(); dit.ok(); ++dit)
-    {
-      FArrayBox& phi =  a_phiThisLevel[dit];
-      const FArrayBox& coarse = a_correctCoarse[dit];
-      Box region = dbl[dit];
-      const IntVect& iv = region.smallEnd();
-      IntVect civ=coarsen(iv, 2);
-      
-      FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
-                   CHF_CONST_FRA_SHIFT(coarse, civ),
-                   CHF_BOX_SHIFT(region, iv),
-                   CHF_CONST_INT(mgref));
-    }
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& phi =  a_phiThisLevel[dit[ibox]];
+	const FArrayBox& coarse = a_correctCoarse[dit[ibox]];
+	Box region = dbl[dit[ibox]];
+	const IntVect& iv = region.smallEnd();
+	IntVect civ=coarsen(iv, 2);
+	
+	FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
+		     CHF_CONST_FRA_SHIFT(coarse, civ),
+		     CHF_BOX_SHIFT(region, iv),
+		     CHF_CONST_INT(mgref));
+      }
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -827,21 +872,28 @@ void AMRPoissonOp::AMRRestrictS(LevelData<FArrayBox>&       a_resCoarse, // outp
 
   DisjointBoxLayout dblCoar = a_resCoarse.disjointBoxLayout();
 
-  DataIterator dit = a_residual.dataIterator();
-  for (dit.begin(); dit.ok(); ++dit)
-    {
-      FArrayBox& coarse = a_resCoarse[dit];
-      const FArrayBox& fine = a_scratch[dit];
-      const Box& b = dblCoar[dit];
-      Box refbox(IntVect::Zero,
-                 (m_refToCoarser-1)*IntVect::Unit);
-      FORT_AVERAGE( CHF_FRA(coarse),
-                    CHF_CONST_FRA(fine),
-                    CHF_BOX(b),
-                    CHF_CONST_INT(m_refToCoarser),
-                    CHF_BOX(refbox)
-                    );
-    }
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+    DataIterator dit = a_residual.dataIterator();
+    int nbox=dit.size();
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& coarse = a_resCoarse[dit[ibox]];
+	const FArrayBox& fine = a_scratch[dit[ibox]];
+	const Box& b = dblCoar[dit[ibox]];
+	Box refbox(IntVect::Zero,
+		   (m_refToCoarser-1)*IntVect::Unit);
+	FORT_AVERAGE( CHF_FRA(coarse),
+		      CHF_CONST_FRA(fine),
+		      CHF_BOX(b),
+		      CHF_CONST_INT(m_refToCoarser),
+		      CHF_BOX(refbox)
+		      );
+      }
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -858,20 +910,29 @@ void AMRPoissonOp::AMRProlong(LevelData<FArrayBox>&       a_correction,
   a_coarseCorrection.copyTo(eCoar.interval(), eCoar, eCoar.interval());
 
   DisjointBoxLayout dbl = a_correction.disjointBoxLayout();
-  for (DataIterator dit = a_correction.dataIterator(); dit.ok(); ++dit)
-    {
-      FArrayBox& phi =  a_correction[dit];
-      const FArrayBox& coarse = eCoar[dit];
+  DataIterator dit = a_correction.dataIterator();
+  int nbox=dit.size();
 
-      Box region = dbl[dit];
-      const IntVect& iv = region.smallEnd();
-      IntVect civ = coarsen(iv, m_refToCoarser);
-
-      FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
-                   CHF_CONST_FRA_SHIFT(coarse, civ),
-                   CHF_BOX_SHIFT(region, iv),
-                   CHF_CONST_INT(m_refToCoarser));
-    }
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& phi =  a_correction[dit[ibox]];
+	const FArrayBox& coarse = eCoar[dit[ibox]];
+	
+	Box region = dbl[dit[ibox]];
+	const IntVect& iv = region.smallEnd();
+	IntVect civ = coarsen(iv, m_refToCoarser);
+	
+	FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
+		     CHF_CONST_FRA_SHIFT(coarse, civ),
+		     CHF_BOX_SHIFT(region, iv),
+		     CHF_CONST_INT(m_refToCoarser));
+      }
+  }// end pragma
 }
 
 // ---------------------------------------------------------
@@ -885,20 +946,29 @@ void AMRPoissonOp::AMRProlongS(LevelData<FArrayBox>&       a_correction,
   a_coarseCorrection.copyTo(a_temp.interval(), a_temp, a_temp.interval(), a_copier);
 
   DisjointBoxLayout dbl = a_correction.disjointBoxLayout();
-  for (DataIterator dit = a_correction.dataIterator(); dit.ok(); ++dit)
-    {
-      FArrayBox& phi =  a_correction[dit];
-      const FArrayBox& coarse = a_temp[dit];
-      
-      Box region = dbl[dit];
-      const IntVect& iv =  region.smallEnd();
-      IntVect civ= coarsen(iv, m_refToCoarser);
-
-      FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
-                   CHF_CONST_FRA_SHIFT(coarse, civ),
-                   CHF_BOX_SHIFT(region, iv),
-                   CHF_CONST_INT(m_refToCoarser));
-    }
+  DataIterator dit = a_correction.dataIterator();
+  int nbox=dit.size();
+  
+#if CH_OPENMP==1
+#pragma omp parallel 
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& phi =  a_correction[dit[ibox]];
+	const FArrayBox& coarse = a_temp[dit[ibox]];
+	
+	Box region = dbl[dit[ibox]];
+	const IntVect& iv =  region.smallEnd();
+	IntVect civ= coarsen(iv, m_refToCoarser);
+	
+	FORT_PROLONG(CHF_FRA_SHIFT(phi, iv),
+		     CHF_CONST_FRA_SHIFT(coarse, civ),
+		     CHF_BOX_SHIFT(region, iv),
+		     CHF_CONST_INT(m_refToCoarser));
+      }
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -917,32 +987,38 @@ void AMRPoissonOp::AMRProlongS_2(LevelData<FArrayBox>&       a_correction,
   
   a_coarseCorrection.copyTo( a_temp.interval(), a_temp, a_temp.interval(), a_copier );
   //a_temp.exchange( a_temp.interval(), a_cornerCopier ); -- needed for AMR
-
-  for ( DataIterator dit = a_correction.dataIterator(); dit.ok(); ++dit )
-    {
-      FArrayBox& phi =  a_correction[dit];
-      FArrayBox& coarse = a_temp[dit];
-      
-      coarserAMRPOp->m_bc( coarse, cdbl[dit], coarserAMRPOp->m_domain, coarserAMRPOp->m_dx, true );
-
-      Box region = dbl[dit];
-      const IntVect& iv = region.smallEnd();
-      IntVect civ = coarsen(iv, m_refToCoarser);
-      
-#if 0
-      FORT_PROLONG( CHF_FRA_SHIFT(phi, iv),
-                    CHF_CONST_FRA_SHIFT(coarse, civ),
-                    CHF_BOX_SHIFT(region, iv),
-                    CHF_CONST_INT(m_refToCoarser));
-#else
-      FORT_PROLONG_2( CHF_FRA_SHIFT(phi, iv),
-                      CHF_CONST_FRA_SHIFT(coarse, civ),
-                      CHF_BOX_SHIFT(region, iv),
-                      CHF_CONST_INT(m_refToCoarser) 
-                      );
+#if CH_OPENMP==1
+#pragma omp parallel
 #endif
-   
-    }
+  {
+    DataIterator dit = a_correction.dataIterator();
+    int nbox = dit.size();
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	FArrayBox& phi =  a_correction[dit[ibox]];
+	FArrayBox& coarse = a_temp[dit[ibox]];
+	
+	coarserAMRPOp->m_bc( coarse, cdbl[dit[ibox]], coarserAMRPOp->m_domain, coarserAMRPOp->m_dx, true );
+
+	Box region = dbl[dit[ibox]];
+	const IntVect& iv = region.smallEnd();
+	IntVect civ = coarsen(iv, m_refToCoarser);
+	
+#if 0
+	FORT_PROLONG( CHF_FRA_SHIFT(phi, iv),
+		      CHF_CONST_FRA_SHIFT(coarse, civ),
+		      CHF_BOX_SHIFT(region, iv),
+		      CHF_CONST_INT(m_refToCoarser));
+#else
+	FORT_PROLONG_2( CHF_FRA_SHIFT(phi, iv),
+			CHF_CONST_FRA_SHIFT(coarse, civ),
+			CHF_BOX_SHIFT(region, iv),
+			CHF_CONST_INT(m_refToCoarser) 
+			);
+#endif
+      }
+  }//end pragma
 
   // debug
   //write(&a_temp,"z_src.hdf5"); 
@@ -1134,7 +1210,7 @@ void AMRPoissonOp::levelGSRB( LevelData<FArrayBox>&       a_phi,
   const DisjointBoxLayout& dbl = a_rhs.disjointBoxLayout();
 
   DataIterator dit = a_phi.dataIterator();
-
+  int nbox=dit.size();
   // do first red, then black passes
   for (int whichPass = 0; whichPass <= 1; whichPass++)
     {
@@ -1155,33 +1231,38 @@ void AMRPoissonOp::levelGSRB( LevelData<FArrayBox>&       a_phi,
         else
           MayDay::Abort("exchangeMode");
       }
-      
-      for (dit.begin(); dit.ok(); ++dit)
-        {
-          const Box& region = dbl[dit];
-          FArrayBox& phiFab = a_phi[dit];
-
-          m_bc( phiFab, region, m_domain, m_dx, true );
-
-          if (m_alpha == 0.0 && m_beta == 1.0 )
-            {
-              FORT_GSRBLAPLACIAN(CHF_FRA(phiFab),
-                                 CHF_CONST_FRA(a_rhs[dit]),
-                                 CHF_BOX(region),
-                                 CHF_CONST_REAL(m_dx),
-                                 CHF_CONST_INT(whichPass));
-            }
-          else
-            {
-              FORT_GSRBHELMHOLTZ(CHF_FRA(phiFab),
-                                 CHF_CONST_FRA(a_rhs[dit]),
-                                 CHF_BOX(region),
-                                 CHF_CONST_REAL(m_dx),
-                                 CHF_CONST_REAL(m_alpha),
-                                 CHF_CONST_REAL(m_beta),
-                                 CHF_CONST_INT(whichPass));
-            }
-        } // end loop through grids
+#if CH_OPENMP==1
+#pragma omp parallel
+#endif
+      {
+#pragma omp for schedule(CH_SCHEDULE)                  
+	for (int ibox=0; ibox < nbox; ibox++)
+	  {
+	    const Box& region = dbl[dit[ibox]];
+	    FArrayBox& phiFab = a_phi[dit[ibox]];
+	    
+	    m_bc( phiFab, region, m_domain, m_dx, true );
+	    
+	    if (m_alpha == 0.0 && m_beta == 1.0 )
+	      {
+		FORT_GSRBLAPLACIAN(CHF_FRA(phiFab),
+				   CHF_CONST_FRA(a_rhs[dit[ibox]]),
+				   CHF_BOX(region),
+				   CHF_CONST_REAL(m_dx),
+				   CHF_CONST_INT(whichPass));
+	      }
+	    else
+	      {
+		FORT_GSRBHELMHOLTZ(CHF_FRA(phiFab),
+				   CHF_CONST_FRA(a_rhs[dit[ibox]]),
+				   CHF_BOX(region),
+				   CHF_CONST_REAL(m_dx),
+				   CHF_CONST_REAL(m_alpha),
+				   CHF_CONST_REAL(m_beta),
+				   CHF_CONST_INT(whichPass));
+	      }
+	  } // end loop through grids
+      }//end pragma
     } // end loop through red-black
 }
 
@@ -1249,7 +1330,7 @@ void AMRPoissonOp::looseGSRB(LevelData<FArrayBox>&       a_phi,
   const DisjointBoxLayout& dbl = a_phi.disjointBoxLayout();
 
   DataIterator dit = a_phi.dataIterator();
-
+  int nbox=dit.size();
   //fill in intersection of ghostcells and a_phi's boxes
   {
     CH_TIME("AMRPoissonOp::looseGSRB::homogeneousCFInterp");
@@ -1267,53 +1348,59 @@ void AMRPoissonOp::looseGSRB(LevelData<FArrayBox>&       a_phi,
   }
 
   // now step through grids...
-  for (dit.begin(); dit.ok(); ++dit)
-    {
-      // invoke physical BC's where necessary
+#if CH_OPENMP==1
+#pragma omp parallel
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
       {
-        CH_TIME("AMRPoissonOp::looseGSRB::BCs");
-        m_bc(a_phi[dit], dbl[dit], m_domain, m_dx, true);
-      }
-
-      const Box& region = dbl[dit];
-
-      if (m_alpha == 0.0 && m_beta == 1.0)
-        {
-          int whichPass = 0;
-          FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit]),
-                        CHF_CONST_FRA(a_rhs[dit]),
-                        CHF_BOX(region),
-                        CHF_CONST_REAL(m_dx),
-                             CHF_CONST_INT(whichPass));
-
-          whichPass = 1;
-          FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit]),
-                             CHF_CONST_FRA(a_rhs[dit]),
-                             CHF_BOX(region),
-                             CHF_CONST_REAL(m_dx),
-                             CHF_CONST_INT(whichPass));
-        }
-      else
-        {
-          int whichPass = 0;
-          FORT_GSRBHELMHOLTZ(CHF_FRA(a_phi[dit]),
-                             CHF_CONST_FRA(a_rhs[dit]),
-                             CHF_BOX(region),
-                             CHF_CONST_REAL(m_dx),
-                             CHF_CONST_REAL(m_alpha),
-                             CHF_CONST_REAL(m_beta),
-                             CHF_CONST_INT(whichPass));
-
-          whichPass = 1;
-          FORT_GSRBHELMHOLTZ(CHF_FRA(a_phi[dit]),
-                             CHF_CONST_FRA(a_rhs[dit]),
-                             CHF_BOX(region),
-                             CHF_CONST_REAL(m_dx),
-                             CHF_CONST_REAL(m_alpha),
-                             CHF_CONST_REAL(m_beta),
-                             CHF_CONST_INT(whichPass));
-        }
-    } // end loop through grids
+	// invoke physical BC's where necessary
+	{
+	  CH_TIME("AMRPoissonOp::looseGSRB::BCs");
+	  m_bc(a_phi[dit[ibox]], dbl[dit[ibox]], m_domain, m_dx, true);
+	}
+	
+	const Box& region = dbl[dit[ibox]];
+	
+	if (m_alpha == 0.0 && m_beta == 1.0)
+	  {
+	    int whichPass = 0;
+	    FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit[ibox]]),
+			       CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			       CHF_BOX(region),
+			       CHF_CONST_REAL(m_dx),
+			       CHF_CONST_INT(whichPass));
+	    
+	    whichPass = 1;
+	    FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit[ibox]]),
+			       CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			       CHF_BOX(region),
+			       CHF_CONST_REAL(m_dx),
+			       CHF_CONST_INT(whichPass));
+	  }
+	else
+	  {
+	    int whichPass = 0;
+	    FORT_GSRBHELMHOLTZ(CHF_FRA(a_phi[dit[ibox]]),
+			       CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			       CHF_BOX(region),
+			       CHF_CONST_REAL(m_dx),
+			       CHF_CONST_REAL(m_alpha),
+			       CHF_CONST_REAL(m_beta),
+			       CHF_CONST_INT(whichPass));
+	    
+	    whichPass = 1;
+	    FORT_GSRBHELMHOLTZ(CHF_FRA(a_phi[dit[ibox]]),
+			       CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			       CHF_BOX(region),
+			       CHF_CONST_REAL(m_dx),
+			       CHF_CONST_REAL(m_alpha),
+			       CHF_CONST_REAL(m_beta),
+			       CHF_CONST_INT(whichPass));
+	  }
+      } // end loop through grids
+  }//end pragma
 }
 
 // ---------------------------------------------------------
@@ -1339,28 +1426,35 @@ void AMRPoissonOp::overlapGSRB(LevelData<FArrayBox>&       a_phi,
 
   // now step through grids...
   DataIterator dit = a_phi.dataIterator();
-  for (dit.begin(); dit.ok(); ++dit)
-    {
-      // invoke physical BC's where necessary
-      CH_START(tb);
-      m_bc(a_phi[dit], dbl[dit], m_domain, m_dx, true);
-      CH_STOP(tb);
-      Box region = dbl[dit];
-      region.grow(-1); // just do the interior on the first run through
-      int whichPass = 0;
-      FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit]),
-                         CHF_CONST_FRA(a_rhs[dit]),
-                         CHF_BOX(region),
-                         CHF_CONST_REAL(m_dx),
-                         CHF_CONST_INT(whichPass));
-
-      whichPass = 1;
-      FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit]),
-                         CHF_CONST_FRA(a_rhs[dit]),
-                         CHF_BOX(region),
-                         CHF_CONST_REAL(m_dx),
-                         CHF_CONST_INT(whichPass));
-    }
+  int nbox=dit.size();
+#if CH_OPENMP==1
+#pragma omp parallel
+#endif
+  {
+#pragma omp for schedule(CH_SCHEDULE)                  
+    for(int ibox = 0; ibox < nbox; ibox++)
+      {
+	// invoke physical BC's where necessary
+	CH_START(tb);
+	m_bc(a_phi[dit[ibox]], dbl[dit[ibox]], m_domain, m_dx, true);
+	CH_STOP(tb);
+	Box region = dbl[dit[ibox]];
+	region.grow(-1); // just do the interior on the first run through
+	int whichPass = 0;
+	FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit[ibox]]),
+			   CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			   CHF_BOX(region),
+			   CHF_CONST_REAL(m_dx),
+			   CHF_CONST_INT(whichPass));
+	
+	whichPass = 1;
+	FORT_GSRBLAPLACIAN(CHF_FRA(a_phi[dit[ibox]]),
+			   CHF_CONST_FRA(a_rhs[dit[ibox]]),
+			   CHF_BOX(region),
+			   CHF_CONST_REAL(m_dx),
+			   CHF_CONST_INT(whichPass));
+      }
+  }//end pragma
 
   a_phi.exchangeEnd();
 
