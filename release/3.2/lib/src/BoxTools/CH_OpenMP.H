@@ -11,7 +11,6 @@
 #ifndef _CH_OpenMP_H_
 #define _CH_OpenMP_H_
 
-#include <omp.h>
 #include "DataIterator.H"
 //#include "FABSTACKTEMP.H"
 //#include "FABSTACKSPACEDIM.H"
@@ -21,7 +20,7 @@
 
 
 #if CH_OPENMP==1
-
+#include <omp.h>
 #define CH_SCHEDULE dynamic
 
 #endif

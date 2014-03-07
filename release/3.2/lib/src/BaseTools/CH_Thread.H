@@ -8,7 +8,9 @@
  */
 #endif
 
+#if CH_OPENMP==1
 #include <omp.h>
+#endif
 
 #ifndef _CH_Thread_H_
 #define _CH_Thread_H_

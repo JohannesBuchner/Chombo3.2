@@ -21,9 +21,8 @@
 #include "mpi.h"
 #endif
 
-#ifdef CH_OPENMP
+#if CH_OPENMP==1
 #include "CH_Thread.H"
-#include <omp.h>
 #endif
 
 
