@@ -70,10 +70,10 @@ void ParseValue(Real* pos,
                 Side::LoHiSide* side,
                 Real* a_values)
 {
-  ParmParse pp;
-  Real bcVal;
-  pp.get("bc_value",bcVal);
-  a_values[0]=bcVal;
+  //  ParmParse pp;
+  //Real bcVal;
+  //pp.get("bc_value",bcVal);
+  a_values[0]=0.;
 }
 
 void ParseBC(FArrayBox& a_state,
@@ -86,13 +86,13 @@ void ParseBC(FArrayBox& a_state,
   if (!a_domain.domainBox().contains(a_state.box()))
     {
 
-      if (!GlobalBCRS::s_areBCsParsed)
-        {
-          ParmParse pp;
-          pp.getarr("bc_lo", GlobalBCRS::s_bcLo, 0, SpaceDim);
-          pp.getarr("bc_hi", GlobalBCRS::s_bcHi, 0, SpaceDim);
-          GlobalBCRS::s_areBCsParsed = true;
-        }
+      // if (!GlobalBCRS::s_areBCsParsed)
+      //   {
+      //     ParmParse pp;
+      //     pp.getarr("bc_lo", GlobalBCRS::s_bcLo, 0, SpaceDim);
+      //     pp.getarr("bc_hi", GlobalBCRS::s_bcHi, 0, SpaceDim);
+      //     GlobalBCRS::s_areBCsParsed = true;
+      //   }
 
       Box valid = a_valid;
       for (int i=0; i<CH_SPACEDIM; ++i)
@@ -104,103 +104,104 @@ void ParseBC(FArrayBox& a_state,
               Box ghostBoxHi = adjCellBox(valid, i, Side::Hi, 1);
               if (!a_domain.domainBox().contains(ghostBoxLo))
                 {
-                  if (GlobalBCRS::s_bcLo[i] == 1)
-                    {
-                      if (!GlobalBCRS::s_printedThatLo[i])
-                        {
-                          if (a_state.nComp() != 1)
-                            {
-                              MayDay::Error("using scalar bc function for vector");
-                            }
-                          GlobalBCRS::s_printedThatLo[i] = true;
-                          if (s_verbosity>5)pout() << "const neum bcs lo for direction " << i << endl;
-                        }
-                      NeumBC(a_state,
-                             valid,
-                             a_dx,
-                             a_homogeneous,
-                             ParseValue,
-                             i,
-                             Side::Lo);
-                    }
-                  else if (GlobalBCRS::s_bcLo[i] == 0)
-                    {
-                      if (!GlobalBCRS::s_printedThatLo[i])
-                        {
-                          if (a_state.nComp() != 1)
-                            {
-                              MayDay::Error("using scalar bc function for vector");
-                            }
-                          GlobalBCRS::s_printedThatLo[i] = true;
-                          if (s_verbosity>5)pout() << "const diri bcs lo for direction " << i << endl;
-                        }
+                  // if (GlobalBCRS::s_bcLo[i] == 1)
+                  //   {
+                  //     if (!GlobalBCRS::s_printedThatLo[i])
+                  //       {
+                  //         if (a_state.nComp() != 1)
+                  //           {
+                  //             MayDay::Error("using scalar bc function for vector");
+                  //           }
+                  //         GlobalBCRS::s_printedThatLo[i] = true;
+                  //         if (s_verbosity>5)pout() << "const neum bcs lo for direction " << i << endl;
+                  //       }
+                  //     NeumBC(a_state,
+                  //            valid,
+                  //            a_dx,
+                  //            a_homogeneous,
+                  //            ParseValue,
+                  //            i,
+                  //            Side::Lo);
+                  //   }
+                  // else if (GlobalBCRS::s_bcLo[i] == 0)
+                  //   {
+                  //     if (!GlobalBCRS::s_printedThatLo[i])
+                  //       {
+                  //         if (a_state.nComp() != 1)
+                  //           {
+                  //             MayDay::Error("using scalar bc function for vector");
+                  //           }
+                  //         GlobalBCRS::s_printedThatLo[i] = true;
+                  //         if (s_verbosity>5)pout() << "const diri bcs lo for direction " << i << endl;
+                  //       }
                       DiriBC(a_state,
                              valid,
                              a_dx,
-                             a_homogeneous,
+                             true,
                              ParseValue,
                              i,
                              Side::Lo,
                              1);
-                    }
-                  else
-                    {
-                      MayDay::Error("bogus bc flag lo");
-                    }
+                  //   }
+                  // else
+                  //   {
+                  //     MayDay::Error("bogus bc flag lo");
+                  //   }
                 }
 
               if (!a_domain.domainBox().contains(ghostBoxHi))
                 {
-                  if (GlobalBCRS::s_bcHi[i] == 1)
-                    {
-                      if (!GlobalBCRS::s_printedThatHi[i])
-                        {
-                          if (a_state.nComp() != 1)
-                            {
-                              MayDay::Error("using scalar bc function for vector");
-                            }
-                          GlobalBCRS::s_printedThatHi[i] = true;
-                          if (s_verbosity>5)pout() << "const neum bcs hi for direction " << i << endl;
-                        }
-                      NeumBC(a_state,
-                             valid,
-                             a_dx,
-                             a_homogeneous,
-                             ParseValue,
-                             i,
-                             Side::Hi);
-                    }
-                  else if (GlobalBCRS::s_bcHi[i] == 0)
-                    {
-                      if (!GlobalBCRS::s_printedThatHi[i])
-                        {
-                          if (a_state.nComp() != 1)
-                            {
-                              MayDay::Error("using scalar bc function for vector");
-                            }
-                          GlobalBCRS::s_printedThatHi[i] = true;
-                          if (s_verbosity>5)pout() << "const diri bcs hi for direction " << i << endl;
-                        }
+                  // if (GlobalBCRS::s_bcHi[i] == 1)
+                  //   {
+                  //     if (!GlobalBCRS::s_printedThatHi[i])
+                  //       {
+                  //         if (a_state.nComp() != 1)
+                  //           {
+                  //             MayDay::Error("using scalar bc function for vector");
+                  //           }
+                  //         GlobalBCRS::s_printedThatHi[i] = true;
+                  //         if (s_verbosity>5)pout() << "const neum bcs hi for direction " << i << endl;
+                  //       }
+                  //     NeumBC(a_state,
+                  //            valid,
+                  //            a_dx,
+                  //            a_homogeneous,
+                  //            ParseValue,
+                  //            i,
+                  //            Side::Hi);
+                  //   }
+                  // else if (GlobalBCRS::s_bcHi[i] == 0)
+                  //   {
+                  //     if (!GlobalBCRS::s_printedThatHi[i])
+                  //       {
+                  //         if (a_state.nComp() != 1)
+                  //           {
+                  //             MayDay::Error("using scalar bc function for vector");
+                  //           }
+                  //         GlobalBCRS::s_printedThatHi[i] = true;
+                  //         if (s_verbosity>5)pout() << "const diri bcs hi for direction " << i << endl;
+                  //       }
                       DiriBC(a_state,
                              valid,
                              a_dx,
-                             a_homogeneous,
+                             true,
                              ParseValue,
                              i,
                              Side::Hi,
                              1);
-                    }
-                  else
-                    {
-                      MayDay::Error("bogus bc flag hi");
-                    }
+                  //   }
+                  // else
+                  //   {
+                  //     MayDay::Error("bogus bc flag hi");
+                  //   }
                 }
             } // end if is not periodic in ith direction
         }
     }
 }
  
-#ifdef FAS_HACKS
+//#ifdef FAS_HACKS
+#if 0
 ////////////////////////////////////////////////////////////////////////
 // DampBC helper
 ////////////////////////////////////////////////////////////////////////
@@ -925,7 +926,9 @@ setupSolver(AMRMultiGrid<LevelData<FArrayBox> > *a_amrSolver,
    for (int iiter = 0; iiter < iterations; iiter++)
      {
        bool zeroInitialGuess = true;
+       pout() << "about to go into solve" << endl;
        amrSolver->solve(phi, rhs, finestLevel, 0, zeroInitialGuess);
+       pout() << "done solve" << endl;
      }
 
    // write results to file
