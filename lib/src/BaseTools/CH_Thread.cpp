@@ -8,7 +8,6 @@
  */
 #endif
 
-#include <omp.h>
 #include "CH_Thread.H"
 #include "NamespaceHeader.H"
 
