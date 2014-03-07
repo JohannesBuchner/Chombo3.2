@@ -485,7 +485,7 @@ void LevelGodunov::computeWHalf(LayoutData<FluxBox>&        a_WHalf,
   {  
     DataIterator dit = m_grids.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {      
 	// The current box
@@ -552,7 +552,7 @@ Real LevelGodunov::computeUpdate(LevelData<FArrayBox>&       a_dU,
   {  
     DataIterator dit = m_grids.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {      
 	// Beginning of loop through patches/grids.
@@ -661,7 +661,7 @@ Real LevelGodunov::getMaxWaveSpeed(const LevelData<FArrayBox>& a_U)
   {
     // Loop over all grids to get the maximum wave speed
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
         m_patchGodunov[dit[ibox]].setCurrentTime(0.0);

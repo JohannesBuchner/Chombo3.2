@@ -14,7 +14,7 @@
 bool onThread0()
 {
   bool retval = true;
-#if _OPENMP==1
+#ifdef _OPENMP
   int thread_num = omp_get_thread_num();
   retval = (thread_num== 0);
 #endif       
