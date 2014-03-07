@@ -229,7 +229,7 @@ ifeq ($(OPENMPFC),TRUE)
 openmpflag = -P
 endif
 
-CPPFLAGS := -DCH_SPACEDIM=$(DIM) -DCH_OPENMP=$(openintcc)\
+CPPFLAGS := -DCH_SPACEDIM=$(DIM)\
 -DCH_$(system)\
 $(subst FALSE,,$(subst TRUE,$(cppdbgflags),$(DEBUG)))\
 $(subst FALSE,,$(subst TRUE,$(cppoptflags),$(subst HIGH,$(cppoptflags) -DNDEBUG,$(OPT))))\
