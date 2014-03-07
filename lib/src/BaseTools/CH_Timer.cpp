@@ -95,7 +95,7 @@ void sampleMem(int a_sig)
 
 const char* currentTimer()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0())
     return TraceTimer::currentTimer();
   else
@@ -130,7 +130,7 @@ void TraceTimer::sampleMemUsage2()
 int sampleCount = 0;
 void TraceTimer::sampleMemUsage(const char* name)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (sampleFileOpen)
@@ -190,7 +190,7 @@ void TraceTimer::sampleMemUsage(const char* name)
 #endif
       sampleMemUsage(name);
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
@@ -203,18 +203,18 @@ void writeOnAbort(int sig)
 
 void writeOnExit()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   TraceTimer::report(true);
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 int TraceTimer::initializer()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   static bool initialized = false;
@@ -293,14 +293,14 @@ int TraceTimer::initializer()
   if (s_memorySampling)
     samplingOn = true;
   return 0;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void normalizeMemory(unsigned int a_m, int& a_memory, char* units)
 { 
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   int megabytes = a_m/(1024);
@@ -314,14 +314,14 @@ void normalizeMemory(unsigned int a_m, int& a_memory, char* units)
       strcpy(units, "k");
       a_memory = a_m;
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::currentize() const
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (m_pruned) return;
@@ -337,14 +337,14 @@ void TraceTimer::currentize() const
     (unsigned long long int&)m_last_WCtime_stamp = current;
 
   }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 int TraceTimer::computeRank() const
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -361,7 +361,7 @@ int TraceTimer::computeRank() const
       ++r;
     }
   return r;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
   return 0;
 #endif
@@ -369,7 +369,7 @@ int TraceTimer::computeRank() const
 
 const TraceTimer* TraceTimer::activeChild() const
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -379,7 +379,7 @@ const TraceTimer* TraceTimer::activeChild() const
       child = m_children[i];
       if (child->m_last_WCtime_stamp != 0) return child;
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
   return NULL;
@@ -395,7 +395,7 @@ void TraceTimer::report(bool a_closeAfter)
 {
 
 #ifndef CH_NTIMER
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (s_memorySampling) samplingOn = false; //disable the sampling while creating a report
@@ -474,14 +474,14 @@ void TraceTimer::report(bool a_closeAfter)
 
   if (s_memorySampling && !a_closeAfter) samplingOn = true; // enable sampling again.....
 #endif
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::reset()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -494,14 +494,14 @@ void TraceTimer::reset()
   TraceTimer& root = *(s_roots[0]);
   root.currentize();
   reset(root);
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::reset(TraceTimer& node)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   node.m_count = 0;
@@ -510,14 +510,14 @@ void TraceTimer::reset(TraceTimer& node)
     {
       reset(*(node.m_children[i]));
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void sorterHelper(const std::vector<TraceTimer*>& children, Vector<int>& order)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   int n = children.size();
@@ -539,14 +539,14 @@ void sorterHelper(const std::vector<TraceTimer*>& children, Vector<int>& order)
           }
       }
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::subReport(FILE* out, const char* header, unsigned long long int totalTime)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   size_t length = strlen(header);
@@ -574,14 +574,14 @@ void TraceTimer::subReport(FILE* out, const char* header, unsigned long long int
     }
   if (subTime > 0)
     fprintf(out, "  %8.3f   %4.1f%%    Total\n", subTime*secondspertick, (double)subTime/totalTime*100.0);
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::updateMemory(TraceTimer& a_timer)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (a_timer.m_pruned) return;
@@ -593,7 +593,7 @@ void TraceTimer::updateMemory(TraceTimer& a_timer)
       a_timer.m_memoryMin = std::min(child.m_memoryMin, a_timer.m_memoryMin);
       a_timer.m_memoryMax = std::max(child.m_memoryMax, a_timer.m_memoryMax);
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
@@ -601,7 +601,7 @@ void TraceTimer::updateMemory(TraceTimer& a_timer)
 void TraceTimer::reportFullTree(FILE* out, const TraceTimer& timer,
                                 unsigned long long int totalTime, int depth)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (timer.m_pruned) return;
@@ -619,14 +619,14 @@ void TraceTimer::reportFullTree(FILE* out, const TraceTimer& timer,
   {
     reportFullTree(out, *(timer.m_children[ordering[i]]), totalTime, depth+1);
   }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 
 }
 void TraceTimer::reportOneTree(FILE* out, const TraceTimer& timer)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (timer.m_pruned) return;
@@ -687,14 +687,14 @@ void TraceTimer::reportOneTree(FILE* out, const TraceTimer& timer)
     double totalPercent = ((double)subTime)/ time * 100.0;
     fprintf(out, "    %4.1f%%                  Total \n", totalPercent);
   }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 bool TraceTimer::find(std::list<const TraceTimer*>& trace, const TraceTimer* target)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -707,7 +707,7 @@ bool TraceTimer::find(std::list<const TraceTimer*>& trace, const TraceTimer* tar
       if (found) return true;
       trace.pop_back();
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
   return false;
@@ -715,7 +715,7 @@ bool TraceTimer::find(std::list<const TraceTimer*>& trace, const TraceTimer* tar
 
 void TraceTimer::reportPeak(FILE* out)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -735,7 +735,7 @@ void TraceTimer::reportPeak(FILE* out)
       ++depth;
       ++i;
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
@@ -806,7 +806,7 @@ bool AutoStartLeaf::active()
 
 TraceTimer::~TraceTimer()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -814,14 +814,14 @@ TraceTimer::~TraceTimer()
     {
       delete m_children[i];
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::reportName(std::ostream& out, const char* name)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 
@@ -831,14 +831,14 @@ void TraceTimer::reportName(std::ostream& out, const char* name)
   const TraceTimer* timer = TraceTimer::getTimer(name);
   unsigned long long int time = timer->m_accumulated_WCtime;
   out<< timer->m_name <<" "<<time*secondspertick <<" "<<timer->m_count;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
   
 TraceTimer* TraceTimer::getTimer(const char* name)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   int thread_id = 0; // this line will change in MThread-aware code.
@@ -854,13 +854,13 @@ TraceTimer* TraceTimer::getTimer(const char* name)
   TraceTimer* newTimer = new TraceTimer(name, parent, thread_id);
   children.push_back(newTimer);
   return newTimer;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
   return NULL;
 #endif
 }
 
-#ifdef CH_OPENMP
+#ifdef _OPENMP
 TraceTimer::TraceTimer(const char* a_name, TraceTimer* parent, int thread_id)
 {
   if(onThread0())
@@ -888,7 +888,7 @@ TraceTimer::TraceTimer(const char* a_name, TraceTimer* parent, int thread_id)
 
 void TraceTimer::prune()
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   int i=0;
@@ -898,14 +898,14 @@ void TraceTimer::prune()
     timer->prune();
   }
   m_pruned = true;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::start(char* mutex)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (m_pruned) return;
@@ -932,14 +932,14 @@ void TraceTimer::start(char* mutex)
     }
   m_last_WCtime_stamp = ch_ticks();
 
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 unsigned long long int overflowLong = (unsigned long long int)1<<50;
 unsigned long long int TraceTimer::stop(char* mutex)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (m_pruned) return 0;
@@ -971,7 +971,7 @@ unsigned long long int TraceTimer::stop(char* mutex)
   *mutex=0;
 
   return diff;
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
   return 0;
 #endif
@@ -1000,7 +1000,7 @@ void TraceTimer::macroTest()
 
 void TraceTimer::PruneTimersParentChildPercent(double threshold, TraceTimer* parent)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
   if (parent->isPruned()) return;
@@ -1018,14 +1018,14 @@ void TraceTimer::PruneTimersParentChildPercent(double threshold, TraceTimer* par
         }
 
     }
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }
 
 void TraceTimer::PruneTimersParentChildPercent(double percent)
 {
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   if(onThread0()){
 #endif
 #ifndef CH_NTIMER
@@ -1039,7 +1039,7 @@ void TraceTimer::PruneTimersParentChildPercent(double percent)
   root->currentize();
   PruneTimersParentChildPercent(percent, root);
 #endif
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   }
 #endif
 }

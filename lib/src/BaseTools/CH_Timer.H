@@ -21,7 +21,7 @@
 #include "mpi.h"
 #endif
 
-#if CH_OPENMP==1
+#if _OPENMP==1
 #include "CH_Thread.H"
 #endif
 
@@ -319,7 +319,7 @@ using namespace std;
 
   };
 
-#ifdef CH_OPENMP
+#ifdef _OPENMP
   class AutoStartLeaf
   {
   public:
