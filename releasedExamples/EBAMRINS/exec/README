@@ -1,3 +1,19 @@
+This algorithm is described in:
+
+ D. Trebotich, B.V. Straalen, D. Graves and P. Colella, "Performance of Embedded Boundary Methods for CFD with Complex Geometry", 2008 J. Phys.: Conf. Ser. 125 012083, 2008, 
+
+A journal article that uses this algorithm along with a whole lot more for moving geometries:
+
+@ARTICLE{miller_trebotich,
+author = {G. H. Miller and D. Trebotich}, 
+title  = {An Embedded Boundary Method for the Navier-Stokes Equations on a Time-Dependent Domain},
+journal = {Communications in Applied Mathematics and Computational Science}, 
+volume = 7,
+pages = {1-31}, 
+year = 2012, 
+}
+
+
 This is an application to solve the incompressible Navier-Stokes
 equations in complex geometries.  
 In the input file you might want change 
