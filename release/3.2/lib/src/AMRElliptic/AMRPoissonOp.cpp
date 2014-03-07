@@ -293,7 +293,7 @@ void AMRPoissonOp::preCond(LevelData<FArrayBox>&       a_phi,
 
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox=0; ibox<nbox; ibox++)
       {
       a_phi[dit[ibox]].copy(a_rhs[dit[ibox]]);
@@ -335,7 +335,7 @@ void AMRPoissonOp::applyOpI(LevelData<FArrayBox>&       a_lhs,
 #pragma omp parallel   default (shared)
   {
     CH_TIME("AMRPoissonOp::applyOpIBC");
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for (int ibox=0;ibox<nbox; ibox++)
       {
         m_bc(phi[dit[ibox]], dbl[dit[ibox]], m_domain, m_dx, a_homogeneous);
@@ -344,7 +344,7 @@ void AMRPoissonOp::applyOpI(LevelData<FArrayBox>&       a_lhs,
 
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for (int ibox=0;ibox<nbox; ibox++)
       {
       const Box& region = dbl[dit[ibox]];
@@ -372,7 +372,7 @@ void AMRPoissonOp::applyOpNoBoundary(LevelData<FArrayBox>&       a_lhs,
 
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for (int ibox = 0; ibox < nbox; ibox++)
     {
       const Box& region = dbl[dit[ibox]];
@@ -630,7 +630,7 @@ void AMRPoissonOp::restrictResidual(LevelData<FArrayBox>&       a_resCoarse,
   int nbox=dit.size();
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& phi = a_phiFine[dit[ibox]];
@@ -640,7 +640,7 @@ void AMRPoissonOp::restrictResidual(LevelData<FArrayBox>&       a_resCoarse,
 
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox&       phi = a_phiFine[dit[ibox]];
@@ -677,7 +677,7 @@ void AMRPoissonOp::prolongIncrement(LevelData<FArrayBox>&       a_phiThisLevel,
   
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& phi =  a_phiThisLevel[dit[ibox]];
@@ -862,7 +862,7 @@ void AMRPoissonOp::AMRRestrictS(LevelData<FArrayBox>&       a_resCoarse, // outp
   {
     DataIterator dit = a_residual.dataIterator();
     int nbox=dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& coarse = a_resCoarse[dit[ibox]];
@@ -899,7 +899,7 @@ void AMRPoissonOp::AMRProlong(LevelData<FArrayBox>&       a_correction,
 
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& phi =  a_correction[dit[ibox]];
@@ -933,7 +933,7 @@ void AMRPoissonOp::AMRProlongS(LevelData<FArrayBox>&       a_correction,
   
 #pragma omp parallel 
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& phi =  a_correction[dit[ibox]];
@@ -971,7 +971,7 @@ void AMRPoissonOp::AMRProlongS_2(LevelData<FArrayBox>&       a_correction,
   {
     DataIterator dit = a_correction.dataIterator();
     int nbox = dit.size();
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	FArrayBox& phi =  a_correction[dit[ibox]];
@@ -1211,7 +1211,7 @@ void AMRPoissonOp::levelGSRB( LevelData<FArrayBox>&       a_phi,
       }
 #pragma omp parallel
       {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
 	for (int ibox=0; ibox < nbox; ibox++)
 	  {
 	    const Box& region = dbl[dit[ibox]];
@@ -1326,7 +1326,7 @@ void AMRPoissonOp::looseGSRB(LevelData<FArrayBox>&       a_phi,
   // now step through grids...
 #pragma omp parallel
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	// invoke physical BC's where necessary
@@ -1403,7 +1403,7 @@ void AMRPoissonOp::overlapGSRB(LevelData<FArrayBox>&       a_phi,
   int nbox=dit.size();
 #pragma omp parallel
   {
-#pragma omp for schedule(CH_SCHEDULE)                  
+#pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
 	// invoke physical BC's where necessary

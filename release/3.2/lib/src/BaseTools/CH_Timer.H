@@ -21,7 +21,7 @@
 #include "mpi.h"
 #endif
 
-#if _OPENMP==1
+#ifdef _OPENMP
 #include "CH_Thread.H"
 #endif
 
