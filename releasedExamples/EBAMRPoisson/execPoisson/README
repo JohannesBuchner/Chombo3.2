@@ -1,3 +1,15 @@
+This is an implentation of the algorithm described in the following document:
+@ARTICLE{schwartzETAL:2006,
+    AUTHOR = {P. Schwartz and M. Barad and P. Colella and T. Ligocki},
+    TITLE = {A {C}artesian Grid Embedded Boundary Method for the Heat Equation and {P}oisson's Equation in Three Dimensions},
+    JOURNAL= {Journal of Computational Physics},
+    VOLUME={211},
+    NUMBER={2},
+    MONTH=Jan,
+    YEAR={2006},
+    PAGES={531-550}
+}
+
 How to run this program
 ./poissonDriver...ex poisson.inputs
 
