@@ -1936,8 +1936,8 @@ incrementFRFine(EBFastFR& a_fluxReg,
                   Box faceBox = surroundingNodes(fabBox, idir);
                   FArrayBox& regFlux = (FArrayBox &)     fluxFine.getSingleValuedFAB();
                   const FArrayBox& regPhi = (const FArrayBox &) phiFine.getSingleValuedFAB();
-                  const FArrayBox& regGrad = (const FArrayBox &) m_grad[ditf()].getSingleValuedFAB();
-                  getFlux(regFlux, regPhi,  regGrad, faceBox, idir, ditf());
+                  const FArrayBox& regGrad = (const FArrayBox &) finerEBAMROp.m_grad[ditf()].getSingleValuedFAB();
+                  finerEBAMROp.getFlux(regFlux, regPhi,  regGrad, faceBox, idir, ditf());
                 }
               else
                 {
