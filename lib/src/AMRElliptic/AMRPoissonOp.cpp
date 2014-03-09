@@ -291,15 +291,13 @@ void AMRPoissonOp::preCond(LevelData<FArrayBox>&       a_phi,
   DataIterator dit = a_phi.dataIterator();
   int nbox = dit.size();
 
-#pragma omp parallel 
-  {
-#pragma omp for 
+#pragma omp parallel for 
     for(int ibox=0; ibox<nbox; ibox++)
       {
       a_phi[dit[ibox]].copy(a_rhs[dit[ibox]]);
       a_phi[dit[ibox]] *= mult;
       }
-  }  //end pragma
+ //end pragma
   relax(a_phi, a_rhs, 2);
 }
 

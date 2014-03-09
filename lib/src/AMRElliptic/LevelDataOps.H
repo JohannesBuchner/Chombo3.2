@@ -88,14 +88,7 @@ protected:
 //*******************************************************
 // LevelDataOps Implementation
 //*******************************************************
-// BVS, June 26, 2003
 
-#define ITER(a) for (DataIterator dit = a.dataIterator(); dit.ok(); ++dit) \
-                {                                                          \
-                   DataIndex d = dit();
-
-#define ENDFOR(a)                                                          \
-                }
 
 template <class T>
 void LevelDataOps<T>:: create(LevelData<T>& a_lhs, const LevelData<T>& a_rhs)
@@ -117,9 +110,14 @@ Real  LevelDataOps<T>::dotProduct(const LevelData<T>& a_1, const LevelData<T>& a
 {
   const DisjointBoxLayout& dbl = a_1.disjointBoxLayout();
   Real val = 0.0;
-  ITER(a_1)
-    val += a_1[d].dotProduct(a_2[d], dbl.get(d));
-  ENDFOR(a_1);
+  DataIterator dit=dbl.dataIterator(); int ompsize=dit.size();
+#pragma omp parallel for reduction (+:val)
+  for(int i=0; i<ompsize; i++)
+    {
+      const DataIndex& d = dit[i];
+      val += a_1[d].dotProduct(a_2[d], dbl.get(d));
+    }
+ 
 
 #ifdef CH_MPI
   Real recv;
@@ -147,9 +145,13 @@ void LevelDataOps<T>::mDotProduct(const LevelData<T>& a_1, const int a_sz, const
     {
       Real val = 0.0;
       const LevelData<T> &a_2 = a_2arr[ii];
-      ITER(a_1)
-        val += a_1[d].dotProduct(a_2[d], dbl.get(d));
-      ENDFOR(a_1);
+      DataIterator dit=dbl.dataIterator(); int ompsize=dit.size();
+#pragma omp parallel for reduction (+:val)
+      for(int i=0; i<ompsize; i++)
+	{
+	  const DataIndex& d = dit[i];
+	  val += a_1[d].dotProduct(a_2[d], dbl.get(d));
+	}
       a_mdots[ii] = val;
     }
 
@@ -179,86 +181,119 @@ void LevelDataOps<T>:: incr( LevelData<T>& a_lhs, const LevelData<T>& a_rhs, Rea
   //  CH_assert(a_lhs.disjointBoxLayout() == a_rhs.disjointBoxLayout());
   int numcomp = a_lhs.nComp();
   int  startcomp = 0;
-  ITER(a_lhs)
-    Box subbox = a_lhs.disjointBoxLayout()[d];
-    a_lhs[d].plus(a_rhs[d],  subbox, subbox, a_scale, startcomp, startcomp, numcomp);
-  ENDFOR(a_lhs);
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+ #pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];
+      Box subbox = a_lhs.disjointBoxLayout()[d];
+      a_lhs[d].plus(a_rhs[d],  subbox, subbox, a_scale, startcomp, startcomp, numcomp);
+    }
 }
 
 template <class T>
 void LevelDataOps<T>:: mult( LevelData<T>& a_lhs, const LevelData<T>& a_rhs)
 {
-  //  CH_assert(a_lhs.disjointBoxLayout() == a_rhs.disjointBoxLayout());
-  ITER(a_lhs)
-    a_lhs[d] *= a_rhs[d];
-  ENDFOR(a_lhs);
+
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];
+      a_lhs[d] *= a_rhs[d];
+    }
 }
 
 template <class T>
 void LevelDataOps<T>:: setToZero( LevelData<T>& a_lhs)
 {
-  ITER(a_lhs)
-    a_lhs[d].setVal(0.0);
-  ENDFOR(a_lhs);
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];     
+      a_lhs[d].setVal(0.0);
+    }
 }
 template <class T>
 void LevelDataOps<T>:: setVal( LevelData<T>& a_lhs, const Real& a_val)
 {
-  ITER(a_lhs)
-    a_lhs[d].setVal(a_val);
-  ENDFOR(a_lhs);
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];    
+      a_lhs[d].setVal(a_val);
+    }
 }
 
 template <class T>
 void LevelDataOps<T>:: copyToZero( LevelData<T>& a_lhs, const Copier& a_copier)
 {
   int nComp = a_lhs.nComp();
-  for (CopyIterator it(a_copier, CopyIterator::LOCAL); it.ok(); ++it)
-    {
-      const MotionItem& item = it();
-      a_lhs[item.toIndex].setVal(0, item.toRegion, 0, nComp);
-
-    }
-  for (CopyIterator it(a_copier, CopyIterator::TO); it.ok(); ++it)
-    {
-      const MotionItem& item = it();
-      a_lhs[item.toIndex].setVal(0, item.toRegion, 0, nComp);
-    }
+  CopyIterator cit(a_copier, CopyIterator::LOCAL); int ccount=cit.size();
+  CopyIterator tit(a_copier, CopyIterator::TO); int tcount = tit.size();
+  
+#pragma omp parallel
+  {
+#pragma omp for nowait
+    for (int i=0; i<ccount; i++)
+      {
+	const MotionItem& item = cit[i];
+	a_lhs[item.toIndex].setVal(0, item.toRegion, 0, nComp);
+      }
+#pragma omp for nowait
+    for (int i=0; i<tcount; i++)
+      {
+	const MotionItem& item = tit[i];
+	a_lhs[item.toIndex].setVal(0, item.toRegion, 0, nComp);
+      }
+  }
 }
 
 template <class T>
 void LevelDataOps<T>:: axby( LevelData<T>& a_lhs, const LevelData<T>& a_x,
                              const LevelData<T>& a_y, Real a, Real b)
 {
-  //  CH_assert(a_lhs.disjointBoxLayout() == a_x.disjointBoxLayout());
-  ITER(a_lhs)
-    T& data = a_lhs[d];
-  data.copy(a_x[d]);
-  data.mult(a);
-  data.plus(a_y[d], b);
-  ENDFOR(a_lhs);
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];    
+      T& data = a_lhs[d];
+      data.copy(a_x[d]);
+      data.mult(a);
+      data.plus(a_y[d], b);
+    }
 }
 
 template <class T>
 void LevelDataOps<T>:: scale(LevelData<T>& a_lhs, const Real& a_scale)
 {
-  ITER(a_lhs)
-    T& data = a_lhs[d];
-  data.mult(a_scale);
-  ENDFOR(a_lhs);
+  DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];    
+      T& data = a_lhs[d];
+      data.mult(a_scale);
+    }
 }
 
 template <class T>
 void LevelDataOps<T>:: plus(LevelData<T>& a_lhs, const Real& a_inc)
 {
-  ITER(a_lhs)
-    T& data = a_lhs[d];
-  data += a_inc;
-  ENDFOR(a_lhs);
+   DataIterator dit=a_lhs.dataIterator(); int count=dit.size();
+#pragma omp parallel for
+  for(int i=0; i<count; i++)
+    {
+      const DataIndex& d=dit[i];    
+      T& data = a_lhs[d];
+      data += a_inc;
+    }
 }
 
-#undef ITER
-#undef ENDFOR
+
 
 #include "NamespaceFooter.H"
 #endif

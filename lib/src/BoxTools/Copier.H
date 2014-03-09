@@ -354,11 +354,16 @@ public:
 
   inline const MotionItem& operator()() const;
 
+  inline const MotionItem& operator[](size_t index) const;
+
   inline void operator++();
 
   inline bool ok() const;
 
   inline void reset();
+
+  inline size_t size(){ return m_motionplanPtr->size();}
+
 private:
   const Vector<MotionItem*>* m_motionplanPtr;
   unsigned int  m_current;
@@ -389,6 +394,12 @@ inline const MotionItem& CopyIterator::operator()() const
 {
   CH_assert(m_current < m_motionplanPtr->size());
   return *(m_motionplanPtr->operator[](m_current));
+}
+
+inline const MotionItem& CopyIterator::operator[](size_t a_index) const
+{
+  CH_assert(a_index < m_motionplanPtr->size());
+  return *(m_motionplanPtr->operator[](a_index));
 }
 
 inline void CopyIterator::operator++()

@@ -49,10 +49,13 @@ inline void BoxLayoutData<T>::setVector(const BoxLayoutData<T>& da,
 {
   if(&da != this)
     {
-      for(DataIterator it = this->dataIterator(); it.ok(); ++it)
+      DataIterator it=this->dataIterator();
+      int nbox=it.size();
+#pragma omp parallel for
+      for(int box=0; box<nbox; box++)
 	{
-	  this->m_vector[it().datInd()]->copy( this->box(it()), destComps,
-					       this->box(it()), da[it()], srcComps);
+	  this->m_vector[it[box].datInd()]->copy( this->box(it[box]), destComps,
+					       this->box(it[box]), da[it[box]], srcComps);
 	}
     }
 }
@@ -178,7 +181,7 @@ inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory,
 
   this->m_callDelete = factory.callDelete();
 
-  DataIterator it(this->dataIterator());
+  DataIterator it(this->dataIterator()); int nbox=it.size();
 #if CH_USE_MEMORY_TRACKING
   if (this->m_callDelete == true)
     {
@@ -186,13 +189,13 @@ inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory,
     }
 #endif
   this->m_vector.resize(it.size(), NULL);
-
-  for(DataIterator it(this->dataIterator()); it.ok(); ++it)
+  //#pragma omp parallel for
+  for(int i=0; i<nbox; i++)
     {
-      unsigned int index = it().datInd();
-      Box abox = this->box(it());
+      unsigned int index = it[i].datInd();
+      Box abox = this->box(it[i]);
       abox.grow(ghost);
-      this->m_vector[index] = factory.create(abox, m_comps, it());
+      this->m_vector[index] = factory.create(abox, m_comps, it[i]);
       if (this->m_vector[index] == NULL)
 	{
 	  MayDay::Error("OutOfMemory in BoxLayoutData::allocateGhostVector");
@@ -203,9 +206,12 @@ inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory,
 template<class T>
 inline void BoxLayoutData<T>::apply(void (*a_func)(const Box& box, int comps, T& t))
 {
-  for (DataIterator it(this->dataIterator()); it.ok(); ++it)
+  DataIterator it(this->dataIterator()); int nbox=it.size();
+#pragma omp parallel for
+  for(int i=0; i<nbox; i++)
+
     {
-      a_func(this->box(it()), m_comps, *(this->m_vector[it().datInd()]));
+      a_func(this->box(it[i]), m_comps, *(this->m_vector[ it[i].datInd() ]));
     }
 }
 
@@ -270,19 +276,20 @@ void BoxLayoutData<T>::makeItSoBegin(const Interval&   a_srcComps,
   {
     CH_TIME("post_messages");
     this->numReceives = m_buff->m_toMe.size();
-    if (this->numReceives > 0)
-    {
-      postReceivesToMe(); // all non-blocking
-    }
 
-    this->numSends = m_buff->m_fromMe.size();
-    if (this->numSends > 0)
+    if (this->numReceives > 0)
+      {
+	postReceivesToMe(); // all non-blocking
+      }
+  
+
+  this->numSends = m_buff->m_fromMe.size();
+  if (this->numSends > 0)
     {
       postSendsFromMe();  // all non-blocking
     }
-  }
-#endif
-
+  }    
+#endif 
 }
 
 template<class T>
@@ -295,9 +302,11 @@ void BoxLayoutData<T>::makeItSoLocalCopy(const Interval&   a_srcComps,
 {
 
   CH_TIME("local copying");
-  for (CopyIterator it(a_copier, CopyIterator::LOCAL); it.ok(); ++it)
+  CopyIterator it(a_copier, CopyIterator::LOCAL);  int items=it.size();
+#pragma omp parallel for
+  for (int n=0; n<items; n++)
     {
-      const MotionItem& item = it();
+      const MotionItem& item = it[n];
       //const T& src = a_src[item.fromIndex];
       //T& dest = a_dest[item.toIndex];
       //int srcSize = src .size(item.fromRegion, a_srcComps);
@@ -624,6 +633,7 @@ void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_
                                                   const LDOperator<T>& a_op) const
 {
   CH_TIME("write Data to buffers");
+#pramga omp parallel for
   for (unsigned int i=0; i<m_buff->m_fromMe.size(); ++i)
     {
       const CopierBuffer::bufEntry& entry = m_buff->m_fromMe[i];
@@ -778,7 +788,7 @@ void BoxLayoutData<T>::unpackReceivesToMe(BoxLayoutData<T>& a_dest,
       {
         //hell if I know what to do about failed messaging here
       }
-
+#pragma omp parallel for
     for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
       {
         const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
@@ -810,7 +820,7 @@ void BoxLayoutData<T>::unpackReceivesToMe_append(LayoutData<Vector<RefCountedPtr
       {
         //hell if I know what to do about failed messaging here
       }
-
+#pragma omp parallel for
     for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
       {
         const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
@@ -866,9 +876,11 @@ void BoxLayoutData<T>::generalCopyTo(const BoxLayout& a_destGrids,
 #endif
 
     // perform local copy
-  for (CopyIterator it(a_copier, CopyIterator::LOCAL); it.ok(); ++it)
+  CopyIterator it(a_copier, CopyIterator::LOCAL); int items=it.size();
+#pragma omp parallel for
+  for (int i=0; i<items; i++)
     {
-      const MotionItem& item = it();
+      const MotionItem& item = it[i];
       RefCountedPtr<T> newT( factory.create(item.toRegion, ncomp, item.toIndex) );
 
       a_op.op(*newT, item.fromRegion,
