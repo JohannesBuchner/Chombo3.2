@@ -85,8 +85,8 @@ ifeq ($(OPENMPCC),TRUE)
   defcxxoptflags := -O2 -funroll-loops -fopenmp
   defcxxdbgflags := -g -pedantic -Wall -fopenmp
 else
-  defcxxoptflags := -O2 -funroll-loops
-  defcxxdbgflags := -g -pedantic -Wall
+  defcxxoptflags := -O2 -funroll-loops -Wno-unknown-pragmas
+  defcxxdbgflags := -g -pedantic -Wall -Wno-unknown-pragmas
 endif
   #newer versions of gcc (4.3.2 works) can use this
 
