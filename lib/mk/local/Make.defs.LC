@@ -142,11 +142,11 @@ else
     _hdf_root=/usr/local/tools/hdf5-gnu-serial-1.8.8
   endif
 endif
-HDFINCFLAGS    = -DH5_USE_16_API -I$(_hdf_root)/include
+HDFINCFLAGS    =  -I$(_hdf_root)/include
 HDFLIBFLAGS    = -L$(_hdf_root)/lib -lhdf5 -lz
 ## Note: don't set the HDFMPI* variables if you don't have parallel HDF installed
 ifeq ($(MPI),TRUE)
-  HDFMPIINCFLAGS = -DH5_USE_16_API -I$(_hdf_root)/include
+  HDFMPIINCFLAGS =  -I$(_hdf_root)/include
   HDFMPILIBFLAGS = -L$(_hdf_root)/lib -lhdf5 -lz
 endif
 XTRALDFLAGS    = -Wl,-rpath,$(_hdf_root)/lib

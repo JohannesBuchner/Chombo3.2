@@ -31,11 +31,11 @@ ifneq ($(USE_HDF),FALSE)
   # The NERSC HDF5 modules use different variables in different HDF versions (not smart)
   #[NOTE: the HDF5C variable in some of the modules has options that don't compile Chombo]
   ifeq ($(HDF5_PAR_DIR),)
-    HDFINCFLAGS=-I$(HDF5_DIR)/include -DH5_USE_16_API
-    HDFMPIINCFLAGS=-I$(HDF5_DIR)/include -DH5_USE_16_API
+    HDFINCFLAGS=-I$(HDF5_DIR)/include 
+    HDFMPIINCFLAGS=-I$(HDF5_DIR)/include 
   else
-    HDFINCFLAGS=-I$(HDF5_PAR_DIR)/include -DH5_USE_16_API
-    HDFMPIINCFLAGS=-I$(HDF5_PAR_DIR)/include -DH5_USE_16_API
+    HDFINCFLAGS=-I$(HDF5_PAR_DIR)/include 
+    HDFMPIINCFLAGS=-I$(HDF5_PAR_DIR)/include 
   endif
   ifeq ($(HDF5_LIB),)
     HDFLIBFLAGS=$(HDF5) -lhdf5_hl -lhdf5

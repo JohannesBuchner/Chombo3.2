@@ -124,9 +124,9 @@ MPICXX        = mpixlcxx -qarch=450d -qtune=450
 #USE_EB        =
 #USE_CCSE      =
 USE_HDF       = TRUE
-HDFINCFLAGS   = -I$(HDF5_HOME)/include -DH5_USE_16_API
+HDFINCFLAGS   = -I$(HDF5_HOME)/include 
 HDFLIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 
-HDFMPIINCFLAGS   = -I$(HDF5_HOME)/include -DH5_USE_16_API
+HDFMPIINCFLAGS   = -I$(HDF5_HOME)/include 
 HDFMPILIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 
 #USE_MF        =
 #USE_MT        =

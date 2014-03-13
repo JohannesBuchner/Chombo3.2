@@ -27,8 +27,8 @@ foptflags += -O2
 # the pgf libs are needed for linking parallel HDF5
 flibflags += -lgfortran 
 
-HDFINCFLAGS=-I$(HDF5_DIR)/include -DH5_USE_16_API
-HDFMPIINCFLAGS=-I$(HDF5_DIR)/include -DH5_USE_16_API
+HDFINCFLAGS=-I$(HDF5_DIR)/include 
+HDFMPIINCFLAGS=-I$(HDF5_DIR)/include 
 HDFLIBFLAGS=-L$(HDF5_DIR)/lib
 HDFMPILIBFLAGS=-L$(HDF5)/lib
 

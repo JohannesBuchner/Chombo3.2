@@ -126,9 +126,9 @@ MPICXX        = mpixlcxx_r
 USE_HDF       = TRUE
 HDF5_HOME      = /soft/libraries/hdf5/1.8.10/cnk-xl/current
 
-HDFINCFLAGS   = -I$(HDF5_HOME)/include -DH5_USE_16_API
+HDFINCFLAGS   = -I$(HDF5_HOME)/include 
 HDFLIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
-HDFMPIINCFLAGS   = -I$(HDF5_HOME)/include -DH5_USE_16_API
+HDFMPIINCFLAGS   = -I$(HDF5_HOME)/include 
 HDFMPILIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
 
 #USE_MF        =
