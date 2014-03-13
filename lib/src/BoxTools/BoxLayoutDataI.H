@@ -633,7 +633,7 @@ void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_
                                                   const LDOperator<T>& a_op) const
 {
   CH_TIME("write Data to buffers");
-#pramga omp parallel for
+#pragma omp parallel for
   for (unsigned int i=0; i<m_buff->m_fromMe.size(); ++i)
     {
       const CopierBuffer::bufEntry& entry = m_buff->m_fromMe[i];
