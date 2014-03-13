@@ -115,10 +115,10 @@ ifneq ($(USE_HDF),FALSE)
       endif
     endif
 
-    HDFINCFLAGS=-I$(_hdf_root)/include -DH5_USE_16_API
-    HDFLIBFLAGS=-L$(_hdf_root)/lib -lhdf5_hl -lhdf5 -lz -DH5_USE_16_API
-    HDFMPIINCFLAGS=-I$(_hdf_root)/include -DH5_USE_16_API
-    HDFMPILIBFLAGS=-L$(_hdf_root)/lib -lhdf5_hl -lhdf5 -lz -DH5_USE_16_API
+    HDFINCFLAGS=-I$(_hdf_root)/include 
+    HDFLIBFLAGS=-L$(_hdf_root)/lib -lhdf5_hl -lhdf5 -lz 
+    HDFMPIINCFLAGS=-I$(_hdf_root)/include 
+    HDFMPILIBFLAGS=-L$(_hdf_root)/lib -lhdf5_hl -lhdf5 -lz 
   else
     $(error No HDF5 module is loaded.)
   endif
