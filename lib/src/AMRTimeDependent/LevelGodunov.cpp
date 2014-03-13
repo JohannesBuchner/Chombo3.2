@@ -165,8 +165,8 @@ Real LevelGodunov::step(LevelData<FArrayBox>&       a_U,
   CH_TIMERS("LevelGodunov::step");
 
   CH_TIMER("LevelGodunov::step::setup"   ,timeSetup);
-  CH_TIMER("LevelGodunov::step::update"  ,timeUpdate);
-  CH_TIMER("LevelGodunov::step::reflux"  ,timeReflux);
+  //CH_TIMER("LevelGodunov::step::update"  ,timeUpdate);
+  //CH_TIMER("LevelGodunov::step::reflux"  ,timeReflux);
   CH_TIMER("LevelGodunov::step::conclude",timeConclude);
 
   // Make sure everything is defined
