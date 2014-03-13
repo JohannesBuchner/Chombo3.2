@@ -57,8 +57,8 @@ cxxcomflags += --display_error_number --diag_suppress 611,997
 ifneq ($(USE_HDF),FALSE)
   # The NERSC HDF5 modules use different variables in different HDF versions (not smart)
   #[NOTE: the HDF5C variable in some of the modules has options that don't compile Chombo]
-  HDFINCFLAGS=-I$(HDF5_DIR_NERSC)/include -DH5_USE_16_API
-  HDFMPIINCFLAGS=-I$(HDF5_DIR_NERSC)/include -DH5_USE_16_API
+  HDFINCFLAGS=-I$(HDF5_DIR_NERSC)/include 
+  HDFMPIINCFLAGS=-I$(HDF5_DIR_NERSC)/include 
   ifeq ($(HDF5_LIB),)
     HDFLIBFLAGS=$(HDF5)
     HDFMPILIBFLAGS=$(HDF5)

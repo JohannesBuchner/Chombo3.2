@@ -37,11 +37,11 @@ ifneq ($(USE_HDF),FALSE)
   # if no HDF5_DIR, then it will have to be set manually...
   ifeq ($(HDF5_DIR),)
     # set HDF5 root dir manually here:
-    HDFINCFLAGS=-I${DEFAULT_HDF5}/include -DH5_USE_16_API
-    HDFMPIINCFLAGS=-I${DEFAULT_HDF5}/include -DH5_USE_16_API
+    HDFINCFLAGS=-I${DEFAULT_HDF5}/include 
+    HDFMPIINCFLAGS=-I${DEFAULT_HDF5}/include 
   else
-    HDFINCFLAGS=-I/opt/cray/hdf5/1.8.3.1/hdf5-pgi/include -DH5_USE_16_API
-    HDFMPIINCFLAGS=-I/opt/cray/hdf5/1.8.3.1/hdf5-pgi/include -DH5_USE_16_API
+    HDFINCFLAGS=-I/opt/cray/hdf5/1.8.3.1/hdf5-pgi/include 
+    HDFMPIINCFLAGS=-I/opt/cray/hdf5/1.8.3.1/hdf5-pgi/include 
   endif
 
   # if no HDF5_CLIB, then try HDF5?
@@ -54,11 +54,11 @@ ifneq ($(USE_HDF),FALSE)
   endif
 
 # hard wire -- use HDF5 1.6.7_par 
-#     HDFINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/include -DH5_USE_16_API
-#  HDFMPIINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/include -DH5_USE_16_API
+#     HDFINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/include 
+#  HDFMPIINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/include 
 #     HDFLIBFLAGS=-L/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/lib -lhdf5 -L/sw/xt5/szip/2.1/sles10.1_pgi7.2.3/lib -lsz
 #  HDFMPILIBFLAGS=-L/sw/xt5/hdf5/1.6.7/cnl2.1_pgi7.2.3_par/lib -lhdf5 -L/sw/xt5/szip/2.1/sles10.1_pgi7.2.3/lib -lsz
-HDFINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_gnu4.2.4_par/include -DH5_USE_16_API
+HDFINCFLAGS=-I/sw/xt5/hdf5/1.6.7/cnl2.1_gnu4.2.4_par/include 
 HDFMPIINCFLAGS=${HDFINCFLAGS}
 HDFLIBFLAGS=-L/sw/xt5/hdf5/1.6.7/cnl2.1_gnu4.2.4_par/lib -lhdf5 -L/sw/xt5/szip/2.1/sles10.1_gnu4.2.4/lib -lsz -lz
 HDFMPILIBFLAGS=${HDFLIBFLAGS}

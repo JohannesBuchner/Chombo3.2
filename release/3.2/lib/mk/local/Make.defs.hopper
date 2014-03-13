@@ -52,10 +52,10 @@ endif
 USE_HDF=TRUE
 #HDF5_DIR = $(CRAY_HDF5_DIR)/hdf5-parallel-gnu
 
-HDFLIBFLAGS=   -L$(HDF5_DIR)/lib     $(HDF_POST_LINK_OPTS) -DH5_USE_16_API -lhdf5 -lz
-HDFMPILIBFLAGS=-L$(HDF5_DIR)/lib     $(HDF_POST_LINK_OPTS) -DH5_USE_16_API -lhdf5 -lz
-HDFINCFLAGS=   -I$(HDF5_DIR)/include $(HDF_INCLUDE_OPTS) -DH5_USE_16_API
-HDFMPIINCFLAGS=-I$(HDF5_DIR)/include $(HDF_INCLUDE_OPTS) -DH5_USE_16_API
+HDFLIBFLAGS=   -L$(HDF5_DIR)/lib     $(HDF_POST_LINK_OPTS)  -lhdf5 -lz
+HDFMPILIBFLAGS=-L$(HDF5_DIR)/lib     $(HDF_POST_LINK_OPTS)  -lhdf5 -lz
+HDFINCFLAGS=   -I$(HDF5_DIR)/include $(HDF_INCLUDE_OPTS) 
+HDFMPIINCFLAGS=-I$(HDF5_DIR)/include $(HDF_INCLUDE_OPTS) 
 ##
 ##ifeq ($(USE_64),FALSE)
 ##  $(error Are you sure you want to run non-64bit?)
