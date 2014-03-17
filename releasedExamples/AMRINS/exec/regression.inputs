@@ -1,5 +1,4 @@
 main.max_step = 2  #max number of timesteps to compute
-main.max_step = 200    #max number of timesteps to compute
 main.max_time = 200.0  #stop time
 main.num_cells =  32 32 32
 main.max_level = 0
