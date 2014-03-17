@@ -36,7 +36,7 @@ max_level          = 1
 #max_level          = 0        
 # maximum linear size of boxes
 max_grid_size         = 1024
-#max_grid_size         = 16
+max_grid_size         = 16
 # refinement ratio
 #ref_ratio          = 4 4 4 4 4 4 4    
 ref_ratio          = 2 2 2 2 2 2 2 2  
