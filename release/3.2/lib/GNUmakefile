@@ -174,7 +174,7 @@ run_targets  = $(subst test/,run/,$(test_targets))
 ##
 ## These variables are needed by the `dist' targets
 ##
-pkg_id := Chombo-3.1
+pkg_id := Chombo-3.2
 ifeq ($(DIST_EB),TRUE)
   pkg_id := EB$(pkg_id)
 endif
