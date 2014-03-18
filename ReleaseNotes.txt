@@ -17,6 +17,7 @@ this does contain many bug fixes from over the years.
     EBAMRPoisson
     EBAMRGodunov
     EBAMRINS
+    EBAMRCNS
     MultiDimPhase
 
   with cleaned up source code, input files, and GNUMakefiles.
