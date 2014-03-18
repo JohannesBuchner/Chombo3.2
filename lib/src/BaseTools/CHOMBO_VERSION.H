@@ -12,7 +12,7 @@
 #define _CHOMBO_VERSION_H_
 #include "BaseNamespaceHeader.H"
 
-#define CHOMBO_VERSION 3.1
+#define CHOMBO_VERSION 3.2
 
 /** signal that this is the svn trunk version of Chombo, rather than 
     the release version. This should be changed in the release version 
@@ -79,7 +79,7 @@
    @ingroup macros
    The minor version number of Chombo -- an integer.
 */
-#define CHOMBO_VERSION_MINOR 1
+#define CHOMBO_VERSION_MINOR 2
 
 #include "BaseNamespaceFooter.H"
 #endif
