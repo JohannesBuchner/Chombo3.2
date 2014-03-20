@@ -9,8 +9,8 @@
 #endif
 
 #include "EBTGAStrategy.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //-----------------------------------------------------------------------
 EBTGAStrategy::

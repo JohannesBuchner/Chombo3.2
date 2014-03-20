@@ -17,6 +17,9 @@
 #include "VoFIterator.H"
 #include "EBLGIntegrator.H"
 #include "EBPatchPolytropicF_F.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 EBPlanarShockIBC::
@@ -455,3 +458,5 @@ EBPlanarShockIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

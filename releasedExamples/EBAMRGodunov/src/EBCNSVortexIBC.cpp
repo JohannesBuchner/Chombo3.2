@@ -16,6 +16,9 @@
 #include "VoFIterator.H"
 #include "EBLGIntegrator.H"
 #include "ParmParse.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 EBCNSVortexIBC::
@@ -329,3 +332,5 @@ EBCNSVortexIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

@@ -28,6 +28,8 @@
 #include "ParmParse.H"
 #include <cstdio>
 
+#include "NamespaceHeader.H"
+
 //-----------------------------------------------------------------------
 void fillValues(Vector<Real>&            a_prim,
                 const Vector<FaceIndex>& a_faces,
@@ -2630,3 +2632,5 @@ consUndividedDivergence(BaseIVFAB<Real>&       a_divF,
     }
 }
 /*****************************/
+
+#include "NamespaceFooter.H"

@@ -12,8 +12,8 @@
 #define _EBCRANKNICHOLSONSTRATEGY_H_
 
 #include "EBImplicitIntegrationStrategy.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //! \class EBCrankNicholsonStrategy
 //! This base class implements the first-order Backward Euler method for
@@ -51,7 +51,6 @@ class EBCrankNicholsonStrategy: public EBImplicitIntegrationStrategy
   // Degree of implicitness.
   Real m_implicitness;
 };
-
 
 #include "NamespaceFooter.H"
 #endif

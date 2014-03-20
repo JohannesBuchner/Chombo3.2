@@ -20,6 +20,7 @@
 #include "EBPatchPolytropic.H"
 #include "TimedDataIterator.H"
 #include "EBExplosionIBCFactory.H"
+
 #include "NamespaceHeader.H"
 
 #define EBAMRG_NUM_APPLY_OPS 1
@@ -170,4 +171,5 @@ EBAMRGLoadBalance(Vector<int>&         a_procs,
 
   return retval;
 }
+
 #include "NamespaceFooter.H"

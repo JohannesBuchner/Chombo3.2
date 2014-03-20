@@ -17,6 +17,8 @@
 #include "REAL.H"
 #include "EBAMRGodunov.H"
 
+#include "NamespaceHeader.H"
+
 class DisjointBoxLayout;
 ///
 /**
@@ -41,4 +43,5 @@ getEBAMRGLoadsAndBoxes(Vector<unsigned long long>&    a_loads,
                        const DisjointBoxLayout&       a_dblOrig,
                        const ProblemDomain&           a_domain);
 
+#include "NamespaceFooter.H"
 #endif

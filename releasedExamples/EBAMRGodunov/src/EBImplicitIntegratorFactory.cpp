@@ -11,6 +11,7 @@
 #include "EBImplicitIntegratorFactory.H"
 #include "EBCrankNicholsonStrategy.H"
 #include "EBTGAStrategy.H"
+
 #include "NamespaceHeader.H"
 
 //-----------------------------------------------------------------------

@@ -56,6 +56,7 @@
 #include   "NeumannConductivityEBBC.H"
 #include "GodunovGeom.H"
 
+#include "NamespaceHeader.H"
 
 using std::ifstream;
 using std::ios;
@@ -1375,3 +1376,5 @@ void godunovFixedGrids(Vector<Vector<Box> >& a_amrGrids,
 
   broadcast(a_amrGrids,uniqueProc(SerialTask::compute));
 }
+
+#include "NamespaceFooter.H"

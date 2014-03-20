@@ -20,6 +20,7 @@
 #include "UnionIF.H"
 #include "AMR.H"
 
+#include "NamespaceHeader.H"
 
 extern "C"
 {
@@ -134,6 +135,5 @@ godunovGeometry(Box& a_coarsestDomain,
 extern UnionIF*
 makeCrossSection(const Vector<Vector<RealVect> >& a_polygons);
 
-
-
+#include "NamespaceFooter.H"
 #endif

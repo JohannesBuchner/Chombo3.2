@@ -15,6 +15,8 @@
 #include "SphereIF.H"
 #include "GeometryShop.H"
 
+#include "NamespaceHeader.H"
+
 //-----------------------------------------------------------------------
 void
 EBAMRGodunovGeomFactory::
@@ -236,3 +238,4 @@ createTorusFromParams(Box& a_coarsestDomain,
 }
 //-----------------------------------------------------------------------
 
+#include "NamespaceFooter.H"

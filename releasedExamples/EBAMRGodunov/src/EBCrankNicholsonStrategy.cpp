@@ -10,8 +10,8 @@
 
 #include "EBCrankNicholsonStrategy.H"
 #include "EBLevelDataOps.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //-----------------------------------------------------------------------
 EBCrankNicholsonStrategy::

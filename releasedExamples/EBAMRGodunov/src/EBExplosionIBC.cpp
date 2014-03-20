@@ -16,6 +16,9 @@
 #include "VoFIterator.H"
 #include "EBLGIntegrator.H"
 #include "ParmParse.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 EBExplosionIBC::
@@ -375,3 +378,5 @@ EBExplosionIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

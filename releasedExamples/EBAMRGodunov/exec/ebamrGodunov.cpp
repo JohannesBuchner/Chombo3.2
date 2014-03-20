@@ -60,6 +60,7 @@
 using std::ifstream;
 using std::ios;
 
+#include "UsingNamespace.H"
 
 void amrGodunov(const Box&      a_coarsestDomain,
                 const RealVect& a_dx);

@@ -14,6 +14,7 @@
 #include "RefCountedPtr.H"
 #include "BaseDomainBC.H"
 #include "BaseBCFuncEval.H"
+
 #include "NamespaceHeader.H"
 
 ///
@@ -101,5 +102,6 @@ public:
 private:
 
 };
+
 #include "NamespaceFooter.H"
 #endif

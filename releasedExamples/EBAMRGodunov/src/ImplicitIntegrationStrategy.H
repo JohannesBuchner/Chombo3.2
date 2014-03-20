@@ -15,6 +15,7 @@
 #include "FArrayBox.H"
 #include "FluxBox.H"
 #include "LevelFluxRegister.H"
+
 #include "NamespaceHeader.H"
 
 //! \struct RegularGridPolicy

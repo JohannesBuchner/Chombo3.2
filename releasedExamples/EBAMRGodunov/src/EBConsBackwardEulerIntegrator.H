@@ -20,8 +20,8 @@
 #include "LevelData.H"
 #include "Vector.H"
 #include "DisjointBoxLayout.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 // This is a one-off, single-level, conservative backward Euler time
 // integrator for the heat equation with time-dependent mass density.

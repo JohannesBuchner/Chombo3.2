@@ -12,6 +12,7 @@
 #define _EBIMPLICITINTEGRATORFACTORY_H_
 
 #include "EBImplicitIntegrator.H"
+
 #include "NamespaceHeader.H"
 
 //! \struct EBImplicitIntegratorFactory
