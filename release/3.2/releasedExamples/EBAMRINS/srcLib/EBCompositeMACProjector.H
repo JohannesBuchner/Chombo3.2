@@ -26,6 +26,7 @@
 #include "EBPWLFillPatch.H"
 #include "BiCGStabSolver.H"
 #include "EBLevelGrid.H"
+
 #include "NamespaceHeader.H"
 
 ///

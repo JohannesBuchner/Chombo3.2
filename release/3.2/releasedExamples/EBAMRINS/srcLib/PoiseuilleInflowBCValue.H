@@ -87,5 +87,4 @@ public:
 };
 
 #include "NamespaceFooter.H"
-
 #endif

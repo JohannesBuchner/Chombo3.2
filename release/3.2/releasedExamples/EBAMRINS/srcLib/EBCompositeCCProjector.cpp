@@ -17,7 +17,9 @@
 #include "EBArith.H"
 #include "EBAlias.H"
 #include "EBAMRDataOps.H"
+
 #include "NamespaceHeader.H"
+
 /*****/
 EBCompositeCCProjector::
 EBCompositeCCProjector(const Vector<EBLevelGrid>&                      a_eblg,
@@ -407,4 +409,5 @@ kappaDivergence(Vector<LevelData<EBCellFAB>* >&              a_divu,
   m_macProjector->kappaDivergence(a_divu, m_macVelo, a_boundaryVelo);
 }
 /*****/
+
 #include "NamespaceFooter.H"

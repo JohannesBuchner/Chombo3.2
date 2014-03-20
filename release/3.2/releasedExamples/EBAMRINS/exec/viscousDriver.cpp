@@ -36,9 +36,10 @@
 #include "PoiseuilleInflowBCValue.H"
 #include "EBFABView.H"
 #include <iostream>
-#include "UsingNamespace.H"
 #include "memusage.H"
 #include "memtrack.H"
+
+#include "UsingNamespace.H"
 
 /***************/
 void ebamrieuler(const AMRParameters& a_params,

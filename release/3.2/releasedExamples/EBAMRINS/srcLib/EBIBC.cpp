@@ -19,5 +19,4 @@ EBIBC::EBIBC()
 EBIBC::~EBIBC()
 {
 }
-
 #include "NamespaceFooter.H"

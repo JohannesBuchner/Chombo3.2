@@ -18,6 +18,7 @@
 #include "EBArith.H"
 #include "EBLevelDataOps.H"
 #include "EBLevelCCProjector.H"
+
 #include "NamespaceHeader.H"
 
 int
@@ -728,4 +729,5 @@ cellGradient(EBCellFAB&             a_gradDiv,
     }
 }
 /***********************/
+
 #include "NamespaceFooter.H"

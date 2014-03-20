@@ -447,5 +447,4 @@ protected:
 };
 
 #include "NamespaceFooter.H"
-
 #endif

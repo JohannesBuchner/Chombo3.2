@@ -21,6 +21,7 @@
 #include "RefCountedPtr.H"
 #include "BaseDomainBC.H"
 #include "BaseEBBC.H"
+
 #include "NamespaceHeader.H"
 
 ///
@@ -201,7 +202,6 @@ public:
     return RefCountedPtr<BaseEBBCFactory>();
   }
 };
-
 
 #include "NamespaceFooter.H"
 #endif

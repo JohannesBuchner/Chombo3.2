@@ -12,7 +12,9 @@
 #include "EBISLayout.H"
 #include "EBLoHiCenter.H"
 #include "VoFIterator.H"
+
 #include "NamespaceHeader.H"
+
 /****************************/
 NoFlowAdvectBC::
 NoFlowAdvectBC(int a_velComp)

@@ -16,6 +16,7 @@
 #include "EBAMRDataOps.H"
 #include "FaceIterator.H"
 #include "MACProjectorF_F.H"
+
 #include "NamespaceHeader.H"
 
 /*********/
@@ -804,4 +805,5 @@ EBCompositeMACProjector::
       delete m_fluxReg[ilev];
     }
 }
+
 #include "NamespaceFooter.H"

@@ -11,6 +11,8 @@
 #include "PoisselleTubeBCValue.H"
 #include "PolyGeom.H"
 
+#include "UsingNamespace.H"
+
 /***/
 RealVect
 PoisselleTubeBCValue::

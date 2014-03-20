@@ -20,6 +20,7 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+
 #include "NamespaceHeader.H"
 
 bool EBLevelMACProjector::s_verbose  = false;
@@ -453,4 +454,5 @@ macEnforceVelocityBC(LevelData<EBFluxFAB>&              a_velocity,
   domainBC->enforceFaceVel(a_velocity,a_grids,a_ebisl,a_domain,a_dx,a_time,a_origin,a_doDivFreeOutflow,a_comp);
   delete domainBC;
 }
+
 #include "NamespaceFooter.H"

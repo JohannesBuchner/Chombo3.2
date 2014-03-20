@@ -16,6 +16,8 @@
 #include "BaseBCValue.H"
 #include "PoisselleTubeBCValue.H"
 
+#include "UsingNamespace.H"
+
 ///
 /**
  */

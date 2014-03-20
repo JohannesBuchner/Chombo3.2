@@ -7,7 +7,6 @@
  *    Please refer to Copyright.txt, in Chombo's root directory.
  */
 #endif
-
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
