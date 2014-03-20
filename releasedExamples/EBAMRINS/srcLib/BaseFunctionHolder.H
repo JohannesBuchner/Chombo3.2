@@ -24,8 +24,8 @@
 #include "EBIBCFactory.H"
 #include "BaseEBBC.H"
 #include "DirichletPoissonEBBC.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 ///
 /**
@@ -72,4 +72,3 @@ public:
 
 #include "NamespaceFooter.H"
 #endif
-

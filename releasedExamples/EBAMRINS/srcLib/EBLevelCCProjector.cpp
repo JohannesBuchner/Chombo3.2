@@ -16,6 +16,7 @@
 #include "EBAMRPoissonOp.H"
 #include "EBArith.H"
 #include "FaceIterator.H"
+
 #include "NamespaceHeader.H"
 
 /*****/
@@ -1353,4 +1354,5 @@ ccpJohansenExtrapFaceToCovered(bool&                   a_dropOrder,
     }
 }
 /***/
+
 #include "NamespaceFooter.H"

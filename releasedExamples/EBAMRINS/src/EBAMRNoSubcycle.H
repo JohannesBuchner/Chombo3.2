@@ -24,7 +24,8 @@
 #include "EBCoarseAverage.H"
 #include "EBSimpleSolver.H"
 #include "EBFastFR.H"
-#include "UsingNamespace.H"
+
+#include "NamespaceHeader.H"
 
 ///
 /**
@@ -680,4 +681,5 @@ private:
 
 };
 
+#include "NamespaceFooter.H"
 #endif

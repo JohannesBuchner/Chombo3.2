@@ -27,8 +27,8 @@
 #include "EBFluxFAB.H"
 #include "EBFaceFAB.H"
 #include "EBLevelGrid.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 ///
 /**
@@ -223,5 +223,6 @@ private:
     MayDay::Error("invalid operator");
   }
 };
+
 #include "NamespaceFooter.H"
 #endif

@@ -22,6 +22,7 @@
 #include "EBAMRPoissonOp.H"
 #include "MultiGrid.H"
 #include "EBQuadCFInterp.H"
+
 #include "NamespaceHeader.H"
 
 ///

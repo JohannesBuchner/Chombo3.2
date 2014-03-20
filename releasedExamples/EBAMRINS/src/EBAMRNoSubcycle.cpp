@@ -39,9 +39,10 @@
 #include <iomanip>
 #include <cmath>
 #include <cstdio>
-#include "UsingNamespace.H"
 #include "memusage.H"
 #include "memtrack.H"
+
+#include "NamespaceHeader.H"
 
 extern Real g_simulationTime;
 #define debugIV IntVect(D_DECL(16, 3, 0))
@@ -3713,3 +3714,5 @@ setCoveredStuffToZero(LevelData<EBCellFAB>& a_vort)
         }
     }
 }
+
+#include "NamespaceFooter.H"

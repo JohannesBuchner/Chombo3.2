@@ -25,6 +25,7 @@
 #include "LevelFluxRegister.H"
 #include "EBQuadCFInterp.H"
 #include "EBCompositeMACProjector.H"
+
 #include "NamespaceHeader.H"
 
 ///

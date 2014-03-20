@@ -18,6 +18,7 @@
 #include "REAL.H"
 #include "PolyGeom.H"
 #include "EBAMRNoSubcycle.H"
+
 #include "UsingNamespace.H"
 
 extern void outputError(const Vector< LevelData<EBCellFAB>* >&   a_errorFine,

@@ -25,6 +25,8 @@
 #include "BaseEBBC.H"
 #include "PolyGeom.H"
 
+#include "UsingNamespace.H"
+
 ///instantiation of basebcvalue that always returns a parabola around center of the domain
 /**
     vel  = inflowvel at r=0
@@ -72,6 +74,5 @@ private:
   Real          m_maxVel;
   int           m_velComp;
 };
-
 
 #endif

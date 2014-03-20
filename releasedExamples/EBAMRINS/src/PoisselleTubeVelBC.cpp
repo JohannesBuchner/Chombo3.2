@@ -10,6 +10,9 @@
 
 #include "EBArith.H"
 #include "PoisselleTubeVelBC.H"
+
+#include "UsingNamespace.H"
+
 /****************************/
 void
 PoisselleTubeVelBC::

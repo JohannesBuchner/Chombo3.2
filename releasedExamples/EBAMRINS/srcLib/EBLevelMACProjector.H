@@ -22,6 +22,7 @@
 #include "EBAMRPoissonOpFactory.H"
 #include "MultiGrid.H"
 #include "BiCGStabSolver.H"
+
 #include "NamespaceHeader.H"
 
 ///
@@ -208,5 +209,6 @@ macEnforceGradientBC(LevelData<EBFluxFAB>&              a_gradPhi,
                      const RealVect&                    a_origin,
                      const Real&                        a_time,
                      RefCountedPtr<BaseDomainBCFactory> a_domainBCFactPhi);
+
 #include "NamespaceFooter.H"
 #endif

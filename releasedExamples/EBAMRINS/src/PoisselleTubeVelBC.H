@@ -22,6 +22,7 @@
 #include "EBPhysIBCFactory.H"
 #include "PoisselleTubeBCValue.H"
 
+#include "UsingNamespace.H"
 
 ///for velocitie boundary conditions
 /**
