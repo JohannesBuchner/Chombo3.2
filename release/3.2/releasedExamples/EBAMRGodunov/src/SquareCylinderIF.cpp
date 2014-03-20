@@ -11,10 +11,10 @@
 #include <cmath>
 
 #include "RealVect.H"
-
 #include "PolyGeom.H"
-
 #include "SquareCylinderIF.H"
+
+#include "NamespaceHeader.H"
 
 SquareCylinderIF::SquareCylinderIF(const Real&     a_radius,
                                    const bool&     a_inside)
@@ -80,3 +80,5 @@ BaseIF* SquareCylinderIF::newImplicitFunction() const
 
   return static_cast<BaseIF*>(squareCylinderPtr);
 }
+
+#include "NamespaceFooter.H"

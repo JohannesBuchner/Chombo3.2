@@ -18,6 +18,7 @@
 #include "EBFluxRegister.H"
 #include "EBFluxFactory.H"
 #include "EBLevelGrid.H"
+
 #include "NamespaceHeader.H"
 
 //! \struct EBGridPolicy

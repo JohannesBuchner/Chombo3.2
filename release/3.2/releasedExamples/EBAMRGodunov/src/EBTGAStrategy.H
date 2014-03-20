@@ -12,8 +12,8 @@
 #define _EBTGASTRATEGY_H__
 
 #include "EBImplicitIntegrationStrategy.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //! \class EBTGAStrategy
 //! This base class implements the first-order Backward Euler method for
@@ -47,7 +47,6 @@ class EBTGAStrategy: public EBImplicitIntegrationStrategy
   Real m_mu1, m_mu2, m_mu3, m_mu4, m_r1;
 
 };
-
 
 #include "NamespaceFooter.H"
 #endif

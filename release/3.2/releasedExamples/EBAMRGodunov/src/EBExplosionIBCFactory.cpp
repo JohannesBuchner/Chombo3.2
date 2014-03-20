@@ -10,6 +10,9 @@
 
 #include "EBExplosionIBCFactory.H"
 #include "EBExplosionIBC.H"
+
+#include "NamespaceHeader.H"
+
 /******************/
 /******************/
 EBExplosionIBCFactory::
@@ -59,3 +62,4 @@ create() const
 /******************/
 /******************/
 
+#include "NamespaceFooter.H"

@@ -15,6 +15,8 @@
 #include "CoveredFaceFAB.H"
 #include "BaseIFFAB.H"
 
+#include "NamespaceHeader.H"
+
 ///
 /**
    An EBPatchGodunov for gamma-law gas dynamics.
@@ -489,4 +491,6 @@ private:
   }
 
 };
+
+#include "NamespaceFooter.H"
 #endif

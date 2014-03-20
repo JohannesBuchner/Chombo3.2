@@ -14,6 +14,8 @@
 #include "EBPatchPolytropic.H"
 #include "EBPatchGodunovFactory.H"
 
+#include "NamespaceHeader.H"
+
 ///
 /**
  */
@@ -88,4 +90,6 @@ private:
     MayDay::Error("invalid operator");
   }
 };
+
+#include "NamespaceFooter.H"
 #endif

@@ -21,6 +21,9 @@
 
 #include "EBPhysIBC.H"
 #include "EBFluxFAB.H"
+
+#include "NamespaceHeader.H"
+
 ///
 /**
    IBC for doing the modiano problem.
@@ -163,4 +166,5 @@ private:
 extern RealVect
 mibcGetNormalVector(const RealVect& channelNormal);
 
+#include "NamespaceFooter.H"
 #endif

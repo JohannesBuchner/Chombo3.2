@@ -11,6 +11,9 @@
 #include "ModianoIBCFactory.H"
 #include "ModianoIBC.H"
 #include "PolyGeom.H"
+
+#include "NamespaceHeader.H"
+
 /******************/
 /******************/
 ModianoIBCFactory::ModianoIBCFactory(const Real&     a_gamma,
@@ -57,3 +60,4 @@ create() const
 /******************/
 /******************/
 
+#include "NamespaceFooter.H"

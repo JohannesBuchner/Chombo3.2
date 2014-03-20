@@ -21,8 +21,8 @@
 #include "LevelData.H"
 #include "AMRTGA.H"
 #include "BaseImplicitIntegrationStrategy.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //! \class BasicImplicitIntegrator
 //! This class provides an interface for the implicit time integration of
@@ -519,8 +519,10 @@ applyDiffusionOperator(LevelDataType& a_Lphi,
 
 // Include regular geometry stuff.
 #include "ImplicitIntegrationStrategy.H"
-#include "NamespaceHeader.H"
-typedef BasicImplicitIntegrator<RegularImplicitIntegratorTraits> ImplicitIntegrator;
-#include "NamespaceFooter.H"
 
+#include "NamespaceHeader.H"
+
+typedef BasicImplicitIntegrator<RegularImplicitIntegratorTraits> ImplicitIntegrator;
+
+#include "NamespaceFooter.H"
 #endif

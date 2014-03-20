@@ -10,6 +10,7 @@
 
 #include "EBImplicitIntegrationStrategy.H"
 #include "LevelTGAF_F.H" // For fortran stuff
+
 #include "NamespaceHeader.H"
 
 //-----------------------------------------------------------------------

@@ -13,7 +13,9 @@
 
 #include "ImplicitIntegrator.H"
 #include "EBImplicitIntegrationStrategy.H"
+
 #include "NamespaceHeader.H"
+
 typedef BasicImplicitIntegrator<EBImplicitIntegratorTraits> EBImplicitIntegrator;
 
 #include "NamespaceFooter.H"

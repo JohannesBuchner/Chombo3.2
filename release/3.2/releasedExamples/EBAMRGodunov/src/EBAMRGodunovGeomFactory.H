@@ -18,6 +18,7 @@
 #include "RealVect.H"
 #include "IntVect.H"
 
+#include "NamespaceHeader.H"
 
 //! \class EBAMRGodunovGeomFactory
 //! This class creates computational domains for embedded boundary AMR
@@ -114,4 +115,5 @@ class EBAMRGodunovGeomFactory
   EBAMRGodunovGeomFactory& operator=(const EBAMRGodunovGeomFactory&);
 };
 
+#include "NamespaceFooter.H"
 #endif

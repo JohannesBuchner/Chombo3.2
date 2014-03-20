@@ -18,6 +18,9 @@
 #include "EBSolidF_F.H"
 #include "EBLoHiCenter.H"
 #include "FaceIterator.H"
+
+#include "NamespaceHeader.H"
+
 ///
 /**
    IBC for doing the modiano problem.
@@ -737,3 +740,4 @@ ModianoIBC::setBndrySlopes(EBCellFAB&       a_deltaPrim,
     } //end loop over boundary sides
 }
 
+#include "NamespaceFooter.H"
