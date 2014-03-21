@@ -23,6 +23,8 @@
 #include "EBPlanarShockF_F.H"
 #include "EBSolidF_F.H"
 
+#include "NamespaceHeader.H"
+
 class EBPlanarShockIBC : public EBPhysIBC
 {
 public:
@@ -99,4 +101,5 @@ private:
 
 };
 
+#include "NamespaceFooter.H"
 #endif

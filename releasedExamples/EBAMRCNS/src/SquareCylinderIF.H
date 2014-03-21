@@ -16,6 +16,8 @@
 
 #include "BaseIF.H"
 
+#include "NamespaceHeader.H"
+
 ///
 /**
     This implicit function specifies a square (infinite) cylinder
@@ -78,4 +80,5 @@ private:
   }
 };
 
+#include "NamespaceFooter.H"
 #endif

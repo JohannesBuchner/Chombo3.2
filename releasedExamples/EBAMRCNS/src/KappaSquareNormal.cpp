@@ -11,10 +11,11 @@
 #include "KappaSquareNormal.H"
 #include "EBArith.H"
 #include "EBISLayout.H"
+
 #include "NamespaceHeader.H"
+
 #include <vector>
 using namespace std;
-
 
 //----------------------------------------------------------------------------
 KappaSquareNormal::
@@ -129,6 +130,5 @@ operator()(LevelData<EBCellFAB>& a_Q) const
    return (*this)(a_Q, Interval(0, a_Q.nComp()-1));
 }
 //----------------------------------------------------------------------------
-
 
 #include "NamespaceFooter.H"

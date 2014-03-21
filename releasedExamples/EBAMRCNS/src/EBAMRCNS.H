@@ -40,8 +40,8 @@
 #include "DisjointBoxLayout.H"
 #include "EBQuadCFInterp.H"
 #include "EBSpaceTimeFunction.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //! \class EBAMRCNS
 //! This class implements an embedded boundary compressible Navier-Stokes solver with 

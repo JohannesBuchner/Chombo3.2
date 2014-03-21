@@ -22,6 +22,8 @@
 #include "EBExplosionF_F.H"
 #include "EBSolidF_F.H"
 
+#include "NamespaceHeader.H"
+
 //------------------------------------------------------------------------------
 EBNoFlowIBC::
 EBNoFlowIBC(Real a_gamma)
@@ -316,4 +318,4 @@ create() const
 }
 //------------------------------------------------------------------------------
 
-
+#include "NamespaceFooter.H"

@@ -16,6 +16,7 @@
 #include "REAL.H"
 #include "BaseDomainBC.H"
 #include "BaseEBBC.H"
+
 #include "NamespaceHeader.H"
 
 ///
@@ -108,8 +109,6 @@ extern void ParseSchlichtingParams(SchlichtingParams& a_params);
 extern ostream&
 operator<< (ostream&              a_os,
             const EBAMRCNSParams& a_p);
-
-
 
 #include "NamespaceFooter.H"
 #endif

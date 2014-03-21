@@ -64,6 +64,7 @@
 #include "SchlichtingTempDomainBC.H"
 #include "GodunovGeom.H"
 
+#include "NamespaceHeader.H"
 
 using std::ifstream;
 using std::ios;
@@ -1964,3 +1965,5 @@ setupAMR(AMR&                  a_amr,
 #endif
     }
 }
+
+#include "NamespaceFooter.H"

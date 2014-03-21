@@ -17,6 +17,9 @@
 #include "EBLGIntegrator.H"
 #include "ParmParse.H"
 #include "PolyGeom.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 EBExplosionIBC::
@@ -233,3 +236,5 @@ EBExplosionIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

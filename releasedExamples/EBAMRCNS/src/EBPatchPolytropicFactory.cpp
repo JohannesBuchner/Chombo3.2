@@ -10,6 +10,8 @@
 
 #include "EBPatchPolytropicFactory.H"
 
+#include "NamespaceHeader.H"
+
 //-----------------------------------------------------------------------
 EBPatchPolytropicFactory::
 EBPatchPolytropicFactory(const EBPhysIBCFactory* const a_bcFactoryPtr,
@@ -79,5 +81,4 @@ create() const
 /******************/
 /******************/
 
-
-
+#include "NamespaceFooter.H"

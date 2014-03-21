@@ -169,6 +169,6 @@ private:
   bool m_slipWall;
 
 };
-#include "NamespaceFooter.H"
 
+#include "NamespaceFooter.H"
 #endif

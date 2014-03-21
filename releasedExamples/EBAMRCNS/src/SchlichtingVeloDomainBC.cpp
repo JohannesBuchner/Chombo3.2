@@ -138,5 +138,4 @@ getFaceFlux(Real&                 a_faceFlux,
     }
 }
 
-
 #include "NamespaceFooter.H"

@@ -22,6 +22,8 @@
 #include "EBPhysIBC.H"
 #include "EBPhysIBCFactory.H"
 
+#include "NamespaceHeader.H"
+
 //! \class EBNoFlowIBC
 //! This class, for use with EBAMRCNS, ensures that there is no flow across an embedded boundary.
 //! Use this only for toy problems where all the action is far from the boundary.
@@ -108,4 +110,5 @@ class EBNoFlowIBCFactory: public EBPhysIBCFactory
   EBNoFlowIBCFactory& operator=(const EBNoFlowIBCFactory&);
 };
 
+#include "NamespaceFooter.H"
 #endif

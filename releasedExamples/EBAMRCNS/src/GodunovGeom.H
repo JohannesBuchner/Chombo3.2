@@ -24,6 +24,7 @@
 #include "EBCNSVortexIBC.H"
 #include "EBAMRCNSFactory.H"
 
+#include "NamespaceHeader.H"
 
 extern "C"
 {
@@ -176,5 +177,5 @@ extern void  setupAMR(AMR&                  a_amr,
                       Real                  a_dt,
                       Vector<Vector<Box>      >  a_boxes = Vector<Vector <Box> >());
 
-
+#include "NamespaceFooter.H"
 #endif

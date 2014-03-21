@@ -17,6 +17,9 @@
 #include "VoFIterator.H"
 #include "EBLGIntegrator.H"
 #include "ParmParse.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 SmoothBumpIBC::
@@ -210,3 +213,5 @@ SmoothBumpIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

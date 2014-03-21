@@ -21,7 +21,6 @@
 
 #include "NamespaceHeader.H"
 
-
 ////
 void 
 SchlichtingTempDomainBC::
@@ -64,6 +63,5 @@ getFaceFlux(Real&                 a_faceFlux,
   neumannBC.getFaceFlux(a_faceFlux, a_vof, a_comp,a_phi, a_probLo,
                         a_dx, a_idir, a_side, a_dit,a_time,a_useHomogeneous);
 }
-
 
 #include "NamespaceFooter.H"

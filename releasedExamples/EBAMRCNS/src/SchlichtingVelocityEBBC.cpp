@@ -20,6 +20,7 @@
 #include "CH_Timer.H"
 #include "EBViscousTensorOp.H"
 #include "EBAMRCNSParams.H"
+
 #include "NamespaceHeader.H"
 
 SchlichtingVelocityEBBC::

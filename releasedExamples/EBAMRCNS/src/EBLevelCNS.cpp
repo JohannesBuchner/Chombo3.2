@@ -23,7 +23,9 @@
 #include "EBAMRIO.H"
 #include "EBArith.H"
 #include "EBPatchPolytropic.H"
+
 #include "NamespaceHeader.H"
+
 int EBLevelCNS::s_timestep = 0;
 /*****************************/
 /*****************************/
@@ -542,4 +544,5 @@ Real EBLevelCNS::getMaxWaveSpeed(const LevelData<EBCellFAB>& a_state)
 }
 /*****************************/
 /*****************************/
+
 #include "NamespaceFooter.H"

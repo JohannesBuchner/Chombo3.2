@@ -11,10 +11,10 @@
 #include <cmath>
 
 #include "RealVect.H"
-
 #include "PolyGeom.H"
-
 #include "WedgeIF.H"
+
+#include "NamespaceHeader.H"
 
 WedgeIF::WedgeIF(const RealVect& a_center,
                  const Real&     a_slope,
@@ -66,3 +66,5 @@ BaseIF* WedgeIF::newImplicitFunction() const
 
   return static_cast<BaseIF*>(wedgePtr);
 }
+
+#include "NamespaceFooter.H"

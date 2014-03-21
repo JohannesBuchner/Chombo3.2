@@ -23,6 +23,7 @@
 #include "ProblemDomain.H"
 #include "EBPatchPolytropic.H"
 #include "EBLevelRedist.H"
+
 #include "NamespaceHeader.H"
 
 /// Level Godunov

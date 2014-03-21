@@ -15,6 +15,7 @@
 #include "AMRLevelFactory.H"
 #include "EBPatchGodunovFactory.H"
 #include "EBPatchPolytropicFactory.H"
+
 #include "NamespaceHeader.H"
 
 //! \class EBAMRCNSFactory

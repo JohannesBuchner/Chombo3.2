@@ -10,6 +10,9 @@
 
 #include "SchlichtingIBCFactory.H"
 #include "SchlichtingIBC.H"
+
+#include "NamespaceHeader.H"
+
 /******************/
 SchlichtingIBCFactory::
 SchlichtingIBCFactory(const SchlichtingParams& a_params)
@@ -33,3 +36,4 @@ create() const
 }
 /******************/
 
+#include "NamespaceFooter.H"
