@@ -128,7 +128,7 @@ ifeq ($(cxxname),icc)
   # disable warnings:
   ifeq (0,$(shell test $(_iccmajorver) -ge 9 ; echo $$?))
     defcxxcomflags += -sox
-    defcxxdbgflags += -debug -ftrapuv
+    defcxxdbgflags += -debug -ftrapuv -Wno-unknown-pragmas
     #defcxxoptflags += 
   endif
 
