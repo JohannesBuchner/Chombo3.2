@@ -28,6 +28,7 @@
 #include "ParmParse.H"
 #include <cstdio>
 
+#include "NamespaceHeader.H"
 
 void
 EBPatchPolytropic::
@@ -2309,3 +2310,5 @@ consUndividedDivergence(BaseIVFAB<Real>&       a_divF,
   EBPatchGodunov::consUndividedDivergence(a_divF, a_centroidFlux, a_ebIrregFlux, a_ivs);
 }
 /*****************************/
+
+#include "NamespaceFooter.H"

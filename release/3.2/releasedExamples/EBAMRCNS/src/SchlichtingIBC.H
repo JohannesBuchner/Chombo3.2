@@ -21,6 +21,7 @@
 #include "EBPhysIBC.H"
 #include "EBAMRCNSParams.H"
 
+#include "NamespaceHeader.H"
 
 class SchlichtingIBC : public EBPhysIBC
 {
@@ -88,4 +89,5 @@ private:
 
 };
 
+#include "NamespaceFooter.H"
 #endif

@@ -9,6 +9,7 @@
 #endif
 
 #include "EBSpaceTimeFunction.H"
+
 #include "NamespaceHeader.H"
 
 //---------------------------------------------------------------------------
@@ -109,3 +110,4 @@ evaluate(EBCellFAB& a_FAB,
 }
 //---------------------------------------------------------------------------
 
+#include "NamespaceFooter.H"

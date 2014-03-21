@@ -26,8 +26,8 @@
 #include "ProblemDomain.H"
 #include "BaseLevelTGA.H"
 #include "EBViscousTensorOp.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 //! Momentum TGA adds another function to EBLevelTGA 
 //! that does not make sense in a broader context
@@ -153,5 +153,3 @@ public:
 
 #include "NamespaceFooter.H"
 #endif
-
-

@@ -11,7 +11,9 @@
 #include "AMRLevel.H"
 #include "EBAMRCNS.H"
 #include "EBAMRCNSFactory.H"
+
 #include "NamespaceHeader.H"
+
 /****************/
 AMRLevel*
 EBAMRCNSFactory::
@@ -22,4 +24,5 @@ new_amrlevel() const
   return (static_cast <AMRLevel*> (amrg_ptr));
 }
 /****************/
+
 #include "NamespaceFooter.H"

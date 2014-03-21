@@ -16,8 +16,8 @@
 #include "ViscousTensorOpF_F.H"
 #include "EBViscousTensorOp.H"
 #include "EBViscousTensorOpF_F.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 SlipWallViscousTensorDomainBC::
 SlipWallViscousTensorDomainBC()
@@ -229,4 +229,5 @@ create(const ProblemDomain& a_domain,
   SlipWallViscousTensorDomainBC* newBC = new SlipWallViscousTensorDomainBC();
   return newBC;
 }
+
 #include "NamespaceFooter.H"

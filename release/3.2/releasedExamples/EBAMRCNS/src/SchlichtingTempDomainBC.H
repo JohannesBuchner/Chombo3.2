@@ -151,6 +151,6 @@ private:
 
   SchlichtingParams m_params;
 };
-#include "NamespaceFooter.H"
 
+#include "NamespaceFooter.H"
 #endif

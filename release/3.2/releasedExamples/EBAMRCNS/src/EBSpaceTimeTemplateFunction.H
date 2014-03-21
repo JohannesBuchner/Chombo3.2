@@ -13,6 +13,8 @@
 
 #include "EBSpaceTimeFunction.H"
 
+#include "NamespaceHeader.H"
+
 /**
  * \class EBSpaceTimeTemplateFunction
    This class template implements a function F(x, t) by using a functor to evaluate data 
@@ -126,5 +128,5 @@ class EBSpaceTimeTemplateFunction: public EBSpaceTimeFunction
   EBSpaceTimeTemplateFunction& operator=(const EBSpaceTimeTemplateFunction&);
 };
 
+#include "NamespaceFooter.H"
 #endif
-

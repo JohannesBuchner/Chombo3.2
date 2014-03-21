@@ -18,6 +18,9 @@
 #include "EBLGIntegrator.H"
 #include "EBLevelDataOps.H"
 #include "EBPatchPolytropicF_F.H"
+
+#include "NamespaceHeader.H"
+
 /****************************/
 /****************************/
 SchlichtingIBC::
@@ -156,3 +159,5 @@ SchlichtingIBC::
 }
 /****************************/
 /****************************/
+
+#include "NamespaceFooter.H"

@@ -10,6 +10,9 @@
 
 #include "EBPlanarShockIBCFactory.H"
 #include "EBPlanarShockIBC.H"
+
+#include "NamespaceHeader.H"
+
 /******************/
 /******************/
 EBPlanarShockIBCFactory::
@@ -60,3 +63,4 @@ create() const
 /******************/
 /******************/
 
+#include "NamespaceFooter.H"

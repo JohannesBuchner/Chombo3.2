@@ -62,6 +62,7 @@
 
 #include <iostream>
 
+#include "UsingNamespace.H"
 
 using std::ifstream;
 using std::ios;

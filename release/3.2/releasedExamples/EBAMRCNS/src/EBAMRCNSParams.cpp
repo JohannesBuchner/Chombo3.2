@@ -12,6 +12,8 @@
 #include "ParmParse.H"
 #include "PolyGeom.H"
 
+#include "NamespaceHeader.H"
+
 Real 
 SchlichtingParams::
 distanceAlongAxis(const RealVect& a_point) const
@@ -131,4 +133,4 @@ operator<< (ostream&              a_os,
   return a_os;
 }
 
-
+#include "NamespaceFooter.H"

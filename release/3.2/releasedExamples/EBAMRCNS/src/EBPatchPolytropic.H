@@ -10,10 +10,13 @@
 
 #ifndef _EBPatchPolytropic_H_
 #define _EBPatchPolytropic_H_
+
 #include "EBPatchGodunov.H"
 #include "Stencils.H"
 #include "CoveredFaceFAB.H"
 #include "BaseIFFAB.H"
+
+#include "NamespaceHeader.H"
 
 ///
 /**
@@ -490,4 +493,6 @@ private:
   }
 
 };
+
+#include "NamespaceFooter.H"
 #endif

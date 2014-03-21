@@ -17,6 +17,8 @@
 #include "LevelData.H"
 #include "ProblemDomain.H"
 
+#include "NamespaceHeader.H"
+
 /**
  * \class EBSpaceTimeFunction
    This virtual base class represents a function F(x, t) that can be used to represent 
@@ -152,5 +154,5 @@ class EBSpaceTimeFunctionIBCAdaptor: public EBSpaceTimeFunction
 
 };
 
+#include "NamespaceFooter.H"
 #endif
-

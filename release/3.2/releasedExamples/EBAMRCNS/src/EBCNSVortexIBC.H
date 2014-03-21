@@ -24,6 +24,8 @@
 #include "EBCNSVortexF_F.H"
 #include "EBSolidF_F.H"
 
+#include "NamespaceHeader.H"
+
 class EBCNSVortexIBC : public EBPhysIBC
 {
 public:
@@ -149,4 +151,6 @@ private:
 
 
 };
+
+#include "NamespaceFooter.H"
 #endif

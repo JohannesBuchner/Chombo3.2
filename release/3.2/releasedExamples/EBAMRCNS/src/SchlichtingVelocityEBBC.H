@@ -20,7 +20,9 @@
 #include "EBStencil.H"
 #include "EBAMRCNSParams.H"
 #include "DirichletViscousTensorEBBC.H"
+
 #include "NamespaceHeader.H"
+
 class VoFCache;
 class VoFStencil;
 
@@ -113,8 +115,6 @@ private:
 
   SchlichtingParams m_params;
 };
-
-
 
 #include "NamespaceFooter.H"
 #endif

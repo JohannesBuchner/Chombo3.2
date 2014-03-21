@@ -22,6 +22,8 @@
 #include "EBExplosionIBC.H"
 #include "EBPhysIBCFactory.H"
 
+#include "NamespaceHeader.H"
+
 ///
 /**
  */
@@ -78,4 +80,5 @@ private:
 
 };
 
+#include "NamespaceFooter.H"
 #endif

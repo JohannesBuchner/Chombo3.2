@@ -57,6 +57,7 @@
 #include "EBExplosionIBCFactory.H"
 #include "EBPlanarShockIBCFactory.H"
 #include "EBEllipticLoadBalance.H"
+
 #include "NamespaceHeader.H"
 
 #ifdef CH_USE_HDF5

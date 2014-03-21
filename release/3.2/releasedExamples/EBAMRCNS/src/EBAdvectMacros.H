@@ -8,11 +8,8 @@
 */
 #endif
 
-
 #define PSCALAR  0
 #define CNUM     1
 #define QNUM     1
 #define QSLOPE   1
 #define FNUM     1
-
-

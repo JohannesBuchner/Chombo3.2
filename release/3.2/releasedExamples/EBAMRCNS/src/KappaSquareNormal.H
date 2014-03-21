@@ -14,8 +14,8 @@
 #include "EBCellFAB.H"
 #include "LevelData.H"
 #include "EBLevelGrid.H"
-#include "NamespaceHeader.H"
 
+#include "NamespaceHeader.H"
 
 /** \class KappaSquareNormal
  *  This class represents an operation that takes a volume-fraction-weighted
