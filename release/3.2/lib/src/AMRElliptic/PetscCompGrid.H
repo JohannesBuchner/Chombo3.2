@@ -32,8 +32,13 @@ class PetscCompGrid
 public: 
 
   //! Base class constructor. Called by all subclass constructors.
-  PetscCompGrid(int a_dof) : m_gid0(0),m_mat(0),m_maxStencilDist(2),m_writeMatlab(false),m_verbose(0),m_dof(a_dof)
+  PetscCompGrid(int a_dof) : m_gid0(0),m_mat(0),m_CFStencilRad(2),m_writeMatlab(false),
+			     m_verbose(0),m_dof(a_dof)
   {
+#if defined(PETSC_USE_LOG)
+    PetscLogEventRegister("createMatrix",PETSC_VIEWER_CLASSID,&m_event0);
+    PetscLogEventRegister("PetscCompGrid",PETSC_VIEWER_CLASSID,&m_event1);
+#endif
   }
   
   virtual void define( const ProblemDomain &a_cdomain,
@@ -91,12 +96,16 @@ public:
 protected:
   Mat m_mat;
   BCHolder m_bc;
-  int m_maxStencilDist;
-  /// all possible stencils, on (-m_maxStencilDist:+m_maxStencilDist)^SpaceDim
+  // all possible stencils, on box(-m_CFStencilRad:+m_CFStencilRad)^SpaceDim
+  int m_CFStencilRad;
   BaseFab<FourthOrderInterpStencil*> m_FCStencils;
   bool m_writeMatlab;
   int m_verbose;
   const int m_dof;
+#if defined(PETSC_USE_LOG)
+  PetscLogEvent m_event0;
+  PetscLogEvent m_event1;
+#endif
 private:
   // Disallowed for all the usual reasons
   void operator=(const PetscCompGrid& a_input)

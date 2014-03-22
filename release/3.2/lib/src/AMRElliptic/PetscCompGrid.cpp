@@ -184,19 +184,24 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
 {
   CH_TIME("PetscCompGrid::define");
   int maxiLev;
-  if (a_numLevels) maxiLev = a_grids.size() - 1;
+  if (a_numLevels<=0) maxiLev = a_grids.size() - 1;
   else maxiLev = a_numLevels - 1;
   const int numLevs = maxiLev - a_ibase + 1;
   m_bc = a_bc;
 
   PetscCompGrid::clean(); // this is virtual so lets not step on derived classes data
-
+  
+  if (m_verbose>5) 
+    {
+      pout() << "PetscCompGrid::define: a_numLevels=" << a_numLevels << ", numLevs=" << 
+	numLevs << ", a_ibase=" << a_ibase << endl; 
+    }
   if (numLevs>1)
     {
       int degree = 3, nref = a_refRatios[0]; // assume same coarsening for all directions and levels
       IntVect interpUnit = IntVect::Unit;
-      Box stencilBox( -m_maxStencilDist*interpUnit,
-                      m_maxStencilDist*interpUnit );
+      Box stencilBox( -m_CFStencilRad*interpUnit,
+                      m_CFStencilRad*interpUnit );
       m_FCStencils.define(stencilBox,1);
       for (BoxIterator bit(stencilBox); bit.ok(); ++bit)
         {
@@ -233,6 +238,11 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
           dom.refine(a_refRatios[ilev]);
           dx /= a_refRatios[ilev];
         }
+      if (m_verbose>5) 
+	{
+	  pout() << "PetscCompGrid::define: level=" << ilev << ", " << 
+	    m_grids[ii].size() << " patches" << endl; 
+	}
     }
 
   // iterate over real cells, get gids, make ops, start numbering from coarsest
@@ -240,10 +250,11 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
   for (int ilev=0;ilev<numLevs;ilev++)
     { 
       const DisjointBoxLayout& dbl = m_grids[ilev];
-      // 3 is a hack for treb
-      IntVect nghost = ilev==0 ? /* getGhostVect() */ 3*IntVect::Unit : m_refRatios[ilev-1]*(m_maxStencilDist+1)*IntVect::Unit;
+      // 3 is a hack for treb (?); refRat*(rad+1) happens at corners (not clear def of "radius")
+      IntVect nProcessGhost = (ilev==0) ? /*getGhostVect()*/ 3*IntVect::Unit : 
+	m_refRatios[ilev-1]*(m_CFStencilRad+1)*IntVect::Unit;
       m_GIDs[ilev] = RefCountedPtr<LevelData<BaseFab<PetscInt> > >
-        (new LevelData<BaseFab<PetscInt> >(dbl,1,nghost));
+        (new LevelData<BaseFab<PetscInt> >(dbl,1,nProcessGhost));
       // set gids == GHOST
       for (DataIterator dit = dbl.dataIterator(); dit.ok(); ++dit)
         {
@@ -339,12 +350,12 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
       LevelData<BaseFab<PetscInt> > *pl;
       int refRatio = m_refRatios[ilev-1];
 
-      // m_crsSupportGIDs[ilev-1]:
+      // form m_crsSupportGIDs[ilev-1]:
       const DisjointBoxLayout& fdbl = m_grids[ilev];
       coarsen(crsenedFineDBL,fdbl,refRatio);
-      // need two ??
-      const int nCrsSuppCells = m_maxStencilDist+1;
-      pl = new LevelData<BaseFab<PetscInt> >(crsenedFineDBL,1,nCrsSuppCells*getGhostVect());
+      // rad+1 needed to get stencils coarse cell coarse cover
+      const IntVect nCrsSuppCells = (m_CFStencilRad+1)*IntVect::Unit;
+      pl = new LevelData<BaseFab<PetscInt> >(crsenedFineDBL,1,nCrsSuppCells);
       m_crsSupportGIDs[ilev-1] = RefCountedPtr<LevelData<BaseFab<PetscInt> > >(pl);
       // set gids == UNKNOWN
       for (DataIterator dit = fdbl.dataIterator(); dit.ok(); ++dit)
@@ -352,23 +363,39 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
           BaseFab<PetscInt>& gidfab = (*pl)[dit];
           gidfab.setVal(UNKNOWN); // enum this.  BCs and covered by this 
         }
-      Copier rcopier(m_grids[ilev-1],crsenedFineDBL,nCrsSuppCells*getGhostVect());
+      Copier rcopier(m_grids[ilev-1],crsenedFineDBL,nCrsSuppCells);
       m_GIDs[ilev-1]->copyTo(inter,*m_crsSupportGIDs[ilev-1],inter,rcopier);
-      
-      // m_fineCoverGIDs[ilev]: prolongator copier, from data to cover
+
+      // from m_fineCoverGIDs[ilev]: fine support of stencils for coarse grid ilev-1
       const DisjointBoxLayout& cdbl = m_grids[ilev-1];
       refine(refinedCrsDBL,cdbl,refRatio);
-      // 
-      pl = new LevelData<BaseFab<PetscInt> >(refinedCrsDBL,1,refRatio*getGhostVect()); 
+      //
+      if (getGhostVect()[0]>refRatio)
+	{
+	  MayDay::Error("PetscCompGrid::define getGhostVect>refRatio - not setup for this");
+	}
+      // ghost cells for fine support governed by CF radius (2), I think we could use 1 with nesting radius==4
+      const IntVect nFineProcGhosts = refRatio*refRatio*m_CFStencilRad*IntVect::Unit;
+      pl = new LevelData<BaseFab<PetscInt> >(refinedCrsDBL,1,nFineProcGhosts); 
       m_fineCoverGIDs[ilev] = RefCountedPtr<LevelData<BaseFab<PetscInt> > >(pl);
       // set gids == UNKNOWN
       for (DataIterator dit = cdbl.dataIterator(); dit.ok(); ++dit)
         {
           BaseFab<PetscInt>& gidfab = (*pl)[dit];
-          gidfab.setVal(UNKNOWN); // enum this.  fine grid that is not there (true data here)
+          gidfab.setVal(UNKNOWN); // enum this. fine grid that is not there (true data here)
         }
-      Copier pcopier(fdbl,refinedCrsDBL,refRatio*getGhostVect());
+      Copier pcopier(fdbl,refinedCrsDBL,nFineProcGhosts);
       m_GIDs[ilev]->copyTo(inter,*m_fineCoverGIDs[ilev],inter,pcopier);
+      if (m_verbose>3) 
+	{
+          pout() << "PetscCompGrid::define: m_fineCoverGIDs["<< ilev-1 <<"] boxes: " << endl; 
+	  for (DataIterator dit = cdbl.dataIterator(); dit.ok(); ++dit)
+	    {
+	      BaseFab<PetscInt>& gidfab = (*pl)[dit];
+	      pout() << "PetscCompGrid::define: refined box=" << gidfab.box() << 
+		", coarse box = " << m_grids[ilev-1][dit] << endl;
+	    }
+	}
     }
 }
 
@@ -380,7 +407,7 @@ PetscCompGrid::createMatrix()
 {
   CH_TIME("PetscCompGrid::createMatrix");
   PetscErrorCode ierr,ilev,idx;
-  PetscInt nloc,max_size,imax;
+  PetscInt nloc,max_size;
   int nGrids=m_domains.size();
   IntVect nghost = getGhostVect();
   Vector<StencilTensor> stenVect;
@@ -388,6 +415,9 @@ PetscCompGrid::createMatrix()
   PetscFunctionBeginUser;
 
   // set preallocation
+#if defined(PETSC_USE_LOG)
+  PetscLogEventBegin(m_event0,0,0,0,0);
+#endif
   ierr = MatGetLocalSize(m_mat,&nloc,PETSC_NULL);CHKERRQ(ierr);
   nloc /= m_dof;
   /* count nnz */
@@ -434,7 +464,7 @@ PetscCompGrid::createMatrix()
                     }
                   // collect prealloc sizes
                   o_nnz[idx*m_dof] = d_nnz[idx*m_dof] = sten2.size();
-                  if (o_nnz[idx*m_dof]>max_size) { max_size = o_nnz[idx*m_dof]; imax = idx;}
+                  if (o_nnz[idx*m_dof]>max_size) { max_size = o_nnz[idx*m_dof];}
                   if (d_nnz[idx*m_dof]>nloc) d_nnz[idx*m_dof] = nloc;
                   d_nnz[idx*m_dof] *= m_dof;
                   o_nnz[idx*m_dof] *= m_dof;
@@ -457,7 +487,9 @@ PetscCompGrid::createMatrix()
               ierr = MPI_Allreduce(&n, &max_size, 1, MPIU_INT, MPI_MAX, wcomm);CHKERRQ(ierr);
 #endif        
             }
-          pout() << "\t PetscCompGrid::createMatrix create matrix for level " << ilev+1 << "/" << nGrids << ". domain " << m_domains[ilev] << ". max. stencil size: " << max_size << endl;
+	  pout() << "\t PetscCompGrid::createMatrix level " << ilev+1 << 
+	    "/" << nGrids << ". domain " << m_domains[ilev] << ". max. stencil size: " << 
+	    max_size << endl;
         }
     } // level
   CH_assert(idx==nloc);
@@ -470,12 +502,13 @@ PetscCompGrid::createMatrix()
     {
       const DisjointBoxLayout& dbl = m_grids[ilev];
       for (DataIterator dit = dbl.dataIterator(); dit.ok(); ++dit)
-        { 
+        {
           BaseFab<PetscInt>& gidfab = (*m_GIDs[ilev])[dit];
           Box region = dbl[dit];
           for (BoxIterator bit(region); bit.ok(); ++bit)
             {
               const IntVect& iv = bit();
+              pout () << "iv = " << iv << endl;
               if ( gidfab(iv,0) >= 0)
                 {
                   ierr = AddStencilToMat(iv,ilev,dit(),stenVect[idx],m_mat);CHKERRQ(ierr);
@@ -501,6 +534,9 @@ PetscCompGrid::createMatrix()
       ierr = MatView(m_mat,viewer);CHKERRQ(ierr);
       ierr = PetscViewerDestroy(&viewer);
     }
+#if defined(PETSC_USE_LOG)
+  PetscLogEventEnd(m_event0,0,0,0,0);
+#endif
   PetscFunctionReturn(0);
 }
 
@@ -615,7 +651,7 @@ PetscCompGrid::applyBCs( IntVect a_iv, int a_ilev, const DataIndex &a_dummy, Box
   // debug
   if (0)
     {
-      Real summ=0.;
+      double summ=0.;
       StencilTensor::const_iterator end = a_sten.end(); 
       for (StencilTensor::const_iterator it = a_sten.begin(); it != end; ++it) {
         for (int i=0; i<m_dof; ++i) 
@@ -626,7 +662,7 @@ PetscCompGrid::applyBCs( IntVect a_iv, int a_ilev, const DataIndex &a_dummy, Box
               }
           }
       }
-      if (abs(summ>1.e-10))
+      if (fabs(summ)>1.e-10)
         {
           for (StencilTensor::const_iterator it = a_sten.begin(); it != end; ++it) {
             pout() << it->first << ": \n";
@@ -773,9 +809,9 @@ PetscCompGrid::AddStencilToMat(IntVect a_iv, int a_ilev,const DataIndex &a_di, S
   PetscScalar vals[4096];
   PetscInt cols[4096],iLevel=a_ilev,vidx[STENCIL_MAX_DOF],gid,ncols=m_dof*a_sten.size();
   BaseFab<PetscInt>& this_gidfabJ = (*m_GIDs[iLevel])[a_di];
-  Real summ=0.,abssum=0.;
+  double summ=0.,abssum=0.;
   PetscFunctionBeginUser;
-  
+
   if (a_sten.size()*m_dof > 4096) MayDay::Error("PetscCompGrid::AddStencilToMat buffer (4096) too small");
   // get cols & vals
   gid = this_gidfabJ(a_iv,0)*m_dof;
@@ -789,24 +825,37 @@ PetscCompGrid::AddStencilToMat(IntVect a_iv, int a_ilev,const DataIndex &a_di, S
       BaseFab<PetscInt>& gidfabJ = (jLevel==iLevel) ? this_gidfabJ : 
         (jLevel==iLevel+1) ? (*m_fineCoverGIDs[iLevel+1])[a_di] : 
         (*m_crsSupportGIDs[iLevel-1])[a_di];
+                  
+      if (!gidfabJ.box().contains(ivJ.iv())){
+      	pout() << "ERROR row  " << IndexML(a_iv,a_ilev) << ", this box:" << 
+      	  m_grids[a_ilev][a_di] << ", fine box (failure): " << gidfabJ.box() << 
+      	  " failed to find "<< ivJ << endl;
+      	jj=0;
+      	for (StencilTensor::const_iterator it2 = a_sten.begin(); it2 != end; ++it2) pout()<<++jj<<") j="<<it2->first<<endl;
+      	MayDay::Error("PetscCompGrid::AddStencilToMat failed to find cell");
+      }
+
       PetscInt gidj = gidfabJ(ivJ.iv(),0)*m_dof;
       if (gidj<0) 
         {
           pout() << "\tFAILED TO FIND iv=" << ivJ << "\t gidj type:" << (GID_type)gidj << "\tiLevel=" << iLevel << "\tiv=" << a_iv << endl;
-          MayDay::Error("PetscCompGrid::AddStencilToMat failed to find cell");
+          MayDay::Error("PetscCompGrid::AddStencilToMat failed to find gid");
         }
       const Real *vv = it->second.getVals();
       for (int nj=0;nj<m_dof;nj++,gidj++,ci++) cols[ci] = gidj;   // columns
+      pout() << "starting ni,nj loop" << endl;
       for (int ni=0;ni<m_dof;ni++) 
         {
           for (int nj=0;nj<m_dof;nj++) 
             {
-              Real tt = vv[ni*m_dof + nj];
+              pout() << "ni, nj = " << ni << ", " << nj << endl;
+              double tt = vv[ni*m_dof + nj];
               vals[ni*ncols + jj*m_dof + nj] = tt;
               summ += tt;
-              abssum += abs(tt);
+              abssum += fabs(tt);
             }
         }
+      pout () << "done with ni,nj loop" << endl;
     }
   
   ierr = MatSetValues(a_mat,m_dof,vidx,ncols,cols,vals,INSERT_VALUES);CHKERRQ(ierr);
@@ -844,14 +893,14 @@ IntVect PetscCompGrid::getCFStencil(const ProblemDomain &a_cdom, const IntVect a
           int offHi = coarseDomainHi[idir] - a_ivc[idir] + 1;
           if (offLo < 0 && offHi >0) // condition means ivc in coarseDomain
             {
-              if ((offLo >= -m_maxStencilDist) &&
-                  (offHi <= m_maxStencilDist))
+              if ((offLo >= -m_CFStencilRad) &&
+                  (offHi <= m_CFStencilRad))
                 { // both of these:  very narrow domain, you are in trouble
                   MayDay::Error("FourthOrderFineInterp::define bad boxes");
                 }
-              if (offLo >= -m_maxStencilDist) // -1 or -2
+              if (offLo >= -m_CFStencilRad) // -1 or -2
                 dist[idir] = offLo;
-              if (offHi <= m_maxStencilDist) // 1 or 2
+              if (offHi <= m_CFStencilRad) // 1 or 2
                 dist[idir] = offHi;
               // Otherwise, dist[idir] = 0.
             }

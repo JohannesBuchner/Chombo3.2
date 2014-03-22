@@ -308,6 +308,7 @@ int PetscSolver<T>::setup_solver( const T& a_phi )
             {
               ierr = KSPMonitorSet(m_ksp,ksp_monitor_pout,PETSC_NULL,PETSC_NULL); CHKERRQ(ierr);
             }
+	  // last arg is removed in newer PETSc -- protect with #defs
           ierr = KSPSetOperators(m_ksp,m_mat,m_mat,SAME_NONZERO_PATTERN);CHKERRQ(ierr);
           ierr = KSPSetInitialGuessNonzero(m_ksp, m_nz_init_guess ? PETSC_TRUE : PETSC_FALSE );CHKERRQ(ierr);
           ksp = m_ksp;
@@ -367,6 +368,7 @@ int PetscSolver<T>::setup_solver( const T& a_phi )
         {
           ierr = SNESGetKSP( m_snes, &ksp ); CHKERRQ(ierr);
         }
+      // last arg is removed in newer PETSc -- protect with #defs
       ierr = KSPSetOperators(ksp,m_mat,m_mat,SAME_NONZERO_PATTERN); CHKERRQ(ierr);
       CH_STOP(t2);
     }
@@ -582,6 +584,7 @@ int PetscSolver<T>::solve_mfree_private( T& a_phi,
     {
       ierr = KSPMonitorSet(ksp,ksp_monitor_pout,PETSC_NULL,PETSC_NULL); CHKERRQ(ierr);
     }
+  // last arg is removed in newer PETSc -- protect with #defs
   ierr = KSPSetOperators(ksp,L,m_mat,SAME_NONZERO_PATTERN); CHKERRQ(ierr);
   ierr = KSPSetInitialGuessNonzero(ksp, m_nz_init_guess ? PETSC_TRUE : PETSC_FALSE ); CHKERRQ(ierr);
 
