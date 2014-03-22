@@ -6,6 +6,10 @@ the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
 - PETSc solver support has been added for elliptic and parabolic solvers.
   It can be used by...
 
+- Chombo has updated to use the HDF5 1.8 API, although support for the 1.6 API 
+  is still in place for this release. This means (among other things) that 
+  the -DH5_USE_16_API compiler flag is no longer required.
+
 - OpenMP is now used in some of the library code.  It can be used by...
 
 - Embedded boundary generation has been optimized for run time, memory usage,
