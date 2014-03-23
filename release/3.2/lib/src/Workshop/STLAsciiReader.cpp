@@ -186,7 +186,7 @@ void STLAsciiReader::ReadData(istream&   a_file,
         // if all dimensions match within tol, then it's the same point
         condition = true;
         for (int j = 0; j < SpaceDim; j++)
-          condition = condition && fabs(verts[ivertl][j]-m_stlmesh->vertices.vertex[ivertg][j])<m_stlmesh->tol;
+          condition = condition && Abs(verts[ivertl][j]-m_stlmesh->vertices.vertex[ivertg][j])<m_stlmesh->tol;
         if (condition)
           m_stlmesh->triangles.corners[itri][ivertl] = ivertg;
       }

@@ -206,7 +206,7 @@ void STLBinaryReader::ReadData(istream&   a_file,
         // if all dimensions match within tol, then it's the same point
         condition = true;
         for (int j = 0; j < SpaceDim; j++)
-          condition = condition && fabs(verts[ivertl][j]-m_stlmesh->vertices.vertex[ivertg][j])<m_stlmesh->tol;
+          condition = condition && Abs(verts[ivertl][j]-m_stlmesh->vertices.vertex[ivertg][j])<m_stlmesh->tol;
         if (condition)
           m_stlmesh->triangles.corners[itri][ivertl] = ivertg;
       }
@@ -231,7 +231,7 @@ void STLBinaryReader::ReadData(istream&   a_file,
         // set the triangle's corner to the found node if it is the same as this one
         bool condition = true;
         for (int j = 0; j < SpaceDim; j++)
-          condition = condition && fabs(verts[ivertl][j]-m_stlmesh->vertices.vertex[*ivertg_ptr][j])<m_stlmesh->tol;
+          condition = condition && Abs(verts[ivertl][j]-m_stlmesh->vertices.vertex[*ivertg_ptr][j])<m_stlmesh->tol;
         if (condition)
           m_stlmesh->triangles.corners[itri][ivertl] = *ivertg_ptr;
       }

@@ -107,6 +107,8 @@ OF SUCH DAMAGE.
 #include "KDStruct.H"
 #include "KDTree.H"
 
+#include "Misc.H"
+
 #include "CH_Timer.H"
 
 #ifdef USE_LIST_NODE_ALLOCATOR
@@ -851,7 +853,7 @@ int KDNearestNeighbor(KDTree const *tree, Real const *queryPoint,
       bestDistSquared = distanceSquared(tree->dim, queryPoint, resultPoint);
 
       /* Check bestDistSquared matches input */
-      if (fabs(bestDistSquared - (*pbestDistSquared)) > 1e-15)
+      if (Abs(bestDistSquared - (*pbestDistSquared)) > 1e-15)
         bestDistSquared = DBL_MAX;
     }
     (*pbestDistSquared) = bestDistSquared;
@@ -1032,7 +1034,7 @@ static int FindNearest(KDNode *node, Real const *query,
 
   /*search the "near" child of this TreeNode */
   ret = FindNearest(dx <= 0.0 ? node->left : node->right, query, range, list, ordered, dim, ierr);
-  if (ret >= 0 && fabs(dx) < range) {
+  if (ret >= 0 && Abs(dx) < range) {
     /*If we cannot rule out the "far" child, search it recursively as well.
       We can only rule it out if its dividing hyperplane does not intersect
       the circle of radius "range" centered at "query" */

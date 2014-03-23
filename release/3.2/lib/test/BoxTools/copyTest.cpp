@@ -176,12 +176,12 @@ copyTest()
   else if ( CH_SPACEDIM == 5 ) normAnswer = 9.54;
   else if ( CH_SPACEDIM == 6 ) normAnswer = 9.54;
   else CH_assert( (CH_SPACEDIM>0) && (CH_SPACEDIM<7) );
-  if ( fabs( norm( loFabCoar, Interval(0,0), 2 ) - normAnswer ) > eps )
+  if ( Abs( norm( loFabCoar, Interval(0,0), 2 ) - normAnswer ) > eps )
   {
     if (verbose)
       {
         pout() << "norm(BoxLayoutData) is wrong, norm error ("
-             << fabs( norm( loFabCoar, Interval(0,0), 2 ) - normAnswer )
+             << Abs( norm( loFabCoar, Interval(0,0), 2 ) - normAnswer )
              << ") is more than tolerance ("
              << eps
              << ")"

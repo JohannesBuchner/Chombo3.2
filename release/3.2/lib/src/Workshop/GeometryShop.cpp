@@ -2808,8 +2808,8 @@ Real GeometryShop::PrismoidalAreaCalc(RealVect& a_xVec,
   //       | (8*aScale*cScale - bScale^2) | <= | 4*aScale |
   //
   //   Which is the second test below.
-  if ((fabs(bScale) > 2*fabs(aScale)) ||
-      (fabs(8*aScale*cScale - bScale*bScale) <= fabs(4*aScale)))
+  if ((Abs(bScale) > 2*Abs(aScale)) ||
+      (Abs(8*aScale*cScale - bScale*bScale) <= Abs(4*aScale)))
     {
       // Compute the area of the parabola
 

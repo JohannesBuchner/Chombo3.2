@@ -378,7 +378,7 @@ void GMRESSolver<T>::CycleGMRES( T &a_xx,
     tt = m_op->norm( vv_it1, m_normType );
     /* check for the happy breakdown */
     //CH_assert( *GRS(it) != 0.0 );
-    //hapbnd  = fabs( tt / *GRS(it) );
+    //hapbnd  = Abs( tt / *GRS(it) );
     hapbnd = 1.e-99; // hard wired happy tol!!!
     if (tt < hapbnd)
     {
@@ -538,7 +538,7 @@ void GMRESSolver<T>::UpdateGMRESHessenberg( const int it, bool hapend, Real &res
     *GRS(it+1) = - (*ss * *GRS(it));
     *GRS(it)   = *cc * *GRS(it);
     *hh       = *cc * *hh + *ss * *(hh+1);
-    res      = fabs( *GRS(it+1) );
+    res      = Abs( *GRS(it+1) );
   }
   else
   {

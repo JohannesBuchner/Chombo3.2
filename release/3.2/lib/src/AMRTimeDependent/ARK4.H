@@ -172,7 +172,7 @@ void ARK4<X, FI, FE, dX>::resetDt(Real a_dt)
 
   // Only update everything if dt has changed
   Real reltol = 1e-10;
-  if (fabs(m_dt - a_dt) > m_dt*reltol)
+  if (Abs(m_dt - a_dt) > m_dt*reltol)
   {
     m_dt = a_dt;
     m_fI.resetDt(m_dt);

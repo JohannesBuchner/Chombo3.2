@@ -67,7 +67,7 @@ rt(__FILE__, __LINE__, #X, _ier); return ( Y);} } while (0)
 extern const char *PXE_ErrorCodeName[];
 
 #define AssertDblWithin( truth, actual, delta) \
-  if (fabs((truth) - (actual)) > (delta)) PXErrorReturn(PX_CODE_FLOW_ERROR);
+  if (Abs((truth) - (actual)) > (delta)) PXErrorReturn(PX_CODE_FLOW_ERROR);
 
 #define PXAssertDblEquals( truth, actual ) \
  CuAssertDblEquals( private_test_struct, truth, actual, 1.0e-15)

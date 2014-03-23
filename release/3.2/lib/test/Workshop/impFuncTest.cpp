@@ -440,7 +440,7 @@ int checkEBISL(const EBISLayout&        a_ebisl,
   Real error;
   error = volTotal - volExact;
 
-  if (fabs(error/volExact) > volError)
+  if (Abs(error/volExact) > volError)
   {
     eekflag = 5;
   }
@@ -448,13 +448,13 @@ int checkEBISL(const EBISLayout&        a_ebisl,
   pout() << "volTotal  = " << volTotal             << endl;
   pout() << "volExact  = " << volExact             << endl;
   pout() << "error     = " << error                << endl;
-  pout() << "relError  = " << fabs(error/volExact) << endl;
+  pout() << "relError  = " << Abs(error/volExact) << endl;
   pout() << "tolerance = " << volError             << endl;
   pout() << endl;
 
   error = bndryTotal - bndryExact;
 
-  if (fabs(error/bndryExact) > bndryError)
+  if (Abs(error/bndryExact) > bndryError)
   {
     eekflag = 6;
   }
@@ -462,7 +462,7 @@ int checkEBISL(const EBISLayout&        a_ebisl,
   pout() << "bndryTotal = " << bndryTotal             << endl;
   pout() << "bndryExact = " << bndryExact             << endl;
   pout() << "error      = " << error                  << endl;
-  pout() << "relError   = " << fabs(error/bndryExact) << endl;
+  pout() << "relError   = " << Abs(error/bndryExact) << endl;
   pout() << "tolerance  = " << bndryError             << endl;
   pout() << endl;
 

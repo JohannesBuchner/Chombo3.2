@@ -102,7 +102,7 @@ CellEdge::CellEdge(const IntVect& a_node0,
 CellEdge::CellEdge(const IntVect& a_node0,
                    const int      a_dir)
 {
-  if (fabs(a_dir) > (SpaceDim-1))
+  if (Abs(a_dir) > (SpaceDim-1))
   {
     MayDay::Abort("CellEdge: Contructor: invalid direction");
   }

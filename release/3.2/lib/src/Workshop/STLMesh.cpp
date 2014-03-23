@@ -50,7 +50,7 @@ void STLMesh::Transform(const Real     scale,
   if (SpaceDim>3)
     MayDay::Abort("STL Mesh: cannot do transformations in more than 3D");
 
-  if (SpaceDim==3 && fabs(axis.vectorLength()-1.0) < tol)
+  if (SpaceDim==3 && Abs(axis.vectorLength()-1.0) < tol)
     axis /= axis.vectorLength(); // normalize
 
   // build rotation matrix
