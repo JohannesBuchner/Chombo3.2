@@ -30,7 +30,7 @@ Real generalDimpleValue(const RealVect & a_point,
   Real r2     = 0.1;
 
   Real part1 = Max(
-                   fabs(x - const1) - r2,
+                   Abs(x - const1) - r2,
                    D_TERM((Real)0.0, + y*y, + z*z) - r1*r1
                   );
 

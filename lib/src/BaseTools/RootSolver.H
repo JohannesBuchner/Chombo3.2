@@ -171,7 +171,7 @@ T Brent(int&           numIter,
           e = d;
         }
 
-      if (std::fabs(fc) < std::fabs(fb))
+      if (Abs(fc) < Abs(fb))
         {
           aPt = bPt;
           bPt = c;
@@ -182,15 +182,15 @@ T Brent(int&           numIter,
         }
 
       //  Convergence check
-      const T tol1  = 2.0 * eps * std::fabs(bPt) + 0.5 * tol;
+      const T tol1  = 2.0 * eps * Abs(bPt) + 0.5 * tol;
       const T xm    = 0.5 * (c - bPt);
 
-      if (std::fabs(xm) <= tol1 || fb == 0.0)
+      if (Abs(xm) <= tol1 || fb == 0.0)
         {
           break;
         }
 
-      if (std::fabs(e) >= tol1 && std::fabs(fa) > std::fabs(fb))
+      if (Abs(e) >= tol1 && Abs(fa) > Abs(fb))
         {
           //  Attempt inverse quadratic interpolation
           s = fb / fa;
@@ -210,10 +210,10 @@ T Brent(int&           numIter,
           //  Check whether in bounds
           if (p > 0) q = -q;
 
-          p = std::fabs(p);
+          p = Abs(p);
 
-          if (2.0 * p < std::min(((float)3.0)*xm*q-std::fabs(tol1*q),
-                                 std::fabs(e*q)))
+          if (2.0 * p < std::min(((float)3.0)*xm*q-Abs(tol1*q),
+                                 Abs(e*q)))
             {
               //  Accept interpolation
               e = d;
@@ -238,7 +238,7 @@ T Brent(int&           numIter,
       fa  = fb;
 
       //  Evaluate new trial root
-      if (std::fabs(d) > tol1)
+      if (Abs(d) > tol1)
         {
           bPt = bPt + d;
         }

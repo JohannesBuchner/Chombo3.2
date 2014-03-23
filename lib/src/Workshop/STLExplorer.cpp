@@ -317,7 +317,7 @@ void STLExplorer::FindCellsOnEdges()
       // (should we include origin here? yes!)
       for (int idir=0; idir<SpaceDim; idir++)
       {
-        if (fabs(d[idir]) < m_msh->tol)
+        if (Abs(d[idir]) < m_msh->tol)
           alpha[idir] = INFINITY;
         else
           alpha[idir] = (m_sb->m_origin[idir] + m_sb->m_dx[idir] * (Real) (curcell[idir]+dcells[idir]) - v0[idir]) / d[idir];
@@ -326,7 +326,7 @@ void STLExplorer::FindCellsOnEdges()
           alpha[idir] = INFINITY;
       }
 
-      int newDir = alpha.minDir(false); // false just means regular minDir (no fabs())
+      int newDir = alpha.minDir(false); // false just means regular minDir (no Abs())
 
       // check if we've gone too far or wrong direction
       if (alpha[newDir] > 1.0)
@@ -710,7 +710,7 @@ void STLExplorer::FindCellEdgesOnBondary()
           // note, we will not catch cell edges that lie in the plane of a triangle but where 
           // the midpoint of the edge is not in the triangle (e.g. the edge cuts into the tip of a 
           // triangle at 10% and 20% along the edge)
-          if (fabs(m_msh->triangles.normal[it->second.triangles[itri]][curedge.m_dir]) < 1.0e-8)
+          if (Abs(m_msh->triangles.normal[it->second.triangles[itri]][curedge.m_dir]) < 1.0e-8)
             nedgeOnTriangle++;
           
           tris.push_back(it->second.triangles[itri]);
@@ -952,7 +952,7 @@ RealVect STLExplorer::FindPlaneLineIntersection(const CellEdge& celledge,
   intersectPt[ celledge.m_dir ] = corner0[ celledge.m_dir ] - ndotdeltax/normal[ celledge.m_dir ];
 
   // bad conditioning if normal[dir]~0 (edge lies in plane of triangle)
-  if ( fabs(normal[celledge.m_dir]) < 1.0e-8)
+  if ( Abs(normal[celledge.m_dir]) < 1.0e-8)
   {
     //pout() << "STLExplorer::FindPlaneLineIntersection: Warning, poorly conditioned for triangle " << triangle << " and edge " << celledge.m_node0 << "-->" << celledge.m_node1 << "\n";
     // just output midpoint of edge
@@ -1120,7 +1120,7 @@ bool STLExplorer::IsPointInTriangle(const RealVect& point,
     Real v = (dot00 * dot12 - dot01 * dot02) / (dot00 * dot11 - dot01 * dot01);
 
     // poor conditioning if denominator~0, i.e. v0~v1 so skinny isocelese triangle
-    //if ( fabs(dot00 * dot11 - dot01 * dot01) < 1.0e-5 )
+    //if ( Abs(dot00 * dot11 - dot01 * dot01) < 1.0e-5 )
     //{
     //  pout() << "STLExplorer::IsPointInTriangle: Warning, poorly conditioned for triangle " << triangle << "\n";
     //}
@@ -1154,7 +1154,7 @@ bool STLExplorer::IsPointOnCellEdge(const RealVect& point,
   Real length = node0.vectorLength();
   for (int idir = 0; idir < SpaceDim; idir++)
   {
-    condition = condition && (fabs(point[idir]-cent[idir]) < (length/2 + m_msh->tol));
+    condition = condition && (Abs(point[idir]-cent[idir]) < (length/2 + m_msh->tol));
   }
   return condition;
   */
@@ -1173,8 +1173,8 @@ bool STLExplorer::IsPointOnCellEdge(const RealVect& point,
     else
     {
       // within a small radius around node0/node1 (should be the same in this direction)
-      condition = condition && ( fabs(point[idir]-node0[idir]) < m_msh->tol );
-      if (fabs(node0[idir]-node1[idir])>m_msh->tol)
+      condition = condition && ( Abs(point[idir]-node0[idir]) < m_msh->tol );
+      if (Abs(node0[idir]-node1[idir])>m_msh->tol)
         pout() << "STLExplorer::IsPointOnCellEdge: Bad input, CellEdge has non-adjacent nodes" << endl;
     }
   }

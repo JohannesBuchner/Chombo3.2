@@ -342,11 +342,11 @@ int fabTest()
 
   ///norm tests
   int normStatus = 0;
-  if (fabs(ourfabs[0].norm(0,0,1) - 1.0) > eps) normStatus += 1;
+  if (Abs(ourfabs[0].norm(0,0,1) - 1.0) > eps) normStatus += 1;
 
-  if (fabs(ourfabs[1].norm(0,0,1) - 2.0) > eps) normStatus += 10;
-  if (fabs(ourfabs[2].norm(0,0,1) - 3.0) > eps) normStatus += 100;
-  if (fabs(ourfabs[3].norm(0,0,1) - 4.0) > eps) normStatus += 1000;
+  if (Abs(ourfabs[1].norm(0,0,1) - 2.0) > eps) normStatus += 10;
+  if (Abs(ourfabs[2].norm(0,0,1) - 3.0) > eps) normStatus += 100;
+  if (Abs(ourfabs[3].norm(0,0,1) - 4.0) > eps) normStatus += 1000;
   if (normStatus != 0)
     {
       pout() << indent << pgmname
@@ -365,10 +365,10 @@ int fabTest()
   Real rnorm = B.numPts();
 
   normStatus = 0;
-  if (fabs(ourfabs[0].norm(1,0,3)/rnorm - 3*1.0) > eps) normStatus += 1;
-  if (fabs(ourfabs[1].norm(1,0,3)/rnorm - 3*2.0) > eps) normStatus += 10;
-  if (fabs(ourfabs[2].norm(1,1,2)/rnorm - 2*3.0) > eps) normStatus += 100;
-  if (fabs(ourfabs[3].norm(1,2,1)/rnorm - 1*4.0) > eps) normStatus += 1000;
+  if (Abs(ourfabs[0].norm(1,0,3)/rnorm - 3*1.0) > eps) normStatus += 1;
+  if (Abs(ourfabs[1].norm(1,0,3)/rnorm - 3*2.0) > eps) normStatus += 10;
+  if (Abs(ourfabs[2].norm(1,1,2)/rnorm - 2*3.0) > eps) normStatus += 100;
+  if (Abs(ourfabs[3].norm(1,2,1)/rnorm - 1*4.0) > eps) normStatus += 1000;
   if (normStatus != 0)
     {
       pout() << indent << pgmname
@@ -387,7 +387,7 @@ int fabTest()
   // norm on restricted box.
   Box restrictedBox( B );
   restrictedBox.grow( -IntVect::Unit );
-  if (fabs(ourfabs[0].norm(restrictedBox,1,1,2) - 2*restrictedBox.numPts()) > eps)
+  if (Abs(ourfabs[0].norm(restrictedBox,1,1,2) - 2*restrictedBox.numPts()) > eps)
   {
     pout() << indent << pgmname
          << ": fab::norm(1) on restricted box might have failed"
@@ -398,10 +398,10 @@ int fabTest()
 
   rnorm = sqrt(rnorm);
   normStatus = 0;
-  if (fabs(ourfabs[0].norm(2,0,1)/rnorm - 1.0) > eps) normStatus += 1;
-  if (fabs(ourfabs[1].norm(2,0,1)/rnorm - 2.0) > eps) normStatus += 10;
-  if (fabs(ourfabs[2].norm(2,0,1)/rnorm - 3.0) > eps) normStatus += 100;
-  if (fabs(ourfabs[3].norm(2,0,1)/rnorm - 4.0) > eps) normStatus += 1000;
+  if (Abs(ourfabs[0].norm(2,0,1)/rnorm - 1.0) > eps) normStatus += 1;
+  if (Abs(ourfabs[1].norm(2,0,1)/rnorm - 2.0) > eps) normStatus += 10;
+  if (Abs(ourfabs[2].norm(2,0,1)/rnorm - 3.0) > eps) normStatus += 100;
+  if (Abs(ourfabs[3].norm(2,0,1)/rnorm - 4.0) > eps) normStatus += 1000;
   if (normStatus != 0)
     {
       pout() << indent << pgmname
@@ -420,22 +420,22 @@ int fabTest()
 
   // dot product tests
   Real numPts = B.numPts();
-  if ((fabs(ourfabs[0].dotProduct(ourfabs[0])/numPts -  1.0*nComps) > eps) ||
-     (fabs(ourfabs[0].dotProduct(ourfabs[1])/numPts +  2.0*nComps) > eps) ||
-     (fabs(ourfabs[0].dotProduct(ourfabs[2])/numPts -  3.0*nComps) > eps) ||
-     (fabs(ourfabs[0].dotProduct(ourfabs[3])/numPts -  4.0*nComps) > eps) ||
-     (fabs(ourfabs[1].dotProduct(ourfabs[0])/numPts +  2.0*nComps) > eps) ||
-     (fabs(ourfabs[1].dotProduct(ourfabs[1])/numPts -  4.0*nComps) > eps) ||
-     (fabs(ourfabs[1].dotProduct(ourfabs[2])/numPts +  6.0*nComps) > eps) ||
-     (fabs(ourfabs[1].dotProduct(ourfabs[3])/numPts +  8.0*nComps) > eps) ||
-     (fabs(ourfabs[2].dotProduct(ourfabs[0])/numPts -  3.0*nComps) > eps) ||
-     (fabs(ourfabs[2].dotProduct(ourfabs[1])/numPts +  6.0*nComps) > eps) ||
-     (fabs(ourfabs[2].dotProduct(ourfabs[2])/numPts -  9.0*nComps) > eps) ||
-     (fabs(ourfabs[2].dotProduct(ourfabs[3])/numPts - 12.0*nComps) > eps) ||
-     (fabs(ourfabs[3].dotProduct(ourfabs[0])/numPts -  4.0*nComps) > eps) ||
-     (fabs(ourfabs[3].dotProduct(ourfabs[1])/numPts +  8.0*nComps) > eps) ||
-     (fabs(ourfabs[3].dotProduct(ourfabs[2])/numPts - 12.0*nComps) > eps) ||
-     (fabs(ourfabs[3].dotProduct(ourfabs[3])/numPts - 16.0*nComps) > eps))
+  if ((Abs(ourfabs[0].dotProduct(ourfabs[0])/numPts -  1.0*nComps) > eps) ||
+     (Abs(ourfabs[0].dotProduct(ourfabs[1])/numPts +  2.0*nComps) > eps) ||
+     (Abs(ourfabs[0].dotProduct(ourfabs[2])/numPts -  3.0*nComps) > eps) ||
+     (Abs(ourfabs[0].dotProduct(ourfabs[3])/numPts -  4.0*nComps) > eps) ||
+     (Abs(ourfabs[1].dotProduct(ourfabs[0])/numPts +  2.0*nComps) > eps) ||
+     (Abs(ourfabs[1].dotProduct(ourfabs[1])/numPts -  4.0*nComps) > eps) ||
+     (Abs(ourfabs[1].dotProduct(ourfabs[2])/numPts +  6.0*nComps) > eps) ||
+     (Abs(ourfabs[1].dotProduct(ourfabs[3])/numPts +  8.0*nComps) > eps) ||
+     (Abs(ourfabs[2].dotProduct(ourfabs[0])/numPts -  3.0*nComps) > eps) ||
+     (Abs(ourfabs[2].dotProduct(ourfabs[1])/numPts +  6.0*nComps) > eps) ||
+     (Abs(ourfabs[2].dotProduct(ourfabs[2])/numPts -  9.0*nComps) > eps) ||
+     (Abs(ourfabs[2].dotProduct(ourfabs[3])/numPts - 12.0*nComps) > eps) ||
+     (Abs(ourfabs[3].dotProduct(ourfabs[0])/numPts -  4.0*nComps) > eps) ||
+     (Abs(ourfabs[3].dotProduct(ourfabs[1])/numPts +  8.0*nComps) > eps) ||
+     (Abs(ourfabs[3].dotProduct(ourfabs[2])/numPts - 12.0*nComps) > eps) ||
+     (Abs(ourfabs[3].dotProduct(ourfabs[3])/numPts - 16.0*nComps) > eps))
   {
     pout() << "ourfabs[0].dotProduct(ourfabs[0])/numPts = (should=3.0) "
          << ourfabs[0].dotProduct(ourfabs[0])/numPts << '\n';
@@ -473,8 +473,8 @@ int fabTest()
   Box B3 = B & B2;
   numPts = B3.numPts();
 
-  if ( (fabs(ourfabs[4].dotProduct(fabFive )/numPts - 20202.0) > eps) ||
-      (fabs(fabFive.dotProduct(ourfabs[4])/numPts - 20202.0) > eps))
+  if ( (Abs(ourfabs[4].dotProduct(fabFive )/numPts - 20202.0) > eps) ||
+      (Abs(fabFive.dotProduct(ourfabs[4])/numPts - 20202.0) > eps))
   {
     pout() << indent << pgmname
          << ": fab::dotProduct might have failed"
@@ -610,7 +610,7 @@ int fabTest()
     else if ( CH_SPACEDIM == 5 ) correctAnswer = 2.68844325;
     else if ( CH_SPACEDIM == 6 ) correctAnswer = 4.0224202;
     else MayDay::Error("undefined dimension for inverse test");
-    if ( fabs( sumAnswer - correctAnswer ) > 0.00001 )
+    if ( Abs( sumAnswer - correctAnswer ) > 0.00001 )
     {
       if (verbose)
       {

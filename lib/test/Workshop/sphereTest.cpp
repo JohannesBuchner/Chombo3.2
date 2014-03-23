@@ -374,12 +374,12 @@ int checkEBISL(const EBISLayout& a_ebisl,
   pout() << "error = "   << bndryTotal - bndryExact << endl;
   pout() << endl;
 
-  if (fabs(volTotal - volExact) / volExact > tolerance)
+  if (Abs(volTotal - volExact) / volExact > tolerance)
   {
     MayDay::Error("Approx. volume not within tolerance");
   }
 
-  if (fabs(bndryTotal - bndryExact) / bndryExact > tolerance)
+  if (Abs(bndryTotal - bndryExact) / bndryExact > tolerance)
   {
     MayDay::Error("Approx. boundary area not within tolerance");
   }

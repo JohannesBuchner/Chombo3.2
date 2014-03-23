@@ -93,8 +93,8 @@ private:
 // Return true if not within specified tolerance
 bool checkRootDefaultTol(const Real a_x0, const Real a_root)
 {
-  return (std::fabs(a_x0 - a_root) >
-          (((Real)4.0)*RootSolver::RootTr<Real>::eps()*std::fabs(a_root) +
+  return (Abs(a_x0 - a_root) >
+          (((Real)4.0)*RootSolver::RootTr<Real>::eps()*Abs(a_root) +
            RootSolver::RootTr<Real>::tolerance()));
 }
 
@@ -183,8 +183,8 @@ int testRootSolver()
         const Real x0 =
           RootSolver::Brent(numIter, func, xmin, xmax, (Real)prec);
         const Real tol = std::pow(10., -std::abs(prec));
-        if (std::fabs(x0 - root) >
-            (((Real)4.0)*RootSolver::RootTr<Real>::eps()*std::fabs(root) +
+        if (Abs(x0 - root) >
+            (((Real)4.0)*RootSolver::RootTr<Real>::eps()*Abs(root) +
              tol))
           {
             pout() << indent << pgmname

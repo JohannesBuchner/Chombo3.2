@@ -57,7 +57,7 @@ Real TylerChannelIF::value(const RealVect& a_point) const
 
   Real ydist = m_y1*(1.0-frac) + m_y2*frac;
 
-  retval = fabs(y - ymid) - ydist;
+  retval = Abs(y - ymid) - ydist;
 
   return retval;
 }

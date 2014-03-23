@@ -296,7 +296,7 @@ template<typename T, int N> inline IndexTM<T,N>& IndexTM<T,N>::reciprocal()
 template<typename T> static bool abscompare(const T & a_a,
                                             const T & a_b)
 {
-  return ::fabs(a_a) < ::fabs(a_b);
+  return ::Abs(a_a) < ::Abs(a_b);
 }
 template<typename T, int N> inline int IndexTM<T,N>::minDir(bool a_doAbs) const
 {
@@ -424,7 +424,7 @@ template<typename T, int N> inline IndexTM<T,N> reflect(const IndexTM<T,N> & a_a
 template<typename T> static T ourcoarsen(T a_a,
                                          T a_b)
 {
-    return (a_a < 0 ? T(-::fabs(a_a+1))/a_b-1 : a_a/a_b);
+    return (a_a < 0 ? T(-::Abs(a_a+1))/a_b-1 : a_a/a_b);
 }
 
 template<typename T, int N> inline IndexTM<T,N> coarsen(const IndexTM<T,N> & a_p,

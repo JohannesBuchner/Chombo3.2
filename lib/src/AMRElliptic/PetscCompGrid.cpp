@@ -662,7 +662,7 @@ PetscCompGrid::applyBCs( IntVect a_iv, int a_ilev, const DataIndex &a_dummy, Box
               }
           }
       }
-      if (fabs(summ)>1.e-10)
+      if (Abs(summ)>1.e-10)
         {
           for (StencilTensor::const_iterator it = a_sten.begin(); it != end; ++it) {
             pout() << it->first << ": \n";
@@ -852,7 +852,7 @@ PetscCompGrid::AddStencilToMat(IntVect a_iv, int a_ilev,const DataIndex &a_di, S
               double tt = vv[ni*m_dof + nj];
               vals[ni*ncols + jj*m_dof + nj] = tt;
               summ += tt;
-              abssum += fabs(tt);
+              abssum += Abs(tt);
             }
         }
       pout () << "done with ni,nj loop" << endl;
@@ -861,7 +861,7 @@ PetscCompGrid::AddStencilToMat(IntVect a_iv, int a_ilev,const DataIndex &a_di, S
   ierr = MatSetValues(a_mat,m_dof,vidx,ncols,cols,vals,INSERT_VALUES);CHKERRQ(ierr);
 
   // debug
-  if (s_check_row_sum && fabs(summ)/abssum>1.e-5)
+  if (s_check_row_sum && Abs(summ)/abssum>1.e-5)
     {
       pout() << " error gid=" << vidx[0]+1 << " row iv =" << a_iv << endl;
       for (int idx=0;idx<ncols;idx++)

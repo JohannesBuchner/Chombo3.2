@@ -77,7 +77,7 @@ ConstrainedLS::LSResult ConstrainedLS::qrSolution(Real ** a,
             {
               dot+=a[i][jj]*a[i][j];
             }
-          Real constant=dot/fabs(qv1*u1);
+          Real constant=dot/Abs(qv1*u1);
           for (int i = j1; i<nRow ; ++i)
             {
               a[i][jj]-= constant*a[i][j]; // todo pointer
@@ -92,7 +92,7 @@ ConstrainedLS::LSResult ConstrainedLS::qrSolution(Real ** a,
           dot+=rhs[i]*a[i][j];
         }
 
-      Real constant=dot/fabs(qv1*u1);
+      Real constant=dot/Abs(qv1*u1);
       rhs[j]-=constant*u1;
       for (int i=j1; i<nRow; ++i)
         {
