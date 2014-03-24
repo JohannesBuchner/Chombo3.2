@@ -51,7 +51,7 @@ inline void BoxLayoutData<T>::setVector(const BoxLayoutData<T>& da,
     {
       DataIterator it=this->dataIterator();
       int nbox=it.size();
-#pragma omp parallel for
+      //#pragma omp parallel for
       for(int box=0; box<nbox; box++)
 	{
 	  this->m_vector[it[box].datInd()]->copy( this->box(it[box]), destComps,
@@ -207,7 +207,7 @@ template<class T>
 inline void BoxLayoutData<T>::apply(void (*a_func)(const Box& box, int comps, T& t))
 {
   DataIterator it(this->dataIterator()); int nbox=it.size();
-#pragma omp parallel for
+  //#pragma omp parallel for
   for(int i=0; i<nbox; i++)
 
     {
@@ -303,7 +303,7 @@ void BoxLayoutData<T>::makeItSoLocalCopy(const Interval&   a_srcComps,
 
   CH_TIME("local copying");
   CopyIterator it(a_copier, CopyIterator::LOCAL);  int items=it.size();
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (int n=0; n<items; n++)
     {
       const MotionItem& item = it[n];
@@ -633,7 +633,7 @@ void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_
                                                   const LDOperator<T>& a_op) const
 {
   CH_TIME("write Data to buffers");
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (unsigned int i=0; i<m_buff->m_fromMe.size(); ++i)
     {
       const CopierBuffer::bufEntry& entry = m_buff->m_fromMe[i];
@@ -788,7 +788,7 @@ void BoxLayoutData<T>::unpackReceivesToMe(BoxLayoutData<T>& a_dest,
       {
         //hell if I know what to do about failed messaging here
       }
-#pragma omp parallel for
+    //#pragma omp parallel for
     for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
       {
         const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
@@ -820,7 +820,7 @@ void BoxLayoutData<T>::unpackReceivesToMe_append(LayoutData<Vector<RefCountedPtr
       {
         //hell if I know what to do about failed messaging here
       }
-#pragma omp parallel for
+   //#pragma omp parallel for
     for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
       {
         const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
@@ -877,7 +877,7 @@ void BoxLayoutData<T>::generalCopyTo(const BoxLayout& a_destGrids,
 
     // perform local copy
   CopyIterator it(a_copier, CopyIterator::LOCAL); int items=it.size();
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (int i=0; i<items; i++)
     {
       const MotionItem& item = it[i];
