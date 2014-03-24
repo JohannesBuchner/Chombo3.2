@@ -13,7 +13,11 @@ the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
   is still in place for this release. This means (among other things) that 
   the -DH5_USE_16_API compiler flag is no longer required.
 
-- OpenMP is now used in some of the library code.  It can be used by...
+- Hybrid parallelism is now possible in Chombo, the base classes have been 
+  made thread-safe. OpenMP is used in some of the library code including 
+  Godunov and Poisson solvers. Among the released examples AMRGodonov and
+  AMRPoisson/exexCell can use OpenMP. 
+  
 
 - Embedded boundary generation has been optimized for run time, memory usage,
   and parallel load balancing.  
