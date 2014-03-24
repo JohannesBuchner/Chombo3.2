@@ -21,7 +21,6 @@ the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
   made thread-safe. OpenMP is used in some of the library code including 
   Godunov and Poisson solvers. Among the released examples AMRGodonov and
   AMRPoisson/exexCell can use OpenMP. 
-  
 
 - Embedded boundary generation has been optimized for run time, memory usage,
   and parallel load balancing.  
