@@ -3,8 +3,11 @@ Release Notes for Chombo version 3.2             March 2014
 You can contact the Chombo development team at <chombo@hpcrdm.lbl.gov> and
 the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
 
-- PETSc solver support has been added for elliptic and parabolic solvers.
-  It can be used by...
+- We have implemented an interface to the PETSc solver library
+  (http://www.mcs.anl.gov/petsc/) which has been particularly useful
+  for solving elliptic and parabolic problems which cause difficulty
+  for our native Geometric multigrid elliptic solvers. Details and
+  instructions can be found in Chapter 7 in doc/chomboDesign.pdf.  
 
 - Chombo has updated to use the HDF5 1.8 API, although support for the 1.6 API 
   is still in place for this release. This means (among other things) that 
