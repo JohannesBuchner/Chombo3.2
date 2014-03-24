@@ -292,10 +292,10 @@ int TraceTimer::initializer()
   initialized = true;
   if (s_memorySampling)
     samplingOn = true;
-  return 0;
 #ifdef _OPENMP
   }
 #endif
+  return 0;
 }
 
 void normalizeMemory(unsigned int a_m, int& a_memory, char* units)
