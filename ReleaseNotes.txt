@@ -18,6 +18,13 @@ the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
 - Embedded boundary generation has been optimized for run time, memory usage,
   and parallel load balancing.  
 
+- We have added an embedded-boundary (EB) adaptive mesh refinement
+  (AMR) compressible Navier-Stokes code in releasedExamples/EBAMRCNS. 
+
+- Also, as one might expect, this release contains many (well, not
+  *that* many) bugfixes and minor capability upgrades over the 3.1
+  release. 
+
 
 Release Notes for Chombo version 3.1             March 2012
 
@@ -36,7 +43,6 @@ this does contain many bug fixes from over the years.
     EBAMRPoisson
     EBAMRGodunov
     EBAMRINS
-    EBAMRCNS
     MultiDimPhase
 
   with cleaned up source code, input files, and GNUMakefiles.
