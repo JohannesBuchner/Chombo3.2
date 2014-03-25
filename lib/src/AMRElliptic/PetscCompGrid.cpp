@@ -508,7 +508,6 @@ PetscCompGrid::createMatrix()
           for (BoxIterator bit(region); bit.ok(); ++bit)
             {
               const IntVect& iv = bit();
-              pout () << "iv = " << iv << endl;
               if ( gidfab(iv,0) >= 0)
                 {
                   ierr = AddStencilToMat(iv,ilev,dit(),stenVect[idx],m_mat);CHKERRQ(ierr);
@@ -843,19 +842,16 @@ PetscCompGrid::AddStencilToMat(IntVect a_iv, int a_ilev,const DataIndex &a_di, S
         }
       const Real *vv = it->second.getVals();
       for (int nj=0;nj<m_dof;nj++,gidj++,ci++) cols[ci] = gidj;   // columns
-      pout() << "starting ni,nj loop" << endl;
       for (int ni=0;ni<m_dof;ni++) 
         {
           for (int nj=0;nj<m_dof;nj++) 
             {
-              pout() << "ni, nj = " << ni << ", " << nj << endl;
               double tt = vv[ni*m_dof + nj];
               vals[ni*ncols + jj*m_dof + nj] = tt;
               summ += tt;
               abssum += Abs(tt);
             }
         }
-      pout () << "done with ni,nj loop" << endl;
     }
   
   ierr = MatSetValues(a_mat,m_dof,vidx,ncols,cols,vals,INSERT_VALUES);CHKERRQ(ierr);
