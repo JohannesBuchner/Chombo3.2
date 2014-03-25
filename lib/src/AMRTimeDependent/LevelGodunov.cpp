@@ -592,6 +592,7 @@ Real LevelGodunov::computeUpdate(LevelData<FArrayBox>&       a_dU,
       // Get maximum wave speed for this grid
       // AD: Any reason why this does not use the thread private variable
       // like before
+      // BVS: Once every compiler is OpenMP 3.1 compliant we can change this to a reduction variable with the new max op.
 #pragma omp critical
 	{
 	  // Clamp away from zero
