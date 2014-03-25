@@ -392,8 +392,12 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
 	  for (DataIterator dit = cdbl.dataIterator(); dit.ok(); ++dit)
 	    {
 	      BaseFab<PetscInt>& gidfab = (*pl)[dit];
-	      pout() << "PetscCompGrid::define: refined box=" << gidfab.box() << 
-		", coarse box = " << m_grids[ilev-1][dit] << endl;
+              if (m_verbose>5)
+                {
+                  pout() << "PetscCompGrid::define: refined box="
+                         << gidfab.box() 
+                         << ", coarse box = " << m_grids[ilev-1][dit] << endl;
+                }
 	    }
 	}
     }
@@ -487,9 +491,13 @@ PetscCompGrid::createMatrix()
               ierr = MPI_Allreduce(&n, &max_size, 1, MPIU_INT, MPI_MAX, wcomm);CHKERRQ(ierr);
 #endif        
             }
-	  pout() << "\t PetscCompGrid::createMatrix level " << ilev+1 << 
-	    "/" << nGrids << ". domain " << m_domains[ilev] << ". max. stencil size: " << 
-	    max_size << endl;
+          if (m_verbose>3)
+            {
+              pout() << "\t PetscCompGrid::createMatrix level " << ilev+1 << 
+                "/" << nGrids << ". domain " << m_domains[ilev] 
+                     << ". max. stencil size: " 
+                     << max_size << endl;
+            }
         }
     } // level
   CH_assert(idx==nloc);
