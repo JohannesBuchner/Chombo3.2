@@ -4,23 +4,26 @@ You can contact the Chombo development team at <chombo@hpcrdm.lbl.gov> and
 the Chombo users e-mail group at <chombousers@hpcrd.lbl.gov>
 
 - We have implemented interfaces to the PETSc solver library
-  (http://www.mcs.anl.gov/petsc/) which generate matrices for
-  discretizations on AMR hierachies of grids for use in PETSc
-  solvers. This is useful for problems, such as those with
-  geometrically complex material coefficients, in which our native
-  geometric multigrid solvers are not efficient. An accompanying
-  single-level interface is also useful as a bottom-solver for use
-  with our geometric multigrid solvers. Details can be found in
-  Chapter 7 in doc/chomboDesign.pdf. 
+  (http://www.mcs.anl.gov/petsc/) which generate matrices for discretizations
+  on AMR hierachies of grids for use in PETSc solvers. This is useful for
+  problems, such as those with geometrically complex material coefficients,
+  in which our native geometric multigrid solvers are not efficient. An
+  accompanying single-level interface is also useful as a bottom-solver for
+  use with our geometric multigrid solvers. Details can be found in Chapter
+  7 in doc/chomboDesign.pdf. 
 
-- Chombo has updated to use the HDF5 1.8 API, although support for the 1.6 API 
-  is still in place for this release. This means (among other things) that 
-  the -DH5_USE_16_API compiler flag is no longer required.
+- Chombo has updated to use the HDF5 1.8 API, although support for the 1.6
+  API is still in place for this release. This means (among other things)
+  that the -DH5_USE_16_API compiler flag is no longer required.
 
 - Hybrid parallelism is now possible in Chombo, the base classes have been 
   made thread-safe. OpenMP is used in some of the library code including 
   Godunov and Poisson solvers. Among the released examples AMRGodonov and
   AMRPoisson/exexCell can use OpenMP. 
+
+  Current status: There are several problems with the OpenMP implementation
+  that are being corrected.  In a few weeks, corrections will be merged
+  into the Chombo 3.2 release to make the OpenMP code fully functional.
 
 - Embedded boundary generation has been optimized for run time, memory usage,
   and parallel load balancing.  
