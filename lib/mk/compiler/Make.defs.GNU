@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 10 Mar 2006 14:33:07 by dbs"; -*-
-
 ### This is a compiler-specific definitions file for GNU compilers.
 
 ## It sets values for the defaults variables ($def*), which will be used
@@ -160,11 +158,6 @@ endif
     CH_CPP = /usr/bin/cpp -E -P
   endif
 
-  # the preprocessor in v3 or later strips "//" by default,
-  # but this is a valid Fortran operator, so force it to leave comments
-  ifeq (0,$(shell test $(_gppmajorver) -ge 3 ; echo $$?))
-    CH_CPP += -C
-  endif
 
 endif
 
