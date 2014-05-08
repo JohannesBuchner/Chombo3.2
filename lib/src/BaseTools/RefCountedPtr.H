@@ -84,11 +84,9 @@ public:
   //
   /// pointer dereference.
   inline T& operator *();
-#ifdef CH_TEMPEST
-  inline       T& operator *() const;  // As in Boost::shared_ptr.
-#else
+
   inline const T& operator *() const;
-#endif
+
   //
   /// auto conversion to regular const pointer where required.
   inline operator const T* () const;
@@ -183,20 +181,29 @@ RefCountedPtr<T>::RefCountedPtr(const RefCountedPtr<T>& other)
     refCount_(other.refCount_)
 {
   if (refCount_ != 0)
-    ++(*refCount_);
+    {
+#pragma omp atomic
+      ++(*refCount_);
+    }
 }
 
 template <class T> inline
 RefCountedPtr<T>::~RefCountedPtr()
 {
-  if (refCount_ != 0 && --(*refCount_) == 0)
-    {
-      decrement();
-      delete ptr_;
-      ptr_ = 0;
-      delete [] refCount_;
-      refCount_ = 0;
-
+  if (refCount_ != 0)
+    { 
+      int count;
+      //
+      //#pragma omp atomic capture
+      count = --(*refCount_); 
+      if(count==0)
+	{
+	  decrement();
+	  delete ptr_;
+	  ptr_ = 0;
+	  delete [] refCount_;
+	  refCount_ = 0;	  
+	}
     }
 }
 
@@ -205,15 +212,22 @@ const RefCountedPtr<T>& RefCountedPtr<T>::operator =(const RefCountedPtr<T>& rhs
 {
   if (ptr_ != rhs.ptr_)
     {
-      if (refCount_ != 0 && --(*refCount_) == 0)
-        {
-          decrement();
-          delete ptr_;
-          delete [] refCount_;
-        }
+      if (refCount_ != 0)
+	{
+	  int count;
+          //#pragma omp atomic capture
+	  count = --(*refCount_); 
+	  if(count == 0)
+	    {
+	      decrement();
+	      delete ptr_;
+	      delete [] refCount_;
+	    }
+	}
       ptr_ = rhs.ptr_;
       refCount_ = rhs.refCount_;
       if (refCount_ != 0)
+#pragma omp atomic
         ++(*refCount_);
     }
   return *this;
@@ -225,7 +239,7 @@ bool RefCountedPtr<T>::isNull() const
   return (ptr_ == 0);
 }
 
-template <class T> inline
+template <class T> inline 
 T* RefCountedPtr<T>::operator ->()
 {
   if (ptr_ == 0)
@@ -249,10 +263,7 @@ T& RefCountedPtr<T>::operator *()
   return *ptr_;
 }
 
-template <class T> inline
-#ifndef CH_TEMPEST
-const
-#endif
+template <class T> inline const
 T& RefCountedPtr<T>::operator *() const
 {
   if (ptr_ == 0)

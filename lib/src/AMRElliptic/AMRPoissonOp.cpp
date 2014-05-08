@@ -856,10 +856,10 @@ void AMRPoissonOp::AMRRestrictS(LevelData<FArrayBox>&       a_resCoarse, // outp
 
   DisjointBoxLayout dblCoar = a_resCoarse.disjointBoxLayout();
 
+  DataIterator dit = a_residual.dataIterator();
+  int nbox=dit.size();
 #pragma omp parallel 
   {
-    DataIterator dit = a_residual.dataIterator();
-    int nbox=dit.size();
 #pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {
@@ -965,10 +965,10 @@ void AMRPoissonOp::AMRProlongS_2(LevelData<FArrayBox>&       a_correction,
   
   a_coarseCorrection.copyTo( a_temp.interval(), a_temp, a_temp.interval(), a_copier );
   //a_temp.exchange( a_temp.interval(), a_cornerCopier ); -- needed for AMR
+  DataIterator dit = a_correction.dataIterator();
+  int nbox = dit.size();
 #pragma omp parallel
   {
-    DataIterator dit = a_correction.dataIterator();
-    int nbox = dit.size();
 #pragma omp for 
     for(int ibox = 0; ibox < nbox; ibox++)
       {

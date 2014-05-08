@@ -55,7 +55,7 @@ inline void BoxLayoutData<T>::setVector(const BoxLayoutData<T>& da,
       for(int box=0; box<nbox; box++)
 	{
 	  this->m_vector[it[box].datInd()]->copy( this->box(it[box]), destComps,
-					       this->box(it[box]), da[it[box]], srcComps);
+                                                  this->box(it[box]), da[it[box]], srcComps);
 	}
     }
 }
@@ -137,30 +137,30 @@ inline void BoxLayoutData<T>::define(const BoxLayoutData<T>& da,
                                      const DataFactory<T>& factory)
 {
   if (this != &da)
-  {
-    m_isdefined = da.m_isdefined;
-    this->m_boxLayout = da.boxLayout();
-    m_comps    = da.nComp();
-    Interval srcAnddest(0, m_comps-1);
-    allocateGhostVector(factory);
-    setVector(da, srcAnddest, srcAnddest);
-  }
+    {
+      m_isdefined = da.m_isdefined;
+      this->m_boxLayout = da.boxLayout();
+      m_comps    = da.nComp();
+      Interval srcAnddest(0, m_comps-1);
+      allocateGhostVector(factory);
+      setVector(da, srcAnddest, srcAnddest);
+    }
 
 }
 template<class T>
 inline void BoxLayoutData<T>::clear()
 {
   if (this->m_callDelete == true)
-  {
-    for (unsigned int i=0; i<this->m_vector.size(); ++i)
-      {
-        delete this->m_vector[i];
-        this->m_vector[i] = NULL;
-      }
+    {
+      for (unsigned int i=0; i<this->m_vector.size(); ++i)
+        {
+          delete this->m_vector[i];
+          this->m_vector[i] = NULL;
+        }
 #if CH_USE_MEMORY_TRACKING
-    this->m_vector.bytes -= sizeof(T)*this->m_vector.size();
+      this->m_vector.bytes -= sizeof(T)*this->m_vector.size();
 #endif
-  }
+    }
   m_isdefined = false;
 }
 
@@ -168,16 +168,16 @@ template<class T>
 inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory, const IntVect& ghost)
 {
   if (this->m_callDelete == true)
-  {
-  for (unsigned int i=0; i<this->m_vector.size(); ++i)
     {
-      delete this->m_vector[i];
-      this->m_vector[i] = NULL;
-    }
+      for (unsigned int i=0; i<this->m_vector.size(); ++i)
+        {
+          delete this->m_vector[i];
+          this->m_vector[i] = NULL;
+        }
 #if CH_USE_MEMORY_TRACKING
-    this->m_vector.bytes -= sizeof(T)*this->m_vector.size();
+      this->m_vector.bytes -= sizeof(T)*this->m_vector.size();
 #endif
-  }
+    }
 
   this->m_callDelete = factory.callDelete();
 
@@ -189,7 +189,7 @@ inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory,
     }
 #endif
   this->m_vector.resize(it.size(), NULL);
-  //#pragma omp parallel for
+#pragma omp parallel for
   for(int i=0; i<nbox; i++)
     {
       unsigned int index = it[i].datInd();
@@ -207,7 +207,8 @@ template<class T>
 inline void BoxLayoutData<T>::apply(void (*a_func)(const Box& box, int comps, T& t))
 {
   DataIterator it(this->dataIterator()); int nbox=it.size();
-  //#pragma omp parallel for
+  //there might be race conditions on 
+#pragma omp parallel for
   for(int i=0; i<nbox; i++)
 
     {
@@ -283,27 +284,81 @@ void BoxLayoutData<T>::makeItSoBegin(const Interval&   a_srcComps,
       }
   
 
-  this->numSends = m_buff->m_fromMe.size();
-  if (this->numSends > 0)
-    {
-      postSendsFromMe();  // all non-blocking
-    }
+    this->numSends = m_buff->m_fromMe.size();
+    if (this->numSends > 0)
+      {
+        postSendsFromMe();  // all non-blocking
+      }
   }    
 #endif 
 }
-
+////
+template<class T>
+bool 
+BoxLayoutData<T>::doingJustCopy(const LDOperator<T>& a_op) const
+{
+  const CopyLDOperator<T>* checkptr = dynamic_cast<const CopyLDOperator<T> *>(&a_op);
+  bool justCopy = (checkptr != NULL);
+  return justCopy;
+}
+////
 template<class T>
 void BoxLayoutData<T>::makeItSoLocalCopy(const Interval&   a_srcComps,
-                                          const BoxLayoutData<T>& a_src,
-                                          BoxLayoutData<T>& a_dest,
-                                          const Interval&   a_destComps,
-                                          const Copier&     a_copier,
-                                          const LDOperator<T>& a_op) const
+                                         const BoxLayoutData<T>& a_src,
+                                         BoxLayoutData<T>& a_dest,
+                                         const Interval&   a_destComps,
+                                         const Copier&     a_copier,
+                                         const LDOperator<T>& a_op) const
 {
-
   CH_TIME("local copying");
+
+  if(doingJustCopy(a_op))
+    {
+      makeItSoLocalCopyThread(a_srcComps, a_src, a_dest, a_destComps, a_copier, a_op);
+    }
+  else
+    {
+      //only thread safe operation i am sure of is copy
+      makeItSoLocalCopyNoOMP(a_srcComps, a_src, a_dest, a_destComps, a_copier, a_op);
+    }
+}
+
+template<class T>
+void BoxLayoutData<T>::makeItSoLocalCopyThread(const Interval&   a_srcComps,
+                                               const BoxLayoutData<T>& a_src,
+                                               BoxLayoutData<T>& a_dest,
+                                               const Interval&   a_destComps,
+                                               const Copier&     a_copier,
+                                               const LDOperator<T>& a_op) const
+{
   CopyIterator it(a_copier, CopyIterator::LOCAL);  int items=it.size();
   //#pragma omp parallel for
+  for (int n=0; n<items; n++)
+    {
+      const MotionItem& item = it[n];
+      //const T& src = a_src[item.fromIndex];
+      //T& dest = a_dest[item.toIndex];
+      //int srcSize = src .size(item.fromRegion, a_srcComps);
+      //int destSize= dest.size(item.toRegion, a_destComps);
+      //if (srcSize != destSize) MayDay::Error("(srcSize != destSize) in makeItSo");
+      a_op.op(a_dest[item.toIndex], item.fromRegion,
+              a_destComps,
+              item.toRegion,
+              a_src[item.fromIndex],
+              a_srcComps);
+
+    }
+}
+template<class T>
+void BoxLayoutData<T>::makeItSoLocalCopyNoOMP(const Interval&   a_srcComps,
+                                              const BoxLayoutData<T>& a_src,
+                                              BoxLayoutData<T>& a_dest,
+                                              const Interval&   a_destComps,
+                                              const Copier&     a_copier,
+                                              const LDOperator<T>& a_op) const
+{
+
+  CopyIterator it(a_copier, CopyIterator::LOCAL);  int items=it.size();
   for (int n=0; n<items; n++)
     {
       const MotionItem& item = it[n];
@@ -342,19 +397,19 @@ void BoxLayoutData<T>::completePendingSends() const
 
 template<class T>
 void BoxLayoutData<T>::allocateBuffers(const BoxLayoutData<T>& a_src,
-                                   const Interval& a_srcComps,
-                                   const BoxLayoutData<T>& a_dest,
-                                   const Interval& a_destComps,
-                                   const Copier&   a_copier,
-                                   const LDOperator<T>& a_op
-                                   ) const
+                                       const Interval& a_srcComps,
+                                       const BoxLayoutData<T>& a_dest,
+                                       const Interval& a_destComps,
+                                       const Copier&   a_copier,
+                                       const LDOperator<T>& a_op
+                                       ) const
 {
 }
 
 template<class T>
 void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_src,
-                                                  const Interval&     a_srcComps,
-                                                  const LDOperator<T>& a_op) const
+                                                      const Interval&     a_srcComps,
+                                                      const LDOperator<T>& a_op) const
 {
 }
 
@@ -370,8 +425,8 @@ void BoxLayoutData<T>::postReceivesToMe() const
 
 template<class T>
 void BoxLayoutData<T>::unpackReceivesToMe(BoxLayoutData<T>& a_dest,
-                                      const Interval&   a_destComps,
-                                      const LDOperator<T>& a_op) const
+                                          const Interval&   a_destComps,
+                                          const LDOperator<T>& a_op) const
 {
 }
 
@@ -393,24 +448,24 @@ void BoxLayoutData<T>::completePendingSends() const
 {
   CH_TIME("completePendingSends");
   if (this->numSends > 0)
-  {
-    m_sendStatus.resize(this->numSends);
-    int result = MPI_Waitall(this->numSends, &(m_sendRequests[0]), &(m_sendStatus[0]));
-    if (result != MPI_SUCCESS)
-      {
-        //hell if I know what to do about failed messaging here
-      }
-  }
+    {
+      m_sendStatus.resize(this->numSends);
+      int result = MPI_Waitall(this->numSends, &(m_sendRequests[0]), &(m_sendStatus[0]));
+      if (result != MPI_SUCCESS)
+        {
+          //hell if I know what to do about failed messaging here
+        }
+    }
   this->numSends = 0;
 }
 
 template<class T>
 void BoxLayoutData<T>::allocateBuffers(const BoxLayoutData<T>& a_src,
-                                   const Interval& a_srcComps,
-                                   const BoxLayoutData<T>& a_dest,
-                                   const Interval& a_destComps,
-                                   const Copier&   a_copier,
-                                   const LDOperator<T>& a_op) const
+                                       const Interval& a_srcComps,
+                                       const BoxLayoutData<T>& a_dest,
+                                       const Interval& a_destComps,
+                                       const Copier&   a_copier,
+                                       const LDOperator<T>& a_op) const
 {
   CH_TIME("MPI_allocateBuffers");
   m_buff = &(((Copier&)a_copier).m_buffers);
@@ -547,11 +602,11 @@ void BoxLayoutData<T>::allocateBuffers(const BoxLayoutData<T>& a_src,
             }
 
           for (int i=0; i<m_buff->m_toMe.size(); ++i)
-          {
-            CH_assert(tdata[i] != ULONG_MAX);
-            m_buff->m_toMe[i].size = tdata[i];
-            recBufferSize+= tdata[i];
-          }
+            {
+              CH_assert(tdata[i] != ULONG_MAX);
+              m_buff->m_toMe[i].size = tdata[i];
+              recBufferSize+= tdata[i];
+            }
         }
 
       if (m_buff->m_fromMe.size() > 0)
@@ -626,14 +681,30 @@ void BoxLayoutData<T>::allocateBuffers(const BoxLayoutData<T>& a_src,
   // together on a per-processor basis.
 
 }
-
+///
 template<class T>
 void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_src,
-                                                  const Interval&     a_srcComps,
-                                                  const LDOperator<T>& a_op) const
+                                                      const Interval&     a_srcComps,
+                                                      const LDOperator<T>& a_op) const
 {
   CH_TIME("write Data to buffers");
-  //#pragma omp parallel for
+
+  if(doingJustCopy(a_op))
+    {
+      writeSendDataFromMeIntoBuffersThread(a_src, a_srcComps, a_op);
+    }
+  else
+    {
+      writeSendDataFromMeIntoBuffersNoOMP (a_src, a_srcComps, a_op);
+    }
+}
+///
+template<class T>
+void BoxLayoutData<T>::writeSendDataFromMeIntoBuffersThread(const BoxLayoutData<T>& a_src,
+                                                            const Interval&     a_srcComps,
+                                                            const LDOperator<T>& a_op) const
+{
+#pragma omp parallel for
   for (unsigned int i=0; i<m_buff->m_fromMe.size(); ++i)
     {
       const CopierBuffer::bufEntry& entry = m_buff->m_fromMe[i];
@@ -642,6 +713,20 @@ void BoxLayoutData<T>::writeSendDataFromMeIntoBuffers(const BoxLayoutData<T>& a_
     }
 }
 
+///
+template<class T>
+void BoxLayoutData<T>::writeSendDataFromMeIntoBuffersNoOMP(const BoxLayoutData<T>& a_src,
+                                                            const Interval&     a_srcComps,
+                                                            const LDOperator<T>& a_op) const
+{
+  for (unsigned int i=0; i<m_buff->m_fromMe.size(); ++i)
+    {
+      const CopierBuffer::bufEntry& entry = m_buff->m_fromMe[i];
+      a_op.linearOut(a_src[entry.item->fromIndex], entry.bufPtr,
+                     entry.item->fromRegion, a_srcComps);
+    }
+}
+///
 template<class T>
 void BoxLayoutData<T>::postSendsFromMe() const
 {
@@ -652,17 +737,17 @@ void BoxLayoutData<T>::postSendsFromMe() const
   this->numSends = m_buff->m_fromMe.size();
 
   if (this->numSends > 1)
-  {
-    for (unsigned int i=m_buff->m_fromMe.size()-1; i>0; --i)
-      {
-        if (m_buff->m_fromMe[i].procID == m_buff->m_fromMe[i-1].procID)
-          {
-            this->numSends--;
-            m_buff->m_fromMe[i-1].size = m_buff->m_fromMe[i-1].size + m_buff->m_fromMe[i].size;
-            m_buff->m_fromMe[i].size = 0;
-          }
-      }
-  }
+    {
+      for (unsigned int i=m_buff->m_fromMe.size()-1; i>0; --i)
+        {
+          if (m_buff->m_fromMe[i].procID == m_buff->m_fromMe[i-1].procID)
+            {
+              this->numSends--;
+              m_buff->m_fromMe[i-1].size = m_buff->m_fromMe[i-1].size + m_buff->m_fromMe[i].size;
+              m_buff->m_fromMe[i].size = 0;
+            }
+        }
+    }
   m_sendRequests.resize(this->numSends);
   std::list<MPI_Request> extraRequests;
 
@@ -675,31 +760,31 @@ void BoxLayoutData<T>::postSendsFromMe() const
       size_t bsize = entry.size;
       int idtag=0;
       while (bsize > CH_MAX_MPI_MESSAGE_SIZE)
-      {
-        extraRequests.push_back(MPI_Request());
         {
-          //CH_TIME("MPI_Isend");
-          MPI_Isend(buffer, CH_MAX_MPI_MESSAGE_SIZE, MPI_BYTE, entry.procID,
-                    idtag, Chombo_MPI::comm, &(extraRequests.back()));
+          extraRequests.push_back(MPI_Request());
+          {
+            //CH_TIME("MPI_Isend");
+            MPI_Isend(buffer, CH_MAX_MPI_MESSAGE_SIZE, MPI_BYTE, entry.procID,
+                      idtag, Chombo_MPI::comm, &(extraRequests.back()));
+          }
+          maxSize = CH_MAX_MPI_MESSAGE_SIZE;
+          bsize -= CH_MAX_MPI_MESSAGE_SIZE;
+          buffer+=CH_MAX_MPI_MESSAGE_SIZE;
+          idtag++;
         }
-        maxSize = CH_MAX_MPI_MESSAGE_SIZE;
-        bsize -= CH_MAX_MPI_MESSAGE_SIZE;
-        buffer+=CH_MAX_MPI_MESSAGE_SIZE;
-        idtag++;
-      }
       {
         //CH_TIME("MPI_Isend");
         MPI_Isend(buffer, bsize, MPI_BYTE, entry.procID,
-                idtag, Chombo_MPI::comm, &(m_sendRequests[i]));
+                  idtag, Chombo_MPI::comm, &(m_sendRequests[i]));
       }
       maxSize = Max<long long>(bsize, maxSize);
       ++next;
       while (next < m_buff->m_fromMe.size() && m_buff->m_fromMe[next].size == 0) ++next;
     }
   for (std::list<MPI_Request>::iterator it = extraRequests.begin(); it != extraRequests.end(); ++it)
-  {
-    m_sendRequests.push_back(*it);
-  }
+    {
+      m_sendRequests.push_back(*it);
+    }
   this->numSends = m_sendRequests.size();
 
   CH_MaxMPISendSize = Max<long long>(CH_MaxMPISendSize, maxSize);
@@ -713,18 +798,18 @@ void BoxLayoutData<T>::postReceivesToMe() const
   this->numReceives = m_buff->m_toMe.size();
 
   if (this->numReceives > 1)
-  {
-    for (unsigned int i=m_buff->m_toMe.size()-1; i>0; --i)
-      {
-        if (m_buff->m_toMe[i].procID == m_buff->m_toMe[i-1].procID)
-          {
-            this->numReceives--;
-            m_buff->m_toMe[i-1].size += m_buff->m_toMe[i].size;
-            m_buff->m_toMe[i].size = 0;
-          }
+    {
+      for (unsigned int i=m_buff->m_toMe.size()-1; i>0; --i)
+        {
+          if (m_buff->m_toMe[i].procID == m_buff->m_toMe[i-1].procID)
+            {
+              this->numReceives--;
+              m_buff->m_toMe[i-1].size += m_buff->m_toMe[i].size;
+              m_buff->m_toMe[i].size = 0;
+            }
 
-      }
-  }
+        }
+    }
   m_receiveRequests.resize(this->numReceives);
   std::list<MPI_Request> extraRequests;
   unsigned int next=0;
@@ -736,18 +821,18 @@ void BoxLayoutData<T>::postReceivesToMe() const
       size_t bsize = entry.size;
       int idtag=0;
       while (bsize > CH_MAX_MPI_MESSAGE_SIZE)
-      {
-        extraRequests.push_back(MPI_Request());
         {
-          //CH_TIME("MPI_Irecv");
-          MPI_Irecv(buffer, CH_MAX_MPI_MESSAGE_SIZE, MPI_BYTE, entry.procID,
-                    idtag, Chombo_MPI::comm, &(extraRequests.back()));
+          extraRequests.push_back(MPI_Request());
+          {
+            //CH_TIME("MPI_Irecv");
+            MPI_Irecv(buffer, CH_MAX_MPI_MESSAGE_SIZE, MPI_BYTE, entry.procID,
+                      idtag, Chombo_MPI::comm, &(extraRequests.back()));
+          }
+          maxSize = CH_MAX_MPI_MESSAGE_SIZE;
+          bsize -= CH_MAX_MPI_MESSAGE_SIZE;
+          buffer+=CH_MAX_MPI_MESSAGE_SIZE;
+          idtag++;
         }
-        maxSize = CH_MAX_MPI_MESSAGE_SIZE;
-        bsize -= CH_MAX_MPI_MESSAGE_SIZE;
-        buffer+=CH_MAX_MPI_MESSAGE_SIZE;
-        idtag++;
-      }
       {
         //CH_TIME("MPI_Irecv");
         MPI_Irecv(buffer, bsize, MPI_BYTE, entry.procID,
@@ -758,79 +843,172 @@ void BoxLayoutData<T>::postReceivesToMe() const
       while (next < m_buff->m_toMe.size() && m_buff->m_toMe[next].size == 0) ++next;
     }
   for (std::list<MPI_Request>::iterator it = extraRequests.begin(); it != extraRequests.end(); ++it)
-  {
-    m_receiveRequests.push_back(*it);
-  }
+    {
+      m_receiveRequests.push_back(*it);
+    }
   this->numReceives = m_receiveRequests.size();
 
   CH_MaxMPIRecvSize = Max<long long>(CH_MaxMPIRecvSize, maxSize);
   //pout()<<"maxSize="<<maxSize<<" posted "<<this->numReceives<<" receives\n";
 
 }
-
+///
 template<class T>
-void BoxLayoutData<T>::unpackReceivesToMe(BoxLayoutData<T>& a_dest,
-                                      const Interval&   a_destComps,
-                                      const LDOperator<T>& a_op) const
+void BoxLayoutData<T>::unpackReceivesToMe(BoxLayoutData<T>   & a_dest,
+                                          const Interval     & a_destComps,
+                                          const LDOperator<T>& a_op) const
 {
 
+  if(doingJustCopy(a_op))
+    {
+      unpackReceivesToMeThread(a_dest, a_destComps, a_op);
+    }
+  else
+    {
+      unpackReceivesToMeNoOMP( a_dest, a_destComps, a_op);
+    }
+}
+///
+template<class T>
+void BoxLayoutData<T>::unpackReceivesToMeThread(BoxLayoutData<T>   & a_dest,
+                                                const Interval     & a_destComps,
+                                                const LDOperator<T>& a_op) const
+{
   CH_TIME("unpack_messages");
   if (this->numReceives > 0)
-  {
-    m_receiveStatus.resize(this->numReceives);
-    int result;
     {
-      CH_TIME("MPI_Waitall");
-      result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
+      m_receiveStatus.resize(this->numReceives);
+      int result;
+      {
+        CH_TIME("MPI_Waitall");
+        result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
                              &(m_receiveStatus[0]));
+      }
+      if (result != MPI_SUCCESS)
+        {
+          //hell if I know what to do about failed messaging here
+        }
+#pragma omp parallel for
+      for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
+        {
+          const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
+          a_op.linearIn(a_dest[entry.item->toIndex], entry.bufPtr, entry.item->toRegion, a_destComps);
+        }
     }
-    if (result != MPI_SUCCESS)
-      {
-        //hell if I know what to do about failed messaging here
-      }
-    //#pragma omp parallel for
-    for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
-      {
-        const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
-        a_op.linearIn(a_dest[entry.item->toIndex], entry.bufPtr, entry.item->toRegion, a_destComps);
-      }
-  }
   this->numReceives = 0;
 }
-
+///
+template<class T>
+void BoxLayoutData<T>::unpackReceivesToMeNoOMP (BoxLayoutData<T>   & a_dest,
+                                                const Interval     & a_destComps,
+                                                const LDOperator<T>& a_op) const
+{
+  CH_TIME("unpack_messages");
+  if (this->numReceives > 0)
+    {
+      m_receiveStatus.resize(this->numReceives);
+      int result;
+      {
+        CH_TIME("MPI_Waitall");
+        result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
+                             &(m_receiveStatus[0]));
+      }
+      if (result != MPI_SUCCESS)
+        {
+          //hell if I know what to do about failed messaging here
+        }
+      for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
+        {
+          const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
+          a_op.linearIn(a_dest[entry.item->toIndex], entry.bufPtr, entry.item->toRegion, a_destComps);
+        }
+    }
+  this->numReceives = 0;
+}
+///
 template<class T>
 void BoxLayoutData<T>::unpackReceivesToMe_append(LayoutData<Vector<RefCountedPtr<T> > >& a_dest,
                                                  const Interval&   a_destComps,
                                                  int ncomp,
                                                  const DataFactory<T>& factory,
-
                                                  const LDOperator<T>& a_op) const
 {
-
+  if(doingJustCopy(a_op))
+    {
+      unpackReceivesToMe_appendThread(a_dest, a_destComps, ncomp, factory,  a_op);
+    }
+  else
+    {
+      unpackReceivesToMe_appendNoOMP( a_dest, a_destComps, ncomp, factory,  a_op);
+    }
+}
+///
+template<class T>
+void BoxLayoutData<T>::unpackReceivesToMe_appendThread(LayoutData<Vector<RefCountedPtr<T> > >& a_dest,
+                                                 const Interval&   a_destComps,
+                                                 int ncomp,
+                                                 const DataFactory<T>& factory,
+                                                 const LDOperator<T>& a_op) const
+{
   if (this->numReceives > 0)
-  {
-   m_receiveStatus.resize(this->numReceives);
-   int result;
-   {
-     CH_TIME("MPI_Waitall");
-     result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
-                              &(m_receiveStatus[0]));
-   }
-   if (result != MPI_SUCCESS)
+    {
+      m_receiveStatus.resize(this->numReceives);
+      int result;
       {
-        //hell if I know what to do about failed messaging here
+        CH_TIME("MPI_Waitall");
+        result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
+                             &(m_receiveStatus[0]));
       }
-   //#pragma omp parallel for
-    for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
-      {
-        const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
-        const MotionItem& item = *(entry.item);
-        RefCountedPtr<T> newT( factory.create(item.toRegion, ncomp, item.toIndex) );;
+      if (result != MPI_SUCCESS)
+        {
+          //hell if I know what to do about failed messaging here
+        }
+#pragma omp parallel for
+      for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
+        {
+          const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
+          const MotionItem& item = *(entry.item);
+          RefCountedPtr<T> newT( factory.create(item.toRegion, ncomp, item.toIndex) );;
 
-        a_op.linearIn(*newT, entry.bufPtr, item.toRegion, a_destComps);
-        a_dest[item.toIndex].push_back(newT);
+          a_op.linearIn(*newT, entry.bufPtr, item.toRegion, a_destComps);
+          a_dest[item.toIndex].push_back(newT);
+        }
+    }
+
+  this->numReceives = 0;
+}
+
+///
+template<class T>
+void BoxLayoutData<T>::unpackReceivesToMe_appendNoOMP(LayoutData<Vector<RefCountedPtr<T> > >& a_dest,
+                                                      const Interval&   a_destComps,
+                                                      int ncomp,
+                                                      const DataFactory<T>& factory,
+                                                      const LDOperator<T>& a_op) const
+{
+  if (this->numReceives > 0)
+    {
+      m_receiveStatus.resize(this->numReceives);
+      int result;
+      {
+        CH_TIME("MPI_Waitall");
+        result = MPI_Waitall(this->numReceives, &(m_receiveRequests[0]),
+                             &(m_receiveStatus[0]));
       }
-  }
+      if (result != MPI_SUCCESS)
+        {
+          //hell if I know what to do about failed messaging here
+        }
+      for (unsigned int i=0; i<m_buff->m_toMe.size(); ++i)
+        {
+          const CopierBuffer::bufEntry& entry = m_buff->m_toMe[i];
+          const MotionItem& item = *(entry.item);
+          RefCountedPtr<T> newT( factory.create(item.toRegion, ncomp, item.toIndex) );;
+
+          a_op.linearIn(*newT, entry.bufPtr, item.toRegion, a_destComps);
+          a_dest[item.toIndex].push_back(newT);
+        }
+    }
 
   this->numReceives = 0;
 }
@@ -848,15 +1026,15 @@ void BoxLayoutData<T>::generalCopyTo(const BoxLayout& a_destGrids,
   CH_assert(T::preAllocatable() == 0);
   a_dest.define(a_destGrids);
 
-  LDOperator<T> a_op;
+  CopyLDOperator<T> copyop;
 
   int ncomp = a_srcComps.size();
   Interval destComps(0, ncomp-1);
   allocateBuffers(*this,  a_srcComps,
                   *this,  destComps,
-                  a_copier, a_op);
+                  a_copier, copyop);
 
-  writeSendDataFromMeIntoBuffers(*this, a_srcComps, a_op);
+  writeSendDataFromMeIntoBuffers(*this, a_srcComps, copyop);
 
   // If there is nothing to recv/send, don't go into these functions
   // and allocate memory that will not be freed later.  (ndk)
@@ -864,18 +1042,18 @@ void BoxLayoutData<T>::generalCopyTo(const BoxLayout& a_destGrids,
 #ifdef CH_MPI
   this->numReceives = m_buff->m_toMe.size();
   if (this->numReceives > 0)
-  {
-    postReceivesToMe(); // all non-blocking
-  }
+    {
+      postReceivesToMe(); // all non-blocking
+    }
 
   this->numSends = m_buff->m_fromMe.size();
   if (this->numSends > 0)
-  {
-    postSendsFromMe();  // all non-blocking
-  }
+    {
+      postSendsFromMe();  // all non-blocking
+    }
 #endif
 
-    // perform local copy
+  // perform local copy
   CopyIterator it(a_copier, CopyIterator::LOCAL); int items=it.size();
   //#pragma omp parallel for
   for (int i=0; i<items; i++)
@@ -883,18 +1061,18 @@ void BoxLayoutData<T>::generalCopyTo(const BoxLayout& a_destGrids,
       const MotionItem& item = it[i];
       RefCountedPtr<T> newT( factory.create(item.toRegion, ncomp, item.toIndex) );
 
-      a_op.op(*newT, item.fromRegion,
-              destComps,
-              item.toRegion,
-              this->operator[](item.fromIndex),
-              a_srcComps);
+      copyop.op(*newT, item.fromRegion,
+                destComps,
+                item.toRegion,
+                this->operator[](item.fromIndex),
+                a_srcComps);
       a_dest[item.toIndex].push_back(newT);
     }
 
   // Uncomment and Move this out of unpackReceivesToMe()  (ndk)
   completePendingSends(); // wait for sends from possible previous operation
 
-  unpackReceivesToMe_append(a_dest, destComps, ncomp, factory, a_op); // nullOp in uniprocessor mode
+  unpackReceivesToMe_append(a_dest, destComps, ncomp, factory, copyop); // nullOp in uniprocessor mode
 }
 
 template <class T>
@@ -945,7 +1123,7 @@ public:
         buffer++;
       } EndFor
 
-  }
+          }
 
 };
 

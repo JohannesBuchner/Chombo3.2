@@ -19,7 +19,7 @@
 
 
 
-#if _OPENMP==1
+#ifdef _OPENMP
 #include <omp.h>
 #define CH_SCHEDULE dynamic
 
