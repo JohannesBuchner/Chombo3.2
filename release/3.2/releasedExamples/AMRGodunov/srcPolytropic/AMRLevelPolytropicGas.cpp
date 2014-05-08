@@ -1047,10 +1047,10 @@ void AMRLevelPolytropicGas::writePlotHeader(HDF5Handle& a_handle) const
 
   // Write the header
   header.writeToFile(a_handle);
-  a_handle.setGroup("/Expressions");
-  HDF5HeaderData expressions;
-  m_levelGodunov.getGodunovPhysicsPtrConst()->expressions(expressions);
-  expressions.writeToFile(a_handle);
+  //  a_handle.setGroup("/Expressions");
+//  HDF5HeaderData expressions;
+//  m_levelGodunov.getGodunovPhysicsPtrConst()->expressions(expressions);
+//  expressions.writeToFile(a_handle);
 
   if (s_verbosity >= 3)
     {

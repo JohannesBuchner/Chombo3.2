@@ -11,7 +11,7 @@ godunov.xcorner = 0.05
 godunov.verbosity = 1
 
 # Number of steps, final time, and time step
-godunov.max_step = 200
+godunov.max_step = 4
 godunov.max_time = 0.064
 # godunov.fixed_dt = 0.002
 

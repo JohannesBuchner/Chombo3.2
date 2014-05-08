@@ -101,12 +101,12 @@ public:
                       BoxLayoutData<T>& dest,
                       const Interval& destComps,
                       const Copier& copier,
-                      const LDOperator<T>& a_op = LDOperator<T>()) const;
+                      const LDOperator<T>& a_op = CopyLDOperator<T>()) const;
 
   /// Simplest case -- assumes source and dest have same interval
   virtual void copyTo(BoxLayoutData<T>& dest,
                       const Copier& copier,
-                      const LDOperator<T>& a_op = LDOperator<T>()) const;
+                      const LDOperator<T>& a_op = CopyLDOperator<T>()) const;
 
   ////////////////////////////// FM MOD. END ////////////////////////////
   ///
@@ -127,12 +127,12 @@ public:
                       LevelData<T>& dest,
                       const Interval& destComps,
                       const Copier& copier,
-                      const LDOperator<T>& a_op = LDOperator<T>()) const;
+                      const LDOperator<T>& a_op = CopyLDOperator<T>()) const;
 
   /// Simplest case -- assumes source and dest have same interval
   virtual void copyTo(LevelData<T>& dest,
                       const Copier& copier,
-                      const LDOperator<T>& a_op = LDOperator<T>()) const;
+                      const LDOperator<T>& a_op = CopyLDOperator<T>()) const;
   ///
   virtual void exchange(const Interval& comps);
 

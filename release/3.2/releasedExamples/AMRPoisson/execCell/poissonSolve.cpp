@@ -26,6 +26,7 @@
 #include "BoxIterator.H"
 #include "CONSTANTS.H"
 #include "memusage.H"
+#include "CH_Attach.H"
 
 #include "UsingNamespace.H"
 
@@ -1011,7 +1012,7 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
 #endif
   int status = 0;
-
+  //  AttachDebugger();
   // scoping...
   {
     if (argc < 2)

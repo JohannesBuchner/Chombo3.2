@@ -44,15 +44,7 @@ using std::ios;
 
 #include "UsingNamespace.H"
 
-#ifdef CH_Linux
-// Should be undefined by default
-#define TRAP_FPE
-#undef  TRAP_FPE
-#endif
 
-#ifdef TRAP_FPE
-static void enableFpExceptions();
-#endif
 
 // Possible pressure relationships for the initial condition
 #define PRESSURE_ISENTROPIC 0
@@ -115,9 +107,6 @@ int main(int a_argc, char* a_argv[])
   // Parse the command line and the input file (if any)
   ParmParse pp(a_argc-2,a_argv+2,NULL,inFile);
 
-#ifdef TRAP_FPE
-  enableFpExceptions();
-#endif
 
   // Run amrGodunov, i.e., do the computation
   amrGodunov();
@@ -125,9 +114,13 @@ int main(int a_argc, char* a_argv[])
 #ifdef CH_MPI
   // Exit MPI
   CH_TIMER_REPORT();
+  pout() << "dumping memory info" << endl;
   dumpmemoryatexit();
+  pout() << "mpi finalizing" << endl;
   MPI_Finalize();
 #endif
+  pout() << "leaving " << endl;
+  return 0;
 }
 
 void amrGodunov()
@@ -839,30 +832,3 @@ void setupFixedGrids(Vector<Vector<Box> >& a_amrGrids,
   broadcast(a_amrGrids,uniqueProc(SerialTask::compute));
 }
 
-#ifdef TRAP_FPE
-#include <fenv.h>
-
-// FE_INEXACT    inexact result
-// FE_DIVBYZERO  division by zero
-// FE_UNDERFLOW  result not representable due to underflow
-// FE_OVERFLOW   result not representable due to overflow
-// FE_INVALID    invalid operation
-
-static void enableFpExceptions ()
-{
-  if (feclearexcept(FE_ALL_EXCEPT) != 0)
-    {
-      MayDay::Abort("feclearexcept failed");
-    }
-
-  int flags = FE_DIVBYZERO |
-              FE_INVALID   |
-//              FE_UNDERFLOW |
-              FE_OVERFLOW  ;
-
-  if (feenableexcept(flags) == -1)
-    {
-      MayDay::Abort("feenableexcept failed");
-    }
-}
-#endif
