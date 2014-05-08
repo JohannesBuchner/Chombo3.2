@@ -722,7 +722,6 @@ c     test fails
       status = 0
 c     this function keeps breaking and it has absolutely nothing to
 c     do with chombo fortran.   It is just testing the fortran compiler
-#if 0 
 
       bar = 'a string with a comment ! in it'
       bar = bar(:LENC(bar)) // ''''  !string with embedded quote and a double quote '' in the comment
