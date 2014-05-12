@@ -189,7 +189,7 @@ inline void BoxLayoutData<T>::allocateGhostVector(const DataFactory<T>& factory,
     }
 #endif
   this->m_vector.resize(it.size(), NULL);
-#pragma omp parallel for
+  //#pragma omp parallel for
   for(int i=0; i<nbox; i++)
     {
       unsigned int index = it[i].datInd();
