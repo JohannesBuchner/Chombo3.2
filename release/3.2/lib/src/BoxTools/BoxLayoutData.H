@@ -198,8 +198,8 @@ public:
       }
     else
       {
-        int sizeSource = size(src,  RegionFrom, Csrc);
-        int sizeDest   = size(dest, RegionTo,   Cdest);
+        int sizeSource = this->size(src,  RegionFrom, Csrc);
+        int sizeDest   = this->size(dest, RegionTo,   Cdest);
 
         if (T::preAllocatable() == 0 || T::preAllocatable() == 1)
           {
