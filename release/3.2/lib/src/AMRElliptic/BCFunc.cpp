@@ -331,7 +331,7 @@ void DiriBC(FArrayBox&      a_state,
               inhomogVal = value[icomp];
             }
 
-          Real ghostVal;
+          Real ghostVal=0;
 
           if (a_order == 1)
             {
@@ -378,7 +378,7 @@ void NoSlipVectorBC(FArrayBox&     a_state,
           Real nearVal = a_state(ivClose, icomp);
           Real farVal  = a_state(ivFar,   icomp);
 
-          Real ghostVal;
+          Real ghostVal=0;
 
           if (a_order == 1)
             {
@@ -416,7 +416,7 @@ void ReflectiveVectorBC(FArrayBox&     a_state,
 
       for (int icomp = 0; icomp < a_state.nComp(); icomp++)
         {
-          Real ghostVal;
+          Real ghostVal=0;
           Real nearVal = a_state(ivClose, icomp);
 
           // zero dirichlet for normal dir
@@ -475,7 +475,7 @@ void ExtrapolateBC(FArrayBox&      a_state,
           Real nearVal = a_state(ivClose, icomp);
           Real farVal  = a_state(ivFar,   icomp);
 
-          Real ghostVal;
+          Real ghostVal=0;
 
           if (a_order == 1)
             {

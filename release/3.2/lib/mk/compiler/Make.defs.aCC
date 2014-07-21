@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 02 Apr 2004 16:47:19 by dbs"; -*-
-
 ## This file contains compiler variables for the HP C++ compiler "aCC".
 
 ## It sets values for the defaults variables ($def*), which will be used

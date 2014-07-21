@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Mon 22 Sep 2003 13:54:05 by dbs"; -*-
-
 ### This is a compiler-specific definitions file for Portland Group compilers (pg*).
 
 ## It sets values for the defaults variables ($def*), which will be used

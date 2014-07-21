@@ -286,7 +286,7 @@ int PetscSolver<T>::setup_solver( const T& a_phi )
           ierr = SNESCreate( wcomm, &m_snes );                                       CHKERRQ(ierr);
           // these casts get rid of the 'const'. These are used in SNES as temp vector!  
           ierr = SNESSetFunction( m_snes, m_rr, m_function, (void*)this );         CHKERRQ(ierr);
-          ierr = SNESSetJacobian( m_snes, m_mat, m_mat, m_jacobian, (void*)this ); CHKERRQ(ierr);
+	  ierr = SNESSetJacobian( m_snes, m_mat, m_mat, m_jacobian, (void*)this ); CHKERRQ(ierr);
           //ierr = SNESSetApplicationContext( m_snes, (void*)this );                   CHKERRQ(ierr);
           ierr = SNESSetFromOptions( m_snes );                                       CHKERRQ(ierr);
           ierr = SNESGetKSP( m_snes, &ksp );                                         CHKERRQ(ierr);
@@ -308,8 +308,11 @@ int PetscSolver<T>::setup_solver( const T& a_phi )
             {
               ierr = KSPMonitorSet(m_ksp,ksp_monitor_pout,PETSC_NULL,PETSC_NULL); CHKERRQ(ierr);
             }
-	  // last arg is removed in newer PETSc -- protect with #defs
+#if PETSC_VERSION_GE(3,5,0)
+	  ierr = KSPSetOperators(m_ksp,m_mat,m_mat);CHKERRQ(ierr);
+#else
           ierr = KSPSetOperators(m_ksp,m_mat,m_mat,SAME_NONZERO_PATTERN);CHKERRQ(ierr);
+#endif
           ierr = KSPSetInitialGuessNonzero(m_ksp, m_nz_init_guess ? PETSC_TRUE : PETSC_FALSE );CHKERRQ(ierr);
           ksp = m_ksp;
         }
@@ -368,8 +371,11 @@ int PetscSolver<T>::setup_solver( const T& a_phi )
         {
           ierr = SNESGetKSP( m_snes, &ksp ); CHKERRQ(ierr);
         }
-      // last arg is removed in newer PETSc -- protect with #defs
+#if PETSC_VERSION_GE(3,5,0)
+      ierr = KSPSetOperators(ksp,m_mat,m_mat); CHKERRQ(ierr);
+#else
       ierr = KSPSetOperators(ksp,m_mat,m_mat,SAME_NONZERO_PATTERN); CHKERRQ(ierr);
+#endif
       CH_STOP(t2);
     }
 #endif
@@ -584,8 +590,12 @@ int PetscSolver<T>::solve_mfree_private( T& a_phi,
     {
       ierr = KSPMonitorSet(ksp,ksp_monitor_pout,PETSC_NULL,PETSC_NULL); CHKERRQ(ierr);
     }
-  // last arg is removed in newer PETSc -- protect with #defs
+#if PETSC_VERSION_GE(3,5,0)
+  ierr = KSPSetOperators(ksp,L,m_mat); CHKERRQ(ierr);
+#else
   ierr = KSPSetOperators(ksp,L,m_mat,SAME_NONZERO_PATTERN); CHKERRQ(ierr);
+#endif
+
   ierr = KSPSetInitialGuessNonzero(ksp, m_nz_init_guess ? PETSC_TRUE : PETSC_FALSE ); CHKERRQ(ierr);
 
   if (0){ // coordinates

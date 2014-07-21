@@ -374,8 +374,8 @@ PetscCompGrid::define( const ProblemDomain &a_cdomain,
 	{
 	  MayDay::Error("PetscCompGrid::define getGhostVect>refRatio - not setup for this");
 	}
-      // ghost cells for fine support governed by CF radius (2), I think we could use 1 with nesting radius==4
-      const IntVect nFineProcGhosts = refRatio*refRatio*m_CFStencilRad*IntVect::Unit;
+      // ghost cells for fine support governed by CF radius (12=nr*nr(rad+1), could use 1 with nesting radius==4 maybe
+      const IntVect nFineProcGhosts = refRatio*refRatio*(m_CFStencilRad+1)*IntVect::Unit;
       pl = new LevelData<BaseFab<PetscInt> >(refinedCrsDBL,1,nFineProcGhosts); 
       m_fineCoverGIDs[ilev] = RefCountedPtr<LevelData<BaseFab<PetscInt> > >(pl);
       // set gids == UNKNOWN

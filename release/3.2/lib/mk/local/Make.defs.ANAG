@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 03 Mar 2006 11:07:53 by dbs"; -*-
-
 ## This file defines variables for use on the machines in ANAG.
 ## You should copy this file to 'mk/Make.defs.local' or symlink
 ## it to 'mk/local/Make.defs.<your_machine_name>'

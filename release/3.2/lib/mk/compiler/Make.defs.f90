@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Mon 30 Jan 2006 14:29:50 by dbs"; -*-
-
 ## This file contains compiler variables for all flavors of the Fortran compiler called "f90"
 
 ## The compiler variables are set in Make.defs using these defaults and local overrides.
