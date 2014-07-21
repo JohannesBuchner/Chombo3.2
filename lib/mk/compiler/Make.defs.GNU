@@ -159,6 +159,12 @@ endif
   endif
 
 
+  # the preprocessor for v4.8+ adds some header gibberish that we 
+  # suppress with -nostdinc.
+  ifeq (00,$(shell test $(_gppmajorver) -ge 4 ; echo $$?)$(shell test $(_gppminorver) -ge 8 ; echo $$?))
+    CH_CPP += -nostdinc
+  endif
+
 endif
 
 ################################################################

@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 26 Mar 2004 16:40:20 by dbs"; -*-
-
 ###
 ### This makefile runs various checks to see if the make variables
 ### are set properly.  Ideally it should run with the same variable

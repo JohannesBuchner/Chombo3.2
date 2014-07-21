@@ -79,7 +79,7 @@
 makefiles+=Make.rules.md
 
 ## First, set some local variables
-##  4dconfig       is the configuration identification string used in filenames
+##  5dconfig       is the configuration identification string used in filenames
 
 ##
 ## The next group of rules compile code
@@ -87,21 +87,21 @@ makefiles+=Make.rules.md
 
 # rules to build objects for executable programs and libraries
 
-o/$(4dconfig)/%.o : %.cpp   d/$(4dconfig)/%.d
-	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) -DCH_LANG_CC $(cxxcompflag) $< $(cxxobjflag)$@
+o/$(5dconfig)/%.o : %.cpp   d/$(5dconfig)/%.d
+	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) -DCH_LANG_CC $(cxxcompflag) $< $(cxxobjflag)$@
 
-o/$(4dconfig)/%.o : %.ChF  d/$(4dconfig)/%.d
-	$(QUIET)$(chfpp_src) -f $< $(CHFFLAGS) -p p/$(4dconfig)/$(notdir $*.C) -c /dev/null -D 4
+o/$(5dconfig)/%.o : %.ChF  d/$(5dconfig)/%.d
+	$(QUIET)$(chfpp_src) -f $< $(CHFFLAGS) -p p/$(5dconfig)/$(notdir $*.C) -c /dev/null -D 5
 #       this is not as stupid as it looks---see comment below
-	$(QUIET)$(CSHELLCMD) "$(CH_CPP) -DCH_SPACEDIM=4 $(MDCPPFLAGS) -I. $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT p/$(4dconfig)/$(notdir $*.C) | awk 'NF>0' > p/$(4dconfig)/$(notdir $*.cpre)"
-	$(QUIET)$(CSHELLCMD) "cat p/$(4dconfig)/$(notdir $*.cpre) | $(stripsharp_src)  | $(fortpost)  > f/$(4dconfig)/$*.f"
-	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(4dconfig)/$*.f $(fobjflag)$@
+	$(QUIET)$(CSHELLCMD) "$(CH_CPP) -DCH_SPACEDIM=5 $(MDCPPFLAGS) -I. $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT p/$(5dconfig)/$(notdir $*.C) | awk 'NF>0' > p/$(5dconfig)/$(notdir $*.cpre)"
+	$(QUIET)$(CSHELLCMD) "cat p/$(5dconfig)/$(notdir $*.cpre) | $(stripsharp_src)  | $(fortpost)  > f/$(5dconfig)/$*.f"
+	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(5dconfig)/$*.f $(fobjflag)$@
 
-o/$(4dconfig)/%.o : %.F  d/$(4dconfig)/%.d
-	$(QUIET)$(CSHELLCMD) "$(CH_CPP) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT $< | $(fortpost) | awk 'NF>0' > f/$(4dconfig)/$*.f"
-	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(4dconfig)/$*.f $(fobjflag)$@
+o/$(5dconfig)/%.o : %.F  d/$(5dconfig)/%.d
+	$(QUIET)$(CSHELLCMD) "$(CH_CPP) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT $< | $(fortpost) | awk 'NF>0' > f/$(5dconfig)/$*.f"
+	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(5dconfig)/$*.f $(fobjflag)$@
 
-o/$(4dconfig)/%.o : %.f  d/$(4dconfig)/%.d
+o/$(5dconfig)/%.o : %.f  d/$(5dconfig)/%.d
 	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) $< $(fobjflag)$@
 
 ##
@@ -110,48 +110,48 @@ o/$(4dconfig)/%.o : %.f  d/$(4dconfig)/%.d
 ## The dependency file is also modified to change the name of the object file:
 ##  when building a library, the dependent is the library member;
 ##  when building an executable, the dependent is the object file in the o/ subdirectory.
-## All dependency files depend on the file ".dummy" to guarantee that the d/$4dconfig subdir
+## All dependency files depend on the file ".dummy" to guarantee that the d/$5dconfig subdir
 ##  is created before doing anything else.  This only matters when running make in parallel.
 
 
 
-d/$(4dconfig)/%.d : %.cpp d/$(4dconfig)/.dummy
+d/$(5dconfig)/%.d : %.cpp d/$(5dconfig)/.dummy
 #	$(QUIET)touch $<
 	@if [ x"$(QUIET)" != x"@" ]; then echo Depending $< ...; fi
 ifdef lbase
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_4dconfig)(\1.o) $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_5dconfig)(\1.o) $@ : %g' > $@"
 else
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(4dconfig)/\1.o $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(5dconfig)/\1.o $@ : %g' > $@"
 endif
 #	# if $(mkdep) failed, sed will still make the output file so delete it if it is empty
 	$(ECHO)if [ ! -s $@ ]; then $(RM) $@; fi
 
-d/$(4dconfig)/%.d : %.ChF d/$(4dconfig)/.dummy
+d/$(5dconfig)/%.d : %.ChF d/$(5dconfig)/.dummy
 	@if [ x"$(QUIET)" != x"@" ]; then echo Depending $< ...; fi
 ifdef lbase
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_4dconfig)(\1.o) $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_5dconfig)(\1.o) $@ : %g' > $@"
 else
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(4dconfig)/\1.o $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(5dconfig)/\1.o $@ : %g' > $@"
 endif
 #	# if $(mkdep) failed, sed will still make the output file so delete it if it is empty
 	$(ECHO)if [ ! -s $@ ]; then $(RM) $@; fi
 
-d/$(4dconfig)/%.d : %.F d/$(4dconfig)/.dummy
+d/$(5dconfig)/%.d : %.F d/$(5dconfig)/.dummy
 	@if [ x"$(QUIET)" != x"@" ]; then echo Depending $< ...; fi
 ifdef lbase
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_4dconfig)(\1.o) $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_5dconfig)(\1.o) $@ : %g' > $@"
 else
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(4dconfig)/\1.o $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(5dconfig)/\1.o $@ : %g' > $@"
 endif
 #	# if $(mkdep) failed, sed will still make the output file so delete it if it is empty
 	$(ECHO)if [ ! -s $@ ]; then $(RM) $@; fi
 
-d/$(4dconfig)/%.d : %.f d/$(4dconfig)/.dummy
+d/$(5dconfig)/%.d : %.f d/$(5dconfig)/.dummy
 	@if [ x"$(QUIET)" != x"@" ]; then echo Depending $< ...; fi
 ifdef lbase
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_4dconfig)(\1.o) $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%$(_lib_5dconfig)(\1.o) $@ : %g' > $@"
 else
-	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=4 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(4dconfig)/\1.o $@ : %g' > $@"
+	$(ECHO)$(CSHELLCMD) "$(mkdep) -DCH_SPACEDIM=5 $(MDCPPFLAGS) $(XTRACPPFLAGS) $< | sed 's%\($*\)\.o[ :]*%o/$(5dconfig)/\1.o $@ : %g' > $@"
 endif
 #	# if $(mkdep) failed, sed will still make the output file so delete it if it is empty
 	$(ECHO)if [ ! -s $@ ]; then $(RM) $@; fi
@@ -164,13 +164,13 @@ endif
 #       be out-of-date with respect to the subdirs because they are
 #       modified after .dummy is created.  But since there are no
 #       dependencies, this rule only runs when the file doesn't exist.
-%/$(4dconfig)/.dummy:
-	$(ECHO)mkdir -p o/$(4dconfig) f/$(4dconfig) d/$(4dconfig) p/$(4dconfig)
+%/$(5dconfig)/.dummy:
+	$(ECHO)mkdir -p o/$(5dconfig) f/$(5dconfig) d/$(5dconfig) p/$(5dconfig)
 	$(ECHO)touch $@
 
 # Rule to build subdirectories.
 #XXX# [NOTE: I think this is unnecessary now. <dbs>]
-#XXXo/$(4dconfig) f/$(4dconfig) d/$(4dconfig) p/$(4dconfig):
+#XXXo/$(5dconfig) f/$(5dconfig) d/$(5dconfig) p/$(5dconfig):
 #XXX	mkdir -p $@
 
 

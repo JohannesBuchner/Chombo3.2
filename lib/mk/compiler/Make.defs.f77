@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Wed 24 Sep 2003 23:45:12 by dbs"; -*-
-
 ## This file contains compiler variables for all flavors of the Fortran compiler called "f77"
 
 ## The compiler variables are set in Make.defs using these defaults and local overrides.

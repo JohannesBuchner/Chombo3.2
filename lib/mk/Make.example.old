@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Tue 16 Aug 2005 13:11:09 by dbs"; -*-
-#####
 ##### Below this point, a user should not mess with
 ##### the makefile unless he/she really know what he/she  is doing.
 ##### Below is the part that interacts with the Chombo Make system.

@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Mon 13 Mar 2006 11:09:38 by dbs"; -*-
-
 ## This file contains compiler variables for flavors of the Lahey Fortran
 ## compiler (called lf90, lf95, ...)
 

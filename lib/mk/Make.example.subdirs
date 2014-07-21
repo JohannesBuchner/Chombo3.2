@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Thu 11 Aug 2005 18:01:43 by dbs"; -*- 
-
 ### This makefile requires GNU make.
 ### It controls building in subdirectories.
 ###

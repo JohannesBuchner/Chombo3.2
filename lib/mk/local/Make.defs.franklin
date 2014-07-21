@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 29 Jul 2005 15:14:39 by dbs"; -*-
-
 ## This file defines variables for use on the login nodes of the NERSC Linux
 ## machine 'franklin'.  
 ##

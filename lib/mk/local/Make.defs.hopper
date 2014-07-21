@@ -1,11 +1,12 @@
-# -*- Mode: Makefile; Modified: "Fri 29 Jul 2005 15:14:39 by dbs"; -*-
-
 ## This file defines variables for use on the login nodes of the NERSC Linux
 ## machine 'hopper'.  
 ##
 ## NOTE: everything is always in 64bit mode
 
 makefiles+=local/Make.defs.hopper
+
+#default to MPI=TRUE for hopper
+MPI=TRUE
 
 CXX=CC
 FC=ftn

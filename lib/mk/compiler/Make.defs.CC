@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Mon 30 Jan 2006 15:38:29 by dbs"; -*-
-
 ## This file contains compiler variables for all flavors of the C++ compiler called "CC"
 
 makefiles+=local/Make.defs.CC

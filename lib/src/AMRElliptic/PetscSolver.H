@@ -52,7 +52,11 @@ public:
   */
 #ifdef CH_USE_PETSC
   virtual void setFunctionAndJacobian( PetscErrorCode (*f)(SNES,Vec,Vec,void*),
+#if PETSC_VERSION_GE(3,5,0)
+				       PetscErrorCode (*j)(SNES,Vec,Mat,Mat,void*)
+#else
                                        PetscErrorCode (*j)(SNES,Vec,Mat*,Mat*,MatStructure*,void*)
+#endif
                                        )
   {
     m_function = f;
@@ -218,7 +222,11 @@ public:
 protected:
   PetscInt m_defined;
   PetscErrorCode (*m_function)(SNES,Vec,Vec,void*);
+#if PETSC_VERSION_GE(3,5,0)
+  PetscErrorCode (*m_jacobian)(SNES,Vec,Mat,Mat,void*);
+#else
   PetscErrorCode (*m_jacobian)(SNES,Vec,Mat*,Mat*,MatStructure*,void*);
+#endif
 #endif
 protected:
   char m_prestring[32];

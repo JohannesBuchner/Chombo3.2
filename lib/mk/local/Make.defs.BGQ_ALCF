@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Fri 29 Jul 2005 15:16:50 by dbs"; -*-
-
 # Copy this file to:
 #
 #    Chombo/lib/mk/Make.defs.local
@@ -113,7 +111,7 @@ makefiles+=Make.defs.local
 #  this variable is ignored, but needs to be here for Chombo Makefiles.
 # you can't actually build a serial version of Chombo.
 CXX           = mpixlcxx_r
-FC            = mpixlf77_r
+FC            = mpixlf77_r -qnosave
 MPI           = TRUE
 MPICXX        = mpixlcxx_r
 #OBJMODEL      =
@@ -127,15 +125,15 @@ USE_HDF       = TRUE
 HDF5_HOME      = /soft/libraries/hdf5/1.8.10/cnk-xl/current
 
 HDFINCFLAGS   = -I$(HDF5_HOME)/include 
-HDFLIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
+HDFLIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
 HDFMPIINCFLAGS   = -I$(HDF5_HOME)/include 
-HDFMPILIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
+HDFMPILIBFLAGS   = -L$(HDF5_HOME)/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz
 
 #USE_MF        =
 #USE_MT        =
 #USE_SETVAL    =
 #AR            =
-CPP = $(CXX) -E -C -qnoppline -qsourcetype=c -qsuppress=1506-234
+#CPP = $(CXX) -E -C -qnoppline -qsourcetype=c -qsuppress=1506-234
 #DOXYGEN       =
 #LD            =
 #PERL          =
@@ -143,25 +141,44 @@ CPP = $(CXX) -E -C -qnoppline -qsourcetype=c -qsuppress=1506-234
 #cppdbgflags   =
 #cppoptflags   =
 #cxxcppflags   =
-cxxdbgflags   = -g 
-cxxoptflags   = -O3 -g
+cxxdbgflags   = -g  -qsuppress=1540-1091
+cxxoptflags   = -O3 -g -qsuppress=1540-1091
 #cxxprofflags  =
 #fcppflags     =
-fdbgflags     = -g -C -qextname
-foptflags     = -O3 -g -qextname
+fdbgflags     = -g -C -qextname -qfixed
+foptflags     = -O3 -g -qextname -qfixed
 #fprofflags    =
-flibflags     = -L$(IBM_FCMP_DIR)/bglib64 -lxlopt -lxl -lxlf90 -lxlfmath /home/morozov/lib/libmpihpm.a /bgsys/drivers/ppcfloor/bgpm/lib/libbgpm.a
+#flibflags     = -L$(IBM_FCMP_DIR)/bglib64 -lxlopt -lxl -lxlf90_r -lxlfmath /home/morozov/lib/libmpihpm.a /bgsys/drivers/ppcfloor/bgpm/lib/libbgpm.a
+#flibflags     = -L$(IBM_FCMP_DIR)/bglib64 -lxlopt -lxl -lxlf90_r -lxlfmath /home/morozov/lib/libmpihpm.a /bgsys/drivers/ppcfloor/bgpm/lib/libbgpm.a /soft/libraries/alcf/current/xl/LAPACK/lib/liblapack.a /soft/libraries/alcf/current/xl/BLAS/lib/libblas.a
+flibflags     = /soft/libraries/alcf/current/xl/LAPACK/lib/liblapack.a /soft/libraries/essl/current/essl/5.1/lib64/libesslbg.a -L/soft/compilers/ibmcmp-feb2014/xlf/bg/14.1/bglib64 -lxlopt -lxl -lxlf90_r -lxlfmath /home/morozov/lib/libmpihpm.a /bgsys/drivers/ppcfloor/bgpm/lib/libbgpm.a
 #flibflags     = -lbgxlfmath
 #lddbgflags    =
 #ldoptflags    =
 #ldprofflags   =
-#syslibflags   =
+#syslibflags   = 
 #xtraldflags += -Wl,-zmuldefs
 #cppcallsfort :=
-CH_CPP = $(CXX) -E -C -qnoppline -qsourcetype=c -qsuppress=1506-234
+CH_CPP = $(CXX) -E -C -qnoppline -qsourcetype=c -qsuppress=1540-1091
 
 XTRALDFLAGS += -Wl,-zmuldefs
 
-PETSC_DIR=/soft/libraries/petsc/3.3-p6/xl-opt-64idx
+#petscincflags =  -I/home/adams/petsc/include -I/home/adams/petsc/arch-bgq-ibm-opt-64idx/include -I/gpfs/mira-home/adams/petsc/arch-bgq-ibm-opt-64idx/include
+#petsclibflags = -L/home/adams/petsc/arch-bgq-ibm-opt-64idx/lib  -lpetsc -Wl,-rpath,/gpfs/mira-home/adams/petsc/arch-bgq-ibm-opt-64idx/lib -L/gpfs/mira-home/adams/petsc/arch-bgq-ibm-opt-64idx/lib -lHYPRE -L$(HDF5_HOME)/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -L/soft/libraries/alcf/current/xl/ZLIB/lib -lz 
+
+#PETSC_DIR=/soft/libraries/petsc/3.3-p6/xl-opt-64idx
+#PETSC_DIR=/gpfs/mira-fs0/projects/Chombo_Crunch/petsc
+#PETSC_DIR=/home/adams/petsc
+#PETSC_ARCH=arch-bgq-ibm-opt-64idx
+
+IBMCMP_ROOT=/soft/compilers/ibmcmp-feb2014
+#BLAS_LIB=/soft/libraries/alcf/current/xl/BLAS/lib
+BLAS_LIB=/soft/libraries/essl/current/essl/5.1/lib64/libesslbg.a
+LAPACK_LIB=/soft/libraries/alcf/current/xl/LAPACK/lib
+XLF_LIB=${IBMCMP_ROOT}/xlf/bg/14.1/bglib64
+XLSMP_LIB=${IBMCMP_ROOT}/xlsmp/bg/3.1/bglib64export
+XLMASS_LIB=${IBMCMP_ROOT}/xlmass/bg/7.3/bglib64
+MATH_LIBS=-L${XLMASS_LIB} -lmassv -lmass -L${LAPACK_LIB} -llapack -L${BLAS_LIB} -lesslbg -L${XLF_LIB} -lxlf90_r -L${XLSMP_LIB} -lxlsmp -ldl  -lxlopt -lxlfmath -lxl -Wl,--allow-multiple-definition
+
+LIBS=${LIBS} ${MATH_LIBS}
 
 #end  -- dont change this line

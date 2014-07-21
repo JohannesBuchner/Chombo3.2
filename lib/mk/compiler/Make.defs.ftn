@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Thu 08 Apr 2004 14:45:57 by dbs"; -*-
-
 ## This file contains compiler variables for all flavors of the Fortran compiler called "ftn"
 
 makefiles+=local/Make.defs.ftn

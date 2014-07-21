@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Mon 25 Apr 2005 15:31:15 by dbs"; -*-
-
 ### This is a compiler-specific definitions file for the HP Tru64 C++ compiler "cxx"
 ## It documents all the compiler variables.
 

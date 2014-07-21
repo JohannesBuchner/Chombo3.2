@@ -15,7 +15,8 @@
 ###    DIM DEBUG OPT PRECISION PROFILE NAMESPACE CXX FC MPICXX MPI PROF USE_SETVAL OBJMODEL XTRACONFIG MULTIDIM
 ### The user may also set:
 ###        CXXFLAGS     CPPFLAGS     FFLAGS     LDFLAGS     LIBFLAGS
-###    XTRACXXFLAGS XTRACPPFLAGS XTRAFFLAGS XTRALDFLAGS XTRALIBFLAGS
+###    XTRACXXFLAGS XTRACPPFLAGS XTRAFFLAGS XTRAF90FLAGS XTRALDFLAGS
+###    XTRALIBFLAGS
 ###
 ### There are several user variables that control the behavior of the rules
 ###  defined here.  They are:
@@ -107,6 +108,7 @@ export XTRACONFIG
 #export XTRACPPFLAGS
 export XTRACXXFLAGS
 export XTRAFFLAGS
+export XTRAF90FLAGS
 export XTRALDFLAGS
 export XTRALIBFLAGS
 
@@ -450,8 +452,8 @@ $(_lib_config): $(XTRALIBS) $(addprefix o/$(config)/,$(objects))
 ifeq ($(ROSE),TRUE)
 # Preprocess with Rose
 o/$(config)/%.o : %.cpp   d/$(config)/%.d
-	$(QUIET)$(ROSECC) $(CPPFLAGS) $(XTRACPPFLAGS) -DCH_LANG_CC $(cxxcompflag) -rose:o rose/$(config)/rose_$< $<
-	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) $(CPPFLAGS) $(XTRACPPFLAGS) -I./ -DCH_LANG_CC $(openmpflag) $(cxxcompflag) rose/$(config)/rose_$< $(cxxobjflag)$@
+	$(QUIET)$(ROSECC) $(CPPFLAGS) $(XTRACPPFLAGS) -DCH_LANG_CC $(cxxcompflag) -rose:o rose/$(config)/rose_$(notdir $<) $<
+	$(QUIET)$(cxxc) $(CXXFLAGS) $(XTRACXXFLAGS) $(pic) $(CPPFLAGS) $(XTRACPPFLAGS) -I./ -DCH_LANG_CC $(openmpflag) $(cxxcompflag) rose/$(config)/rose_$(notdir $<) $(cxxobjflag)$@
 else
 # Direct Vendor compilation
 o/$(config)/%.o : %.cpp   d/$(config)/%.d
@@ -459,7 +461,7 @@ o/$(config)/%.o : %.cpp   d/$(config)/%.d
 endif
 
 o/$(config)/%.o : %.f90  d/$(config)/%.d
-	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) $< $(fobjflag)$@
+	$(QUIET)$(FC) $(FFLAGS) $(XTRAF90FLAGS) $(fcompflag) $< $(fobjflag)$@
 
 o/$(config)/%.o : %.ChF  d/$(config)/%.d
 	$(QUIET)$(chfpp_src) -f $< $(CHFFLAGS) -p p/$(config)/$(notdir $*.C) -c /dev/null -D $(DIM)
@@ -472,8 +474,8 @@ o/$(config)/%.o : %.F  d/$(config)/%.d
 	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(config)/$*.f $(fobjflag)$@
 
 o/$(config)/%.o : %.F90  d/$(config)/%.d
-	$(QUIET)$(CSHELLCMD) "$(CPP) $(CPPFLAGS) $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT $< | $(fortpost) | awk 'NF>0' > f/$(config)/$*.f90"
-	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) f/$(config)/$*.f90 $(fobjflag)$@
+	$(QUIET)$(CSHELLCMD) "$(CH_CPP) $(CPPFLAGS) $(XTRACPPFLAGS) $(fcppflags) -DCH_LANG_FORT $< | $(fortpost) | awk 'NF>0' > f/$(config)/$*.f90"
+	$(QUIET)$(FC) $(FFLAGS) $(XTRAF90FLAGS) $(fcompflag) f/$(config)/$*.f90 $(fobjflag)$@
 
 o/$(config)/%.o : %.f  d/$(config)/%.d
 	$(QUIET)$(FC) $(FFLAGS) $(XTRAFFLAGS) $(fcompflag) $< $(fobjflag)$@
@@ -486,7 +488,7 @@ o/$(config)/%.o : %.f  d/$(config)/%.d
 ##
 %_F.H: %.ChF
 	@if [ x"$(QUIET)" != x"@" ]; then echo Creating $*_F.H ...; fi
-	$(ECHO)$(chfpp_src) -f $< $(CHFFLAGS) -p /dev/null -c $*_F.H -D $(DIM)
+	$(chfpp_src) -f $< $(CHFFLAGS) -p /dev/null -c $*_F.H -D $(DIM)
 
 ##
 ## Rules to build Cuda cubin or fatbinary embedded in header files

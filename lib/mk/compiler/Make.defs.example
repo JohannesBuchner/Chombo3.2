@@ -1,5 +1,3 @@
-# -*- Mode: Makefile; Modified: "Thu 31 Jul 2003 13:59:09 by dbs"; -*-
-
 ### This is a compiler-specific definitions file for the <example> compiler.
 ## It documents all the compiler variables.
 
