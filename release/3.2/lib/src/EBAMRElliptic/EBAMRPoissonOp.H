@@ -147,7 +147,9 @@ public:
 
     StencilIndex& operator= (const StencilIndex& a_sin)
     {
-      return *this;
+      m_vof   =a_sin.m_vof;
+      m_phase = a_sin.m_phase;
+      return *this;	
     }
 
     VolIndex vof() const
