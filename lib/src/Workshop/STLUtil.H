@@ -57,7 +57,7 @@ namespace STLUtil
       m_dir = 0; // default to x,y,z order
     }
 
-    inline bool operator()(const IntVect& a, const IntVect& b)
+    inline bool operator()(const IntVect& a, const IntVect& b) const
     {
       if (a[m_dir%SpaceDim] < b[m_dir%SpaceDim])
         return true;
@@ -82,7 +82,7 @@ namespace STLUtil
   // first sort based on node0, then compare the direction of the edge
   struct EdgeCompareSWO
   {
-    inline bool operator()(const CellEdge& a,const CellEdge& b)
+    inline bool operator()(const CellEdge& a,const CellEdge& b) const
     {
       if (a.m_node0==b.m_node0)
         return (a.m_dir<b.m_dir); // compare directions, first x, then y,z

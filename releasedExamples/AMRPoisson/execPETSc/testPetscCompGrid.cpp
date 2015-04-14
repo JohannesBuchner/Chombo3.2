@@ -159,10 +159,15 @@ PetscErrorCode plotAll( Vector<LevelData<FArrayBox> *> &a_phi,
     }
   {
     double error;
+#ifdef CH_MPI
     MPI_Allreduce( &a_errNorm[0], &error, 1, MPI_DOUBLE, MPI_MAX, PETSC_COMM_WORLD );
     a_errNorm[0] = error;
+#endif
+
+#ifdef CH_MPI
     MPI_Allreduce( &a_errNorm[1], &error, 1, MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD );
     a_errNorm[1] = error;
+#endif
   }
 
   pout() << "\t\t plot |error|_inf=" << a_errNorm[0] << endl;
@@ -281,7 +286,7 @@ PetscErrorCode setupGrids( Vector<int> &a_refratios,  // out
                   Real grad = 0., tt;
                   if (s_amr_type_iserror)
                     {
-                      tt = abs(phiFAB(iv,0)-exactFAB(iv,0));
+                      tt = fabs(phiFAB(iv,0)-exactFAB(iv,0));
                       if (tt>max_) max_ = tt;
                     }
                   else
@@ -297,8 +302,11 @@ PetscErrorCode setupGrids( Vector<int> &a_refratios,  // out
                     }
                 }
             }
-          
+#ifdef CH_MPI
           MPI_Allreduce( &max_, &thresh, 1, MPI_DOUBLE, MPI_MAX, PETSC_COMM_WORLD );
+#else
+	  thresh = max_;
+#endif
           // set thresh
           thresh /= 2.; 
         }
@@ -318,7 +326,7 @@ PetscErrorCode setupGrids( Vector<int> &a_refratios,  // out
                   const IntVect& iv = bit();
                   if (s_amr_type_iserror)
                     {
-                      Real error = abs(phiFAB(iv,0)-exactFAB(iv,0));
+                      Real error = fabs(phiFAB(iv,0)-exactFAB(iv,0));
                       if (error > thresh) a_tagVects[ilev] |= iv; // real AMR
                     }
                   else // grad

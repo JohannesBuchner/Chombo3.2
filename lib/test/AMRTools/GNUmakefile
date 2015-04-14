@@ -11,7 +11,7 @@ makefiles+=lib_test_AMRTools
 ebase :=  testPWL quadCFInterpTest testPeriodic fluxRegisterTest \
           testRegionGather testCoarseAverage testPeriodicFillPatch \
 	testComputeSum  FineInterpEdgeTest refluxEdgeTest testPeriodicFR \
-	testFourthOrderFineInterp
+	testFourthOrderFineInterp testFineInterp
 
 LibNames := AMRTools BoxTools
 

@@ -148,11 +148,12 @@ public:
     StencilIndex& operator= (const StencilIndex& a_sin)
     {
       m_vof   =a_sin.m_vof;
-      m_phase = a_sin.m_phase;
-      return *this;	
+      m_phase = a_sin.m_phase;      
+      return *this;
     }
 
-    VolIndex vof() const
+    VolIndex vof() 
+const
     {
       return m_vof;
     }
@@ -160,6 +161,11 @@ public:
     int phase() const
     {
       return m_phase;
+    }
+
+    bool operator!=(const StencilIndex& a_sin) const
+    {
+      return m_vof!= a_sin.m_vof || m_phase!=a_sin.m_phase;
     }
 
   protected:

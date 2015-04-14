@@ -17,7 +17,6 @@
 #include "BoxIterator.H"
 #include "FourthOrderInterpStencil.H"
 #include <petsc-private/pcimpl.h>
-
 #include "NamespaceHeader.H"
 
 typedef enum {GHOST=-1,FINE_COVERED=-2,DIRI_BC=-3,
@@ -32,12 +31,14 @@ class PetscCompGrid
 public: 
 
   //! Base class constructor. Called by all subclass constructors.
-  PetscCompGrid(int a_dof) : m_gid0(0),m_mat(0),m_CFStencilRad(2),m_writeMatlab(false),
-			     m_verbose(0),m_dof(a_dof)
+  PetscCompGrid(int a_dof) : m_gid0(0),m_mat(0),m_Pmat(0),m_CFStencilRad(2),m_writeMatlab(false),
+			     m_verbose(0),m_dof(a_dof),m_num_extra_nnz(0),m_repartition(PETSC_FALSE),
+			     m_patch_size(0),m_from_petscscat(0)
   {
 #if defined(PETSC_USE_LOG)
     PetscLogEventRegister("createMatrix",PETSC_VIEWER_CLASSID,&m_event0);
     PetscLogEventRegister("PetscCompGrid",PETSC_VIEWER_CLASSID,&m_event1);
+    PetscLogEventRegister("Prepartsition",PETSC_VIEWER_CLASSID,&m_event2);
 #endif
   }
   
@@ -53,11 +54,13 @@ public:
   virtual void clean();
 
   Mat getMatrix() const { return m_mat; }
+  Mat getPMatrix() const { return m_Pmat; }
   void setMatlab(bool b=true) {m_writeMatlab = b;}
+  void setRepartition(bool b=true) {m_repartition = (b ? PETSC_TRUE : PETSC_FALSE);}
   void setVerbose(int a_v){ m_verbose=a_v;}
 
   // main Mat creation routines
-  PetscErrorCode createMatrix();
+  PetscErrorCode createMatrix(int a_makePmat=0);
   // solver uses these, not used in base class, used in app code
   PetscErrorCode putChomboInPetsc( const Vector<LevelData<FArrayBox> * > &rhs, Vec b )const;
   PetscErrorCode putPetscInChombo( Vec b, Vector<LevelData<FArrayBox> * > &rhs )const;
@@ -81,6 +84,9 @@ protected:
     a_node.first.setLevel(a_lev);
     a_node.second.setValue(a_val);
   }
+  void setCFCoverMaps(int a_nlev);
+  void setCoverMaps(int a_nlev);
+  PetscErrorCode permuteDataAndMaps(Vector<StencilScalar> &patchStencil);
   // data
   Vector<ProblemDomain> m_domains;
   Vector<DisjointBoxLayout> m_grids;
@@ -92,9 +98,10 @@ protected:
   Vector<RefCountedPtr<LevelData<BaseFab<PetscInt> > > > m_crsSupportGIDs;
   Vector<RefCountedPtr<LevelData<BaseFab<PetscInt> > > > m_fineCoverGIDs;
 public:
-  int m_gid0;
+  PetscInt m_gid0,m_nlocrealpatches,m_patchid0;
 protected:
   Mat m_mat;
+  Mat m_Pmat;
   BCHolder m_bc;
   // all possible stencils, on box(-m_CFStencilRad:+m_CFStencilRad)^SpaceDim
   int m_CFStencilRad;
@@ -105,7 +112,16 @@ protected:
 #if defined(PETSC_USE_LOG)
   PetscLogEvent m_event0;
   PetscLogEvent m_event1;
+  PetscLogEvent m_event2;
 #endif
+public:
+  int m_num_extra_nnz;
+  // repartitioning data
+  PetscBool m_repartition;
+private:
+  PetscInt m_patch_size;
+  VecScatter m_from_petscscat;
+  Vec m_origvec; // buffer to hold Chombo data in a PETSc vector
 private:
   // Disallowed for all the usual reasons
   void operator=(const PetscCompGrid& a_input)

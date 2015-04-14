@@ -1344,7 +1344,7 @@ int read(HDF5Handle& a_handle, BoxLayoutData<T>& a_data, const std::string& a_na
           count[0] = offsets[i][index+1] - offset[0];
           if (count[0] > 0)
           {
-            int size = count[0] * type_size[i];
+            size_t size = count[0] * type_size[i];
             while (size > buffers[i].size())
               {
                 buffers[i].resize(2*buffers[i].size());

@@ -232,6 +232,7 @@ void BiCGStabSolver<T>::solve(T& a_phi, const T& a_rhs)
   };
 
   bool init = true;
+  int restarts = 0;
 
   if (m_verbosity >= 5)
     {
@@ -406,6 +407,55 @@ void BiCGStabSolver<T>::solve(T& a_phi, const T& a_rhs)
               recount = 0;
               m_op->incr(a_phi, e, 1.0);
 
+              if (restarts == m_numRestarts)
+                {
+                  if (m_verbosity >= 4)
+                    {
+                      pout() << "      BiCGStab: max restarts reached" << endl;
+                      pout() << "                init  norm = " << initial_norm << endl;
+                      pout() << "                final norm = " << norm[0] << endl;
+                    }
+
+                  CH_STOP(timeMainLoop);
+
+                  CH_START(timeCleanup);
+
+                  m_exitStatus = 3;
+
+                  // need to call clear just in case
+                  // this is not ideal -- maybe change the return
+                  // to exit
+                  m_op->clear(r);
+                  m_op->clear(r_tilde);
+                  m_op->clear(e);
+                  m_op->clear(p);
+                  m_op->clear(p_tilde);
+                  m_op->clear(s_tilde);
+                  m_op->clear(t);
+                  m_op->clear(v);
+
+                  CH_STOP(timeCleanup);
+
+                  return;
+                }
+
+              {
+                CH_TIME("BiCGStabSolver::solve::Restart");
+
+                m_op->residual(r, a_phi, a_rhs, m_homogeneous);
+                norm[0] = m_op->norm(r, m_normType);
+                rho[1]=0.0; rho[1]=0.0; rho[2]=0.0; rho[3]=0.0;
+                alpha[0]=0; beta[0]=0; omega[0]=0;
+                m_op->assignLocal(r_tilde, r);
+                m_op->setToZero(e);
+
+                restarts++;
+              }
+
+              if (m_verbosity >= 4)
+                {
+                  pout() << "      BiCGStab::   restart =  " << restarts << "\n";
+                }
 
               init = true;
             }

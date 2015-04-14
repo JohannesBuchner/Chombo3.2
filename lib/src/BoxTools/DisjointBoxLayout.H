@@ -301,7 +301,7 @@ public:
   */
   friend void adjCellLo(DisjointBoxLayout& a_output,
                         const DisjointBoxLayout& a_input,
-                        int a_dir, int a_len=1);
+                        int a_dir, int a_len);
 
   ///
   /** Returns the set of boxes which result from calling Box::adjCellHi
@@ -311,7 +311,7 @@ public:
   */
   friend void adjCellHi(DisjointBoxLayout& a_output,
                         const DisjointBoxLayout& a_input,
-                        int a_dir, int a_len=1);
+                        int a_dir, int a_len);
 
   /*@}*/
 
@@ -374,6 +374,28 @@ void refine_dbl(DisjointBoxLayout& output,
 {
   refine(output, input, refinement);
 }
+
+///
+/** Returns the set of boxes which you get from calling Box::adjCellLo
+    on each box in input. Output must be open, is closed upon exit from
+    this function. A negative length results in the set of boxes
+    of width a_len on the low side of, but _inside_ the original boxes.
+ */
+void adjCellLo(DisjointBoxLayout& a_output,
+               const DisjointBoxLayout& a_input,
+               int a_dir, int a_len=1);
+
+///
+/** Returns the set of boxes which result from calling Box::adjCellHi
+    on each box in input.  Output must be open, will be closed upon
+    exiting this function.  A negative length results in the set of boxes
+    of width a_len on the low side of, but _inside_ the original boxes.
+ */
+void adjCellHi(DisjointBoxLayout& a_output,
+               const DisjointBoxLayout& a_input,
+               int a_dir, int a_len=1);
+
+  /*@}*/
 
 #include "NamespaceFooter.H"
 #endif

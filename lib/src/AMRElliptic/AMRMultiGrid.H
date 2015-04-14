@@ -752,6 +752,7 @@ void AMRMultiGrid<T>::computeAMROperator(Vector<T*>&       a_lph,
                                          int               l_base,
                                          bool              a_homogeneousBC)
 {
+  
   for (int ilev = l_base; ilev <= l_max; ilev++)
     {
       m_op[ilev]->create(*m_residual[ilev], *a_lph[ilev]);
