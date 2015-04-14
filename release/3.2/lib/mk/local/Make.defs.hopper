@@ -41,7 +41,7 @@ foptflags += -O2 -fast
 #flibflags += -lgfortran -L/opt/pgi/default/linux86-64/default/lib 
 flibflags += 
 else
-$(ECHO) "UNKNOWN PROGRAMMING ENVIRONMENT!"
+#$(ECHO) "UNKNOWN PROGRAMMING ENVIRONMENT!"
 endif
 
 # The appropriate 'module' must be loaded for this to work.

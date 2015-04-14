@@ -512,7 +512,7 @@ Vector<Real> Moments::momentCalc2D(const int&    a_order,
           // edges is appropriate. No doubt this could be done better
           if (j != faceNormal)
             {
-              int low;
+              int low=-1;
 
               rowIndex += 1;
 

@@ -384,7 +384,7 @@ public:
    */
   friend
   IntVectSet
-  refine(const IntVectSet& ivs, int iref = 2);
+  refine(const IntVectSet& ivs, int iref);
 
   /// Coarsen all the IntVects in this IntVectSet
   /**
@@ -406,7 +406,7 @@ public:
    */
   friend
   IntVectSet
-  coarsen(const IntVectSet& ivs, int iref = 2);
+  coarsen(const IntVectSet& ivs, int iref);
 
   /// Increment all the IntVects in this IntVectSet by the IntVect \a iv
   void
@@ -760,6 +760,28 @@ IntVectSet::isDense() const
 {
   return m_isdense;
 }
+
+/// Refine all the IntVects in an IntVectSet
+/**
+   Creates a new IntVectSet that is a copy of the argument IntVectSet \a ivs
+   refined by the factor \a iref.  It is an error if \a iref <= 0.
+   Definition of refinement: for each IntVect \p iv in the original
+   IntVectSet \a ivs, the refined IntVectSet will contain the Box defined by
+   <b>refine( Box(iv,iv), iref )<b>.
+ */
+IntVectSet
+refine(const IntVectSet& ivs, int iref = 2);
+
+/// Coarsen all the IntVects in an IntVectSet
+/**
+   Creates a new IntVectSet that is a copy of the argument IntVectSet \a ivs coarsened
+   by the factor \a iref.  It is an error if \a iref <= 0.
+   Definition of coarsening: for each IntVect \p iv in the original
+   IntVectSet, the refined IntVectSet will contain the IntVect defined by
+   <b>coarsen( iv, iref )</b>.
+ */
+IntVectSet
+coarsen(const IntVectSet& ivs, int iref = 2);
 
 #endif /* WRAPPER */
 

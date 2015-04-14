@@ -681,7 +681,9 @@ BoxLayout::operator==(const BoxLayout& rhs) const
 inline bool
 BoxLayout::operator<(const BoxLayout& rhs) const
 {
-  return m_boxes < rhs.m_boxes;
+  if(*this == rhs) return false;
+  if(m_layout == rhs.m_layout) return  m_boxes->operator[](0).box.numPts() < rhs.m_boxes->operator[](0).box.numPts();
+  return m_layout < rhs.m_layout;
 }
 
 // member functions

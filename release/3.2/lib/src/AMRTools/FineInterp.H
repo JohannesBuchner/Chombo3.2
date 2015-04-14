@@ -165,6 +165,49 @@ public:
                   const LevelData<FArrayBox>& a_coarse_data,
                   bool a_averageFromDest = false);
 
+  
+  /// 
+  enum BoundaryLimitType
+    {
+      limitSlopes = 0,
+      noSlopeLimiting,
+      PCInterp,
+      NUM_LIMIT_TYPES
+    };
+
+  /// static variable to set default limiting behavior near domain boundaries
+  /** 
+      This allows the user to define the default limiting behavior near 
+      domain boundaries.
+      Near non-periodic domain boundaries, there are three options when 
+      computing interpolated values, corresponding to the three possible 
+      values in the BoundaryLimitType enum:
+      limitSlopes -- normal piecewise-linear interpolation, with the standard
+                     vanLeer limiting of slopes to prevent new maxima. This
+                     requires that ghost-cell values be set on the coarse data
+                     at domain boundaries.
+      noSlopeLimiting -- (default) piecewise-linear interpolation without 
+                         limiting. This doesn't require coarse-level ghost 
+                         cells be set, but may introduce new maxima/minima 
+                         (or break positivity) for non-smooth functions. 
+      PCInterp -- piecewise-constant interpolation. Safest bet, since it's 
+                  max/min-preserving without requiring that ghost cells be set,
+                  but also least accurate.
+
+      The basic idea here is that the user can over-ride the default behavior 
+      in favor of what an application demands by resetting the static variable.
+      The default behavior can then be over-ridden for an individual 
+      instantiation of the FineInterp class by modifying the member variable
+      m_boundary_limit_type.
+  */
+  static int s_default_boundary_limit_type;
+
+  /// domain-boundary limiting behavior for this object
+  /** default is to use whatever s_default_boundary_limit_type is at define 
+      time, but can be reset by the user at any time.
+  */ 
+  int m_boundary_limit_type;
+
 protected:
   void
   interpGridData(BaseFab<Real>& a_fine,

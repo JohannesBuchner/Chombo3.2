@@ -446,7 +446,7 @@ public:
   */
   friend Box bdryLo (const ProblemDomain& a_pd,
                      int        a_dir,
-                     int        a_len=1);
+                     int        a_len);
 
   /// Returns a face-centered Box at the high side of \em a_pd
   /**
@@ -459,7 +459,7 @@ public:
   */
   friend Box bdryHi (const ProblemDomain& a_pd,
                      int        a_dir,
-                     int        a_len=1);
+                     int        a_len);
 
   /// Returns the cell-centered Box adjacent to the low side of \em a_pd.
   /**
@@ -489,7 +489,7 @@ public:
   */
   friend Box adjCellLo (const ProblemDomain& a_pd,
                         int        a_dir,
-                        int        a_len=1);
+                        int        a_len);
 
   /// Returns the cell-centered Box adjacent to the low side of \em a_pd.
   /**
@@ -520,7 +520,7 @@ public:
   */
   friend Box adjCellHi (const ProblemDomain& a_pd,
                         int        a_dir,
-                        int        a_len=1);
+                        int        a_len);
 
   // Intersection functions
 
@@ -1114,6 +1114,94 @@ ProblemDomain::contains (const Box& b) const
                                 && b.bigEnd  (5) <= domainBox.bigEnd  (5))))));
   }
 }
+
+/// Returns a face-centered Box at the low side of \em a_pd
+/**
+   Returns the edge-centered Box (in direction \em a_dir) defining
+   the low side of the argument ProblemDomain.  The output Box will
+   have the given length in the given direction.  Directions are
+   zero-based.  It is an error if not 0 <= dir < SpaceDim.  The neighbor
+   of an Empty ProblemDomain is an Empty Box of the appropriate type.
+   If \em a_dir is a periodic direction, will return an empty Box.
+ */
+Box bdryLo (const ProblemDomain& a_pd,
+            int        a_dir,
+            int        a_len=1);
+
+/// Returns a face-centered Box at the high side of \em a_pd
+/**
+   Returns the edge-centered Box (in direction \em a_dir) defining the
+   high side of the argument ProblemDomain.  The return Box will have the
+   given length in the given direction.  Directions are zero-based.
+   It is an error if not 0 <= dir < SpaceDim.  The neighbor of an
+   Empty ProblemDomain is an Empty Box of the appropriate type.
+   If \em a_dir is a periodic direction, will return an empty Box.
+ */
+Box bdryHi (const ProblemDomain& a_pd,
+            int        a_dir,
+            int        a_len=1);
+
+/// Returns the cell-centered Box adjacent to the low side of \em a_pd.
+/**
+   Returns the cell centered Box of the given length adjacent to the
+   argument ProblemDomain on the low end along the given coordinate direction.
+   The return Box is identical to the argument ProblemDomain in the other
+   directions.  The return ProblemDomain and the argument ProblemDomain
+   have an empty intersection.
+
+   \b NOTES:
+   - len >= 1.
+   - Box retval = adjCellLo(b,dir,len) is equivalent to the following set of
+     operations:
+     \code
+       Box retval(b);
+
+       retval.convert(dir,ProblemDomain::CELL);
+
+       retval.setrange(dir,retval.smallEnd(dir)-len,len);
+     \endcode
+
+   Directions are zero-based.  It is an error if not 0 <= dir <
+   SpaceDim.  The neighbor of an Empty ProblemDomain is an Empty Box of the
+   appropriate type. If \em a_dir is a periodic direction, will return
+   an empty Box as well.
+
+ */
+Box adjCellLo (const ProblemDomain& a_pd,
+               int        a_dir,
+               int        a_len=1);
+
+/// Returns the cell-centered Box adjacent to the low side of \em a_pd.
+/**
+   Returns the cell centered Box of the given length adjacent to the
+   argument ProblemDomain on the high end along the given coordinate
+   direction.  The return Box is identical to the argument ProblemDomain in
+   the other directions.  The return Box and the argument ProblemDomain have
+   an empty intersection.
+
+   \b NOTES:
+   - len >= 1.
+
+   - Box retval = adjCellHi(b,dir,len) is equivalent to the
+     following set of operations:
+     \code
+       Box retval(b);
+
+       retval.convert(dir,ProblemDomain::CELL);
+
+       retval.setrange(dir,retval.bigEnd(dir)+1,len);
+     \endcode
+
+   Directions are zero-based.  It is an error if not 0 <= dir <
+   SpaceDim.  The neighbor of an Empty ProblemDomain is an Empty Box of the
+   appropriate type.    If \em a_dir is a periodic direction, will return
+   an empty Box.
+
+ */
+Box adjCellHi (const ProblemDomain& a_pd,
+               int        a_dir,
+               int        a_len=1);
+
 
 #endif /*WRAPPER*/
 

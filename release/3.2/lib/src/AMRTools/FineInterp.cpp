@@ -20,6 +20,9 @@
 #include "FineInterp.H"
 #include "NamespaceHeader.H"
 
+/// static variable initialization
+int FineInterp::s_default_boundary_limit_type = noSlopeLimiting;
+
 FineInterp::FineInterp()
   :
   is_defined(false)
@@ -68,6 +71,10 @@ FineInterp::define(const DisjointBoxLayout& a_fine_domain,
                    const ProblemDomain& a_fine_problem_domain)
 {
   CH_TIME("FineInterp::define");
+  
+  // set boundary limit type to default value
+  m_boundary_limit_type = s_default_boundary_limit_type;
+
   // check for consistency
   CH_assert (a_fine_domain.checkPeriodic(a_fine_problem_domain));
   m_ref_ratio = a_ref_ratio;
@@ -256,6 +263,8 @@ FineInterp::interpGridData(BaseFab<Real>& a_fine,
     {
       BaseFab<Real>& dir_slope = slopes[dir];
       dir_slope.resize(b, num_comp);
+      // initialize to zero for PC-interp case
+      dir_slope.setVal(0.0);
     }
   for (int dir = 0; dir < SpaceDim; ++dir)
     {
@@ -304,10 +313,16 @@ FineInterp::interpGridData(BaseFab<Real>& a_fine,
   // DFM 10/8/01
   // note that this turns off slope limiting for cells adjacent to the
   // boundary -- may want to revisit this in the future
+  // DFM (9/23/14) -- finally revisiting this; only compute modified box if 
+  // slope limiting is turned off or if PC interpolation. 
+  // (otherwise, do limiiting adjacent to domain boundaries)
   Box b_mod(b);
-  b_mod.grow(1);
-  b_mod = m_coarse_problem_domain & b_mod;
-  b_mod.grow(-1);
+  if (m_boundary_limit_type != limitSlopes)
+    {
+      b_mod.grow(1);
+      b_mod = m_coarse_problem_domain & b_mod;
+      b_mod.grow(-1);
+    }
 
   // create a box grown big enough to remove periodic BCs from domain
   Box domBox = grow(b, 2);
@@ -326,9 +341,14 @@ FineInterp::interpGridData(BaseFab<Real>& a_fine,
     {
       BaseFab<Real>& dir_slope = slopes[dir];
 
+      Box linearInterpBox = b;
+      if (m_boundary_limit_type == PCInterp)
+        {
+          linearInterpBox = b_mod;
+        }
       FORT_INTERPLINEAR ( CHF_FRA ( a_fine ),
                           CHF_CONST_FRA ( dir_slope ),
-                          CHF_BOX ( b ),
+                          CHF_BOX ( linearInterpBox ),
                           CHF_CONST_INT ( dir ),
                           CHF_CONST_INT ( a_ref_ratio ),
                           CHF_BOX ( refbox )

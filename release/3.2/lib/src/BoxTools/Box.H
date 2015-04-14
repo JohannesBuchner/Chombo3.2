@@ -266,6 +266,7 @@ private:
   unsigned char itype;
 };
 
+
 //
 // Inlines.
 //
@@ -690,37 +691,23 @@ public:
   */
   int size (int dir) const;
 
-  ///
-  /**
-     Is the number calculated by numPts() representable in a long?
-
-  */
-  bool numPtsOK () const;
-
+ 
   ///
   /**
      Return the volume, in indexing space, of region enclosed by this
-     Box.  This is identical to volume().  Abort()s if the number
-     cannot be represented in a long.\\
+     Box.  This is identical to volume().  
 
   */
-  long numPts () const;
+  unsigned long long int numPts () const;
 
-  ///
-  /**
-     Is the number calculated by volume() representable in a long?
-
-  */
-  bool volumeOK () const;
-
+ 
   ///
   /**
      Return the volume, in indexing space, of region enclosed by this
-     Box.  This is identical to numPts().  Abort()s if the number
-     cannot be represented in a long.\\
+     Box.  This is identical to numPts().  
 
   */
-  long volume () const;
+  unsigned long long int volume () const;
 
   ///
   /**
@@ -1103,6 +1090,7 @@ public:
                        const IntVect& a_sign,
                        const IntVect& a_translation);
 
+
   ///multiblock stuff
   void convertNewToOld(const IntVect& a_permutation,
                        const IntVect& a_sign,
@@ -1443,6 +1431,17 @@ public:
 
   /// coarsening
 
+  /*
+      True if the if (refine(coarsen(int))) gets the same box back
+   */
+   bool coarsenable(int refrat) const
+   {
+     Box test = *this;
+     test.coarsen(refrat);
+     test.refine(refrat);
+     return (test==*this);
+   }
+
   ///
   /**
      Modifies this Box by coarsening it by given (positive) refinement
@@ -1461,17 +1460,6 @@ public:
 
   Box& coarsen (int refinement_ratio);
 
-  ///
-  /**
-     True if the if (refine(coarsen(int))) gets the same box back
-  */
-  bool coarsenable(int refrat) const
-  {
-    Box test = *this;
-    test.coarsen(refrat);
-    test.refine(refrat);
-    return (test==*this);
-  }
   ///
   /**
      Returns a Box that is the argument Box coarsened by given
@@ -1638,14 +1626,6 @@ public:
 
 protected:
   friend class HDF5Handle;
-  //
-  // A helper function for numPtsOK() and numPts().
-  //
-  bool numPtsOK (long& N) const;
-  //
-  // A helper function for volumeOK() and volume().
-  //
-  bool volumeOK (long& N) const;
 
   IntVect   smallend;
   IntVect   bigend;
@@ -1672,6 +1652,7 @@ void linearIn(CH_XDIR::Box& a_outputT, const void* const a_inBuf);
 //Box specialization of linearOut
 template < >
 void linearOut(void* const a_outBuf, const CH_XDIR::Box& a_inputT);
+
 
 //Vector<Box>  specialization
 template < >
@@ -1858,13 +1839,7 @@ Box::getVect () const
   return smallend.getVect();
 }
 
-inline
-bool
-Box::numPtsOK () const
-{
-  long ignore;
-  return numPtsOK(ignore);
-}
+
 
 inline
 bool
@@ -1950,12 +1925,6 @@ Box::cellCentered () const
   return !btype.any();
 }
 
-inline
-bool
-Box::volumeOK () const
-{
-  return numPtsOK();
-}
 
 inline
 long

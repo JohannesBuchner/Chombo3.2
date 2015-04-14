@@ -43,6 +43,7 @@ convertOldToNew(const IntVect& a_ivOld,
   return ivNew;
 }
 
+
 CH_XDIR::IntVect
 convertNewToOld(const IntVect& a_ivNew,
                 const IntVect& a_permutation,
@@ -57,6 +58,7 @@ convertNewToOld(const IntVect& a_ivNew,
     }
   return ivOld;
 }
+
 
 ///multiblock stuff.
 void
@@ -78,6 +80,7 @@ convertOldToNew(const IntVect& a_permutation,
   //  Box bxNewCells = enclosedCells(bxNewNodes);
   *this = Box(ivNewLo, ivNewHi);
 }
+
 
 ///multiblock stuff
 void
@@ -287,10 +290,27 @@ void Box::define(const Box& b)
   btype = b.btype;
 }
 
-bool
-Box::numPtsOK (long& N) const
+template<unsigned char DIM> inline unsigned long long int counter(const IntVect& lo, const IntVect& hi);
+template<> inline unsigned long long int counter<1>(const IntVect& lo, const IntVect& hi)
 {
+  return hi[0]-lo[0]+1;
+}
+template<unsigned char DIM> inline unsigned long long int counter(const IntVect& lo, const IntVect& hi)
+{
+  return (hi[DIM-1]-lo[DIM-1]+1)*counter<DIM-1>(lo,hi);
+}
 
+unsigned long long int Box::numPts() const
+{
+  return counter<CH_SPACEDIM>(smallend,bigend);
+}
+
+unsigned long long int Box::volume() const
+{
+  return counter<CH_SPACEDIM>(smallend,bigend);
+}
+
+/*
 #if CH_SPACEDIM >= 1
     long M = (bigend[0]-smallend[0]+1);
     N = M;
@@ -387,6 +407,7 @@ Box::volume () const
 {
   return(numPts());
 }
+*/
 
 Box&
 Box::shiftHalf (int dir,
@@ -846,6 +867,7 @@ Box::chop (int dir,
   return Box(sm,bg,btype);
 }
 
+
 void
 Box::degenerate( Box& a_to, const SliceSpec& a_sliceSpec,
                  bool* a_outofbounds /*=0*/ ) const
@@ -876,6 +898,7 @@ Box::degenerate( Box& a_to, const SliceSpec& a_sliceSpec,
     }
   a_to = result;
 }
+
 
 //
 // Shift by half increments.
@@ -1423,6 +1446,7 @@ adjCellHi (const Box& b,
   }
 }
 
+
 /*static*/ void Box::setTempestOutputFormat( bool b )
 {
   Box::s_tempestOutputFormat = b;
@@ -1498,5 +1522,7 @@ template < > void linearOut(void* const a_outBuf, const Vector<Vector<Box> >& a_
 {
   linearListOut(a_outBuf, a_inputT);
 }
+
+
 
 #include "BaseNamespaceFooter.H"

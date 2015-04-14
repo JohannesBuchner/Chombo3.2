@@ -218,7 +218,7 @@ BRMeshRefine::makeBoxes(std::list<Box>&      a_mesh,
                         const int            a_totalBufferSize
                         ) const
 {
-  long long int Ntags  = a_tags.numPts();
+  unsigned long long int Ntags  = a_tags.numPts();
   Box minbx ;                                  //min box around Tags
   std::list<Box> mesh_hi ;                     //boxes from recursion
   IntVectSet& tags_lo = a_tags;
@@ -323,7 +323,7 @@ BRMeshRefine::makeBoxesParallel(std::list<Box>&      a_mesh,
       return;
     }
 
-  long long int Ntags  = a_tags.numPts();
+  unsigned long long int Ntags  = a_tags.numPts();
   std::list<Box> mesh_hi ;             //boxes from recursion
   IntVectSet& tags_lo = a_tags;
   IntVectSet  tags_hi ;                //tags for recursion

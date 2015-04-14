@@ -653,12 +653,12 @@ template <class T>
 PetscErrorCode PetscSolver<T>::putPetscInChombo( T& a_phi, const Vec xx )
 {
   PetscErrorCode ierr;
-  PetscScalar *arr;
+  const PetscScalar *arr;
   const DisjointBoxLayout &dbl = a_phi.disjointBoxLayout();
   DataIterator dit( dbl );
   const PetscInt nc = a_phi.nComp();
 
-  ierr = VecGetArray(xx,&arr);  CHKERRQ(ierr);
+  ierr = VecGetArrayRead(xx,&arr);  CHKERRQ(ierr);
   for ( dit = a_phi.dataIterator() ; dit.ok() ; ++dit )
     {
       BaseFab<Real> &phiFab = getRegFab(a_phi,dit);
@@ -675,7 +675,7 @@ PetscErrorCode PetscSolver<T>::putPetscInChombo( T& a_phi, const Vec xx )
             }
         }
     }
-  ierr =  VecRestoreArray(xx,&arr); CHKERRQ(ierr);
+  ierr =  VecRestoreArrayRead(xx,&arr); CHKERRQ(ierr);
   return 0;
 }
 

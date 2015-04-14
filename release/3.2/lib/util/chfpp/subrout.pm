@@ -1131,7 +1131,12 @@ sub SubroutProc::findCHFID
     my $subname = "" ;
     while( <SubroutProc::FIN> ){
         ## NOTE: this will fail on a statement like "subroutinefoo=1"
-        if (m/^\s*subroutine/i)
+        ## this bit of weirdness is to allow for the statement "end subroutine",
+        ## which is legal fortran, but was confusing the parser here
+        if (m/^\s*end/i)
+        {
+        }
+        elsif (m/^\s*subroutine/i)
         {
             if($debug)
             {

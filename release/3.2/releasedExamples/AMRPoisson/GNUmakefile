@@ -14,7 +14,8 @@ CHOMBO_HOME = ../../lib
 exec_dirs = execCell          \
             execNode          \
             execVariableCoefficient   \
-            execViscousTensor 
+            execViscousTensor \
+            execPETSc
 
 # the shared code for building in example subdirectories
 include $(CHOMBO_HOME)/mk/Make.example.subdirs
