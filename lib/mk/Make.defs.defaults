@@ -63,14 +63,14 @@
 ##  MULTIDIM        if true, will be compiling and linking with multiple dimensions
 
 ################################################################################
-FAS=TRUE
+FAS?=TRUE
 # vars affecting the configuration string
 DIM?=2
 DEBUG?=TRUE
 #OPT=FALSE
 PRECISION?=DOUBLE
 PROFILE?=FALSE
-MPI?=TRUE
+MPI?=FALSE
 ROSE?=FALSE
 GPU?=FALSE
 PIC?=FALSE
